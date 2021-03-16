@@ -17,18 +17,20 @@ from owslib.wcs import WebCoverageService
 import subprocess  # call exe from wihin script
 import os          # change dir and so on
 
+setglobaloption("lddin")
+setglobaloption("lddfill")
+setglobaloption("matrixtable")
+
+
 
 ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
 
 ### input maps ###
-catchmentsize = 1e6
-soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
-
 DEMinName = 'demc.map'                  # digital elevation model, area must be <= mask
 buffersinName = 'buffer.map'            # in m, positive valuesName = dike, negative values is basin, added to the DEM
 
 unitinName = 'lu20m.map'                # land use types
-lutblName = 'ludataSTL.tbl'             # land use surface properties
+lutblName = 'ludata.tbl'             # land use surface properties
                                         # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover
 riversinName = 'chanmask.map'           # river mask
 mainoutinName = 'mainout20m.map'        # forced outlet rivers to the sea, because of imperfect dem
@@ -36,7 +38,7 @@ outpointuserinName = 'mainout20m.map'   # points for user output hydrographs
 
 housecoverinName = 'building20m.map'    # housing density fraction (0-1)
 hardsurfinName = 'zero.map'             # hard surfaces (0-1) such as airport, parking lots etc
-roadinName = 'roadtype20m.map'          # type 1Name = highway, 2Name = 2.5 car width is larger, 3 is 1.5 car width
+roadinName = 'zero.map' #'roadtype20m.map'          # type 1Name = highway, 2Name = 2.5 car width is larger, 3 is 1.5 car width
 
 ### output maps ###
 
@@ -55,7 +57,7 @@ shadeName = 'shade.map'
 
 # infrastructure
 roadwidthName = 'roadwidt.map'   # road width (m)
-hardsufName = 'hardsurf.map'        # impermeable surfaces (0 or 1)
+hardsurfName = 'hardsurf.map'        # impermeable surfaces (0 or 1)
 housecovName = 'housecover.map'  # house cover fraction
 roofstoreName = 'roofstore.map'  # roof interception (mm) \
 raindrumsizeName = 'raindrum.map'# raindrum size (m3)
@@ -82,6 +84,8 @@ asName = 'aggrstab.map'
 d50Name = 'd50.map'
 d90Name = 'd90.map'
 
+compactName = 'compfrc.map'      # fraction of compacted siurface (0-1)
+crustName = 'crustfrc.map'       # fraction of crusted siurface (0-1)
 ksatcompName = 'ksatcomp.map'    # ksat of compacted areas (mm/h)
 ksatcrustName = 'ksatcrust.map'  # ksat of crusted areas (mm/h)
 porecompName = 'porecomp.map'    # Porosity of compacted areas (-)
@@ -107,7 +111,7 @@ chanwidthName = 'chanwidt.map'   # channel width (m)
 changradName = 'changrad.map'    # channel gradient, sine
 chanmanName = 'chanman.map'      # channel manning (-)
 chansideName = 'chanside.map'    # angle channel side walls, 0Name = 'rectangular
-chanmasknName = 'chanmask.map'   # copy of channel mask
+chanmaskName = 'chanmask.map'   # copy of channel mask
 chancohName = 'chancoh.map'      # channel cohesion (kPa)
 chandepthName = 'chandepth.map'  # channel depth (m)
 chanmaxqName = 'chanmaxq.map'    # maximum discharge (m3/s) in culvert locations in channel
@@ -343,24 +347,32 @@ class DEMderivatives(StaticModel):
     def __init__(self):
         StaticModel.__init__(self)
     def initial(self):
-        mask = mask_;
+        mask = mask_
+        size = catchmentsize_
+
 
         barriers = scalar(0) #readmap(buffersinName)*mask
         report(barriers,buffersName);
 
         DEM = readmap(DEMinName)
+        if correctDEM :
+            sizec = size /100
+            DEMc = lddcreatedem(DEM, sizec,sizec,sizec,sizec)
         DEMm = DEM + barriers;
         report(DEMm, DEMName)
+        DEM_ =- DEMm
 
-        mainout = readmap(mainoutinName)*mask
+        mainout = mainout_
+
         chanm = readmap(riversinName)*mask
-        size = catchmentsize
 
         Ldd = lddcreate (DEMm-chanm*10-mainout*10, size, size, size, size)
-        report(Ldd, lddName)
+        report(Ldd, LddName)
+        Ldd_ = Ldd
+
         # runoff flow network based on dem, main outlet, channels and barriers
         #report outlet = mainout; #pit(Ldd);
-        grad = sin(atan(slope(dem)))
+        grad = sin(atan(slope(DEMm)))
         report(grad, gradName)
 
         #### not used in lisem, auxilary maps
@@ -375,7 +387,7 @@ class DEMderivatives(StaticModel):
         shade = 0.7*(shade-mapminimum(shade))/(mapmaximum(shade)-mapminimum(shade))
         + 0.3*(DEM-mapminimum(DEM))/(mapmaximum(DEM)-mapminimum(DEM))
 
-        report(shade,shadeMap)  # not used in lisem
+        report(shade,shadeName)  # not used in lisem
 
 
         distriv = spread(nominal(chanm > 0),0,1)*mask
@@ -403,8 +415,8 @@ class SurfaceMaps(StaticModel):
         Cover = cover_
 
         unitmap = readmap(unitinName)
-        rr = max(lookupscalar(lu_tbl, 1, unitmap) * mask, 0.01)
-        report(rr,rrname)
+        rr = max(lookupscalar(lutblName, 1, unitmap) * mask, 0.01)
+        report(rr,rrName)
          # micro relief, random roughness (=std dev in cm)
 
         mann = lookupscalar(lutblName, 2, unitmap) * mask
@@ -414,15 +426,19 @@ class SurfaceMaps(StaticModel):
         crust = mask*0
         report(crust,crustName)
         # crust fraction assumed zero
+        compact = mask*0
+        report(compact,compactName)
+        # compact fraction assumed zero
 
-        report(hard_surf*mask,hardsurfName)
+        hardsurf = readmap(hardsurfinName)*mask
+        report(hardsurf ,hardsurfName)
          #hard surface, here airports and large impenetrable areas
 
-        roadwidth = readmap(roadinName)
+        roadwidth = readmap(roadinName)*mask
         report(roadwidth,roadwidthName)
 
         if optionErosionMaps :
-            cropheight = lookupscalar(lu_tbl, 3, unitmap) * mask #plant height in m
+            cropheight = lookupscalar(lutblName, 3, unitmap) * mask #plant height in m
             report(cropheight,cropheightName)
 
             aggrstab = 6 * mask;  # aggregate stability
@@ -446,8 +462,11 @@ class ChannelMaps(StaticModel):
         StaticModel.__init__(self)
     def initial(self):
         mask = mask_
+        mainout = mainout_
+        DEMm = DEM_
 
-        chanmask = ifthen(rivers> 0,1)*mask;
+        rivers=readmap(chanmaskName)
+        chanmask = ifthen(rivers > 0, scalar(1))*mask
         # create missing value outside channel
 
         lddchan = lddcreate((DEMm-mainout*100)*chanmask,1e20,1e20,1e20,1e20)
@@ -455,6 +474,7 @@ class ChannelMaps(StaticModel):
 
         outpoint = cover(scalar(pit(lddchan)),0)*mask
         outlet = cover(scalar(pit(lddchan)),0)*mask
+        mainout = outlet
         report(outlet,outletName)
         report(outpoint,outletName)
 
@@ -468,8 +488,9 @@ class ChannelMaps(StaticModel):
         report(chanside, chansideName)
 
         # relation by Allen and Pavelski (2015)
-        dx = celllength();
-        chanwidth = min(0.95*dx, max(2.0, accuflux(Ldd, dx/3.22e4)**(1.18)))*chanmask;
+        dx = celllength()
+        af = accuflux(Ldd_, dx/3.22e4)
+        chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
         ##  culvert_fraction_width = 0.8;
         ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
         ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
@@ -483,10 +504,10 @@ class ChannelMaps(StaticModel):
         report(chanksat,chanksatName)
 
         #bridges=clump(nominal(cover(if(chanwidth gt 9 and roadwidth gt 0 , 1, 0),0)*mask)); #and so ge 4
-        ws=catchment(Ldd, pit(lddchan));
+        ws=catchment(Ldd_, pit(lddchan));
         report(ws,wsName)
 
-        baseflow=cover(scalar(pit(lddchan) > 0)*chanwidth*chandepth*0.5,0)*mask
+        baseflow=cover(scalar(pit(lddchan) != 0)*chanwidth*chandepth*0.5,0)*mask
         report(baseflow,baseflowName)
         # assuming 0.5 m/s baseflow
 
@@ -494,36 +515,52 @@ class ChannelMaps(StaticModel):
 
 workingDir = 'C:/data/India/Cauvery/Base/'
 os.chdir(workingDir)
-maskname_ = 'dem200m.tif'
-masknamemap_ = 'maskbasin.map'
 
+print('read base maps')
+maskname_ = 'dem200m.tif'   # tif file for projection ESPG id
+masknamemap_ = 'maskbasin.map'  # pcraster file for exact basin mask
+# some general options
 Debug_ = False #True
+correctDEM = True
+catchmentsize_ = 1e6
 
-# tif file for projection ESPG id
+# get ESPG data and load mask
 masktif = gdal.Open(maskname_, gdalconst.GA_ReadOnly)
 proj = osr.SpatialReference(wkt=masktif.GetProjection())
 ESPG = proj.GetAttrValue('AUTHORITY',1)
-
-# pcraster file for exact basin mask
 setclone(masknamemap_)
 mask_ = readmap(masknamemap_)
-cover_ = scalar(0) #readmap(coverName)
 
-# dem derivatives, slope, LDD etc
+
+# check if there is a file for user defined outlets
+soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
+mainout_ = scalar(0)
+if os.path.isfile(mainoutinName):
+    mainout_ = readmap(mainoutinName)
+Ldd_ = ldd(0*mask_)
+cover_ = 0*mask_
+DEM_ = scalar(0)
+
+print('dem derivatives, slope, LDD etc')
 staticModelDEM = StaticFramework(DEMderivatives())
 staticModelDEM.run()
 
-# surface and l;and use related maps
+print('channel maps')
+staticModelCH = StaticFramework(ChannelMaps())
+staticModelCH.run()
+
+print('surface and l;and use related maps')
 optionErosionMaps = False
 staticModelSURF = StaticFramework(SurfaceMaps())
 staticModelSURF.run()
 
+
 # soil and infiltration maps
 print("downloading SOILGRIDS layers...")
-# for x in range(0,6):
-#     GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],2,1)
-# for x in range(0,6):
-#     GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],4,2)
+for x in range(0,6):
+    GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],2,1)
+for x in range(0,6):
+    GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],4,2)
 
 initmoisture_ = 0.7
 standardbulkdensity_ = 1450.0
