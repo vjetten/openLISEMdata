@@ -16,11 +16,14 @@ from owslib.wcs import WebCoverageService
 # operation system stuff
 import subprocess  # call exe from wihin script
 import os          # change dir and so on
+import sys
+import numpy as np
+from scipy import stats
+#from sklearn.linear_model import LinearRegression
 
 setglobaloption("lddin")
 setglobaloption("lddfill")
 setglobaloption("matrixtable")
-
 
 
 ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
@@ -29,35 +32,37 @@ setglobaloption("matrixtable")
 DEMinName = 'demc.map'                  # digital elevation model, area must be <= mask
 buffersinName = 'buffer.map'            # in m, positive valuesName = dike, negative values is basin, added to the DEM
 
-unitinName = 'lu20m.map'                # land use types
-lutblName = 'ludata.tbl'             # land use surface properties
+LULCinName = 'LULC_2005.tif'            # land use types
+lutblName = 'ludata.tbl'                # land use surface properties
                                         # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover
 riversinName = 'chanmask.map'           # river mask
-mainoutinName = 'mainout20m.map'        # forced outlet rivers to the sea, because of imperfect dem
-outpointuserinName = 'mainout20m.map'   # points for user output hydrographs
+mainoutinName = 'zero.map' #'mainout.map'        # forced outlet rivers to the sea, because of imperfect dem
+outpointuserinName = 'zero.map' # 'mainout.map'   # points for user output hydrographs
 
-housecoverinName = 'building20m.map'    # housing density fraction (0-1)
-hardsurfinName = 'zero.map'             # hard surfaces (0-1) such as airport, parking lots etc
-roadinName = 'zero.map' #'roadtype20m.map'          # type 1Name = highway, 2Name = 2.5 car width is larger, 3 is 1.5 car width
+housecoverinName = 'zero.map'      # housing density fraction (0-1)
+hardsurfinName = 'zero.map'            # hard surfaces (0-1) such as airport, parking lots etc
+roadinName = 'zero.map' #'roadtype20m.map  # tarmac roads, impermeable
+NDVIinName = 'ndvi.map'                 # NDVI for cover and LAI
 
 ### output maps ###
 
 # basic topography related maps
 DEMName = 'dem.map'             # adjusted dem
+IDName = 'id.map'               # raingauge zones, def set to 1
 buffersName = 'buffer.map'      # changes in m to the dem (+ or -)
-LddName = 'ldd.map'             # Local Drain Direction surface runoff
-gradName = 'grad.map'           # slope, sine!
+LddName = 'ldd.map'             # Local Drain Direction for surface runoff
+gradName = 'grad.map'           # slope, sine! (0-1)
 idName = 'id.map'               # pluviograph influence zones
 outletName = 'outlet.map'       # location outlets and checkpoints
-landuseName = 'landunit.map'    # land units combined soil and vegetation
-outpointName = 'outpoint.map'   # points where hydrograph output is generated
-upsName = 'ups.map'             # points where hydrograph output is generated
-wsName = 'ws.map'               # points where hydrograph output is generated
-shadeName = 'shade.map'
+landuseName = 'landuse.map'    # landuse/landcover for RR and manning
+outpointName = 'outpoint.map'   # user defined output locations
+upsName = 'ups.map'             # cumulative flow network, not used in lisem
+wsName = 'ws.map'               # watershed boundary map, not used in lisem
+shadeName = 'shade.map'         # shaded relief map, not use din lisem
 
 # infrastructure
 roadwidthName = 'roadwidt.map'   # road width (m)
-hardsurfName = 'hardsurf.map'        # impermeable surfaces (0 or 1)
+hardsurfName = 'hardsurf.map'    # impermeable surfaces (0 or 1)
 housecovName = 'housecover.map'  # house cover fraction
 roofstoreName = 'roofstore.map'  # roof interception (mm) \
 raindrumsizeName = 'raindrum.map'# raindrum size (m3)
@@ -120,8 +125,6 @@ chanksatName = 'chanksat.map'    # ksat in case channel infiltrates, for dry cha
 baseflowName = 'baseflow.map'    # stationary baseflow at end piints of river
 
 
-
-
 ### ---------- class GetSoilGridsLayer ---------- ###
 
 class GetSoilGridsLayer:
@@ -144,17 +147,17 @@ class GetSoilGridsLayer:
         #if self.debug == 1:
         print("Processing layer "+str(self.outlayer)+": "+self.varname+ID)
 
-        raster=gdal.Open(self.mask)
+       # raster=gdal.Open(self.mask)
         ESPG = 'urn:ogc:def:crs:EPSG::{0}'.format(self.ESPG)
-        wide = raster.RasterXSize
-        high = raster.RasterYSize
-        dx = raster.GetGeoTransform()[1]
-        dy = raster.GetGeoTransform()[5]
-        llx = raster.GetGeoTransform()[0]
-        ury = raster.GetGeoTransform()[3]
-        urx = llx+wide*dx
-        lly = ury+dy*high
-        bbox = [llx,lly,urx,ury]
+        # wide = raster.RasterXSize
+        # high = raster.RasterYSize
+        # dx = raster.GetGeoTransform()[1]
+        # dy = raster.GetGeoTransform()[5]
+        # llx = raster.GetGeoTransform()[0]
+        # ury = raster.GetGeoTransform()[3]
+        # urx = llx+wide*dx
+        # lly = ury+dy*high
+        # bbox = [llx,lly,urx,ury]
 
         if self.debug == 1:
             print("Mask ESPG and bounding box:"+ESPG,llx,lly,urx,ury,dx,dy)
@@ -179,7 +182,7 @@ class GetSoilGridsLayer:
             print("Downloading "+variable)
 
         # get data as temp geotif and save to disk
-        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=bbox,
+        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,
             resx=dx,resy=dx,format='GEOTIFF_INT16')
         with open(outputnametif, 'wb') as file:
              file.write(response.read())
@@ -188,7 +191,7 @@ class GetSoilGridsLayer:
         src = gdal.Open(outputnametif, gdalconst.GA_ReadOnly)
         src_proj = src.GetProjection()
         src_geotrans = src.GetGeoTransform()
-        dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, wide, high, 1,
+        dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols, nrRows, 1,
                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
         dst.SetGeoTransform( src_geotrans )
         dst.SetProjection( src_proj )
@@ -203,8 +206,6 @@ class GetSoilGridsLayer:
 
         dst = None
         src = None
-        if self.debug == 1:
-            print("Done.\n")
 
 
 ### ---------- class PedoTranfer() ---------- ###
@@ -221,8 +222,6 @@ class PedoTransfer(StaticModel):
         fractionmoisture = scalar(initmoisture_)   #inital moisture as fraction between porosity and field capacity
         x = layer_
         mask = mask_
-        SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
-        # texture, doil organic carbon, course fragments, bulk dens
 
         S1 = readmap("{0}{1}.map".format(SG_names_[0],str(x)))  # sand g/kg
         Si1 = readmap("{0}{1}.map".format(SG_names_[1],str(x))) # silt g/kg
@@ -252,6 +251,15 @@ class PedoTransfer(StaticModel):
         Si = Si1/1000
         OC = (OC1/10000)*100  # conversion OC from dg/kg to percentage
         OM = OC*1.73  #/2.0   #conversion org carbon to org matter factor 2
+
+        unitmap = readmap(landuseName)
+
+        S = ifthenelse(unitmap == unitBuild_, 0.6, S)
+        C = ifthenelse(unitmap == unitBuild_, 0.28, C)
+        Si = ifthenelse(unitmap == unitBuild_, 0.12, Si)
+        S = ifthenelse(unitmap == unitWater_, 0, S)
+        C = ifthenelse(unitmap == unitWater_, 0, C)
+        Si = ifthenelse(unitmap == unitWater_, 1.0, Si)
 
         mask = ifthen(S+C+Si > 0.01,mask) # assume areas where sum text is not 1 = MV
 
@@ -303,6 +311,12 @@ class PedoTransfer(StaticModel):
         WP = M1500adj*mask
         FC = M33adj* mask
         PAW = (M33adj - M1500adj)*(1-Gravel)* mask
+
+        POROSITY = ifthenelse(unitmap == unitBuild_, Poreurban_, POROSITY)
+        Ksat = ifthenelse(unitmap == unitBuild_, Ksaturban_, Ksat)
+        POROSITY = ifthenelse(unitmap == unitWater_, 0, POROSITY)
+        Ksat = ifthenelse(unitmap == unitWater_, 0, Ksat)
+
         initmoist = fractionmoisture*POROSITY+ (1-fractionmoisture)*FC
 
         report(POROSITY,Pore1)
@@ -326,20 +340,64 @@ class PedoTransfer(StaticModel):
         ## estimation based on clay content       ##
         ## adapted from Morgan, 2001              ##
         ############################################
+        if optionErosionMaps and x == 1:
+            Coh = max(1.0, 4.316*ln(C+1.0) - 6.955)
+            # log fit using values below
+            Coh = ifthenelse((unitmap == unitBuild_) | (unitmap == unitWater_) , -1, Coh)
+            #Coh = lookupscalar("claycoh.tbl",C)*mask
+            # content of claycoh.tbl
+            # [,20>   2
+            # [20,35> 3
+            # [35,40> 9
+            # [40,55> 10
+            # [55,60> 11
+            # [60,100> 12
 
-        Coh = max(1.0, 4.316*ln(C+1.0) - 6.955)
-        # log fit using values below
+            report(Coh, Coh1)
+            report(Coh,aggrstabName)
+            D50 = scalar(0)
+            D90 = scalar(0)
 
-        #Coh = lookupscalar("claycoh.tbl",C)*mask
-        # content of claycoh.tbl
-        # [,20>   2
-        # [20,35> 3
-        # [35,40> 9
-        # [40,55> 10
-        # [55,60> 11
-        # [60,100> 12
+            if optionD50 == 1 :
+                print('estimating d50 and d90 from texture, may take some time')
+                cp = pcr2numpy(C, -9999)
+                sip = pcr2numpy(Si, -9999)
+                sp = pcr2numpy(S, -9999)
+                d50p = pcr2numpy(D50, -9999)
+                d90p = pcr2numpy(D90, -9999)
 
-        report(Coh, Coh1)
+                step = 1
+                for row in range(1,nrRows) :
+                    sss = "["+"#"*step+"."*(100-step)+"]"
+                    if row % int(nrRows/100) == 0 :
+                        step += 1
+
+                    #print("\r" + str("{:.0%}".format(row/nrRows)), end="")
+                    print("\r" + sss, end="")
+                    for col in range(1,nrCols) :
+                        c = cp[row][col]#cellvalue(C, row, col)
+                        si = sip[row][col]#cellvalue(Si, row, col)
+                        s = sp[row][col]#cellvalue(S, row, col)
+                        y = [c,c+si,1.0]
+                        x = [0.693147181,3.912023005,6.214608098]
+                        res = stats.linregress(x, y)
+                        # print("a",res.intercept)
+                        # print("a",res.slope)
+                        # # linear regression between cumulative texture fraction and ln(grainsize)
+                        if res.slope > 1e-3 :
+                            d50p[row][col] = exp((0.5-res.intercept)/res.slope)
+                            d90p[row][col] = exp((0.9-res.intercept)/res.slope)
+                        else :
+                            d50p[row][col] = 0
+                            d90p[row][col] = 0
+                            #print(row,col,d50p[row][col])
+
+                # print(d50p[100][100])
+                D50 = numpy2pcr(Scalar,d50p,-9999)
+                report(D50*mask,d50Name)
+                D90 = numpy2pcr(Scalar,d90p,-9999)
+                report(D90*mask,d90Name)
+
 
 ### ---------- class DEMderivatives() ---------- ###
 
@@ -349,26 +407,32 @@ class DEMderivatives(StaticModel):
     def initial(self):
         mask = mask_
         size = catchmentsize_
+        global mainout_
+        mainout = mainout_
 
+        ID = mask
+        report(ID,IDName)
 
         barriers = scalar(0) #readmap(buffersinName)*mask
         report(barriers,buffersName);
 
         DEM = readmap(DEMinName)
-        if correctDEM :
-            sizec = size /100
-            DEMc = lddcreatedem(DEM, sizec,sizec,sizec,sizec)
+        if fillDEM > 0 :
+            DEMc = lddcreatedem(DEM, fillDEM,fillDEM,fillDEM,fillDEM)
         DEMm = DEM + barriers;
         report(DEMm, DEMName)
         DEM_ =- DEMm
 
-        mainout = mainout_
-
-        chanm = readmap(riversinName)*mask
+        chanm = scalar(0)
+        if optionChannelMaps :
+            chanm = readmap(riversinName)*mask
+            chanm = cover(ifthen(chanm > 1, scalar(1)),0)*mask
 
         Ldd = lddcreate (DEMm-chanm*10-mainout*10, size, size, size, size)
         report(Ldd, LddName)
         Ldd_ = Ldd
+        mainout_ = cover(scalar(pit(Ldd)),0)*mask
+
 
         # runoff flow network based on dem, main outlet, channels and barriers
         #report outlet = mainout; #pit(Ldd);
@@ -402,7 +466,7 @@ class DEMderivatives(StaticModel):
         soildepth2 = mask*(soildepth1+cover(windowaverage(soildb,3*celllength()),mask))
 
         report(soildepth1,soildep1Name)
-        report(soildepth1,soildep2Name)
+        report(soildepth2,soildep2Name)
 
 
 ### ---------- class SurfaceMaps() ---------- ###
@@ -414,12 +478,17 @@ class SurfaceMaps(StaticModel):
         mask = mask_
         Cover = cover_
 
-        unitmap = readmap(unitinName)
-        rr = max(lookupscalar(lutblName, 1, unitmap) * mask, 0.01)
+        if Debug_ :
+            print('create RR, n etc')
+
+        unitmap = readmap(landuseName)
+        rr = cover(max(lookupscalar(lutblName, 1, unitmap), 0.5),1.0) * mask
         report(rr,rrName)
          # micro relief, random roughness (=std dev in cm)
 
         mann = lookupscalar(lutblName, 2, unitmap) * mask
+        mann = cover(mann,0.05)*mask
+       # mann = 0.01*rr + 0.1*Cover
         report(mann,mannName)
          # in the lisem code Manning's n is increased with house effect
 
@@ -437,6 +506,7 @@ class SurfaceMaps(StaticModel):
         roadwidth = readmap(roadinName)*mask
         report(roadwidth,roadwidthName)
 
+
         if optionErosionMaps :
             cropheight = lookupscalar(lutblName, 3, unitmap) * mask #plant height in m
             report(cropheight,cropheightName)
@@ -447,12 +517,11 @@ class SurfaceMaps(StaticModel):
             cohplant = Cover * 5.0 * mask  # additional plant root strength
             report(cohplant,cohaddName)
 
-            D50 = 40*mask;
-            report(D50,d50Name)
+            # D50 = 40*mask;
+            # report(D50,d50Name)
 
-            D90 = 90*mask;
-            report(D90,d90Name)
-
+            # D90 = 90*mask;
+            # report(D90,d90Name)
 
 ### ---------- class ChannelMaps() ---------- ###
 
@@ -462,23 +531,24 @@ class ChannelMaps(StaticModel):
         StaticModel.__init__(self)
     def initial(self):
         mask = mask_
+        global mainout_
         mainout = mainout_
-        DEMm = DEM_
+        DEM = DEM_
 
         rivers=readmap(chanmaskName)
         chanmask = ifthen(rivers > 0, scalar(1))*mask
         # create missing value outside channel
 
-        lddchan = lddcreate((DEMm-mainout*100)*chanmask,1e20,1e20,1e20,1e20)
+        lddchan = lddcreate((DEM-mainout*10)*chanmask,1e20,1e20,1e20,1e20)
         report(lddchan,lddchanName)
 
         outpoint = cover(scalar(pit(lddchan)),0)*mask
         outlet = cover(scalar(pit(lddchan)),0)*mask
-        mainout = outlet
+        mainout_ = outlet
         report(outlet,outletName)
-        report(outpoint,outletName)
+        report(outpoint,outpointName)
 
-        changrad = min(0.2,max(0.01,sin(atan(slope(chanmask*DEMm)))))
+        changrad = min(0.5,max(0.01,sin(atan(slope(chanmask*DEM)))))
         changrad = windowaverage(changrad, 5*celllength())*chanmask
         report(changrad,changradName)
 
@@ -514,49 +584,84 @@ class ChannelMaps(StaticModel):
 ### ---------- START ---------- ###
 
 workingDir = 'C:/data/India/Cauvery/Base/'
+lulcDIR = 'C:/\data/India/Decadal_LULC_India_1336/data/'
 os.chdir(workingDir)
 
 print('read base maps')
-maskname_ = 'dem200m.tif'   # tif file for projection ESPG id
+
 masknamemap_ = 'maskbasin.map'  # pcraster file for exact basin mask
 # some general options
-Debug_ = False #True
-correctDEM = True
-catchmentsize_ = 1e6
+Debug_ = False
+fillDEM = 1e4  # use fill dem with lddcreatedem, if this value = 0 then this is not used
+catchmentsize_ = 1e8
+optionErosionMaps = True
+optionChannelMaps = True
+optionD50 = True
 
-# get ESPG data and load mask
+# get ESPG number
+maskname_ = 'dem200m.tif'   # tif file for projection ESPG id
 masktif = gdal.Open(maskname_, gdalconst.GA_ReadOnly)
-proj = osr.SpatialReference(wkt=masktif.GetProjection())
-ESPG = proj.GetAttrValue('AUTHORITY',1)
+ESPG = osr.SpatialReference(wkt=masktif.GetProjection()).GetAttrValue('AUTHORITY',1)
+masktif = None
+
+# set the overall mask
 setclone(masknamemap_)
 mask_ = readmap(masknamemap_)
 
+# set the gdal details of the mask, bounding box
+maskgdal=gdal.Open(masknamemap_) # get mask details
+maskproj = maskgdal.GetProjection()
+nrRows = maskgdal.RasterYSize
+nrCols = maskgdal.RasterXSize
+dx = maskgdal.GetGeoTransform()[1]
+dy = maskgdal.GetGeoTransform()[5]
+llx = maskgdal.GetGeoTransform()[0]
+ury = maskgdal.GetGeoTransform()[3]
+urx = llx + nrCols*dx
+lly = ury + dy*nrRows
+maskbox = [llx,lly,urx,ury]
 
-# check if there is a file for user defined outlets
+#maps that are neede in multiple classes
 soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
-mainout_ = scalar(0)
-if os.path.isfile(mainoutinName):
-    mainout_ = readmap(mainoutinName)
+mainout_ = readmap(mainoutinName)       # can be zero
 Ldd_ = ldd(0*mask_)
-cover_ = 0*mask_
+cover_ = scalar(0)
 DEM_ = scalar(0)
+Ksaturban_ = scalar(5)
+Poreurban_ = scalar(0.45)
+unitBuild_ = scalar(3)  # to adapt ksat pore urban areas
+unitWater_ = scalar(9)  # to adapt ksat pore water
+report(DEM_,'zero.map')
 
-print('dem derivatives, slope, LDD etc')
+print('Get land use map for the area')
+lulcTIF = lulcDIR+LULCinName
+src = gdal.Open(lulcTIF)
+dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
+                            gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+dst.SetGeoTransform( maskgdal.GetGeoTransform() )
+dst.SetProjection( maskproj )
+gdal.ReprojectImage(src, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
+dst = None
+src = None
+
+
+# print('dem derivatives, slope, LDD etc')
 staticModelDEM = StaticFramework(DEMderivatives())
 staticModelDEM.run()
 
-print('channel maps')
-staticModelCH = StaticFramework(ChannelMaps())
-staticModelCH.run()
+if optionChannelMaps :
+    print('channel maps')
+    staticModelCH = StaticFramework(ChannelMaps())
+    staticModelCH.run()
 
-print('surface and l;and use related maps')
-optionErosionMaps = False
+# print('surface and land use related maps')
 staticModelSURF = StaticFramework(SurfaceMaps())
 staticModelSURF.run()
 
-
 # soil and infiltration maps
 print("downloading SOILGRIDS layers...")
+SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
+#soigrid map names for texture, doil organic carbon, course fragments, bulk dens
 for x in range(0,6):
     GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],2,1)
 for x in range(0,6):
