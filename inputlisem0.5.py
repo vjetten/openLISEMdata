@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 15 09:50:45 2021
+Created on Fri Mar 19 14:07:11 2021
 openlisem input script
-@author: vjetten
+@author: v jetten, ITC
 """
 
 # pcraster stuff
@@ -16,27 +16,31 @@ from owslib.wcs import WebCoverageService
 # operation system stuff
 import subprocess  # call exe from wihin script
 import os          # change dir and so on
-import sys
-import numpy as np
+#import sys
+#import numpy as np
+
+# linear regression for D50 and D90
 from scipy import stats
-#from sklearn.linear_model import LinearRegression
+
 
 setglobaloption("lddin")
 setglobaloption("lddfill")
 setglobaloption("matrixtable")
 
+import channelMaps
 
 ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
 
 ### input maps ###
-DEMinName = 'demc.map'                  # digital elevation model, area must be <= mask
-buffersinName = 'buffer.map'            # in m, positive valuesName = dike, negative values is basin, added to the DEM
+DEMinName = 'dembasin.map'                  # digital elevation model, area must be <= mask
+buffersinName = 'zero.map'            # in m, positive valuesName = dike, negative values is basin, added to the DEM
+maskinName = 'maskbasin.map'
 
 LULCinName = 'LULC_2005.tif'            # land use types
 lutblName = 'ludata.tbl'                # land use surface properties
                                         # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover
-riversinName = 'chanmask.map'           # river mask
-mainoutinName = 'zero.map' #'mainout.map'        # forced outlet rivers to the sea, because of imperfect dem
+riversinName = 'rivermask.map'           # river mask
+mainoutinName = 'mainout.map' #'mainout.map'        # forced outlet rivers to the sea, because of imperfect dem
 outpointuserinName = 'zero.map' # 'mainout.map'   # points for user output hydrographs
 
 housecoverinName = 'zero.map'      # housing density fraction (0-1)
@@ -79,7 +83,7 @@ LitterName = 'litter.map'       # fraction of litter under tree vegetation.
 ksatName = 'ksat'                # sat hydraulic conductivity (mm/h)
 poreName = 'thetas'              # porosity (-)
 thetaiName = 'thetai'            # initial moisture content (-)
-psiName = 'psi1'                 # suction unsat zone (cm)
+psiName = 'psi'                 # suction unsat zone (cm)
 soildep1Name = 'soildep1.map'    # soil depth (mm), assumed constant
 soildep2Name = 'soildep2.map'    # soil depth (mm), assumed constant
 
@@ -227,7 +231,7 @@ class PedoTransfer(StaticModel):
         Si1 = readmap("{0}{1}.map".format(SG_names_[1],str(x))) # silt g/kg
         C1 = readmap("{0}{1}.map".format(SG_names_[2],str(x)))  # clay g/kg
         OC1 = readmap("{0}{1}.map".format(SG_names_[3],str(x)))  # organic carbon in dg/kg
-        Gravel1 = readmap("{0}{1}.map".format(SG_names_[4],str(x))) # coarse fragments cm3/dm3,
+        Grv = readmap("{0}{1}.map".format(SG_names_[4],str(x))) # coarse fragments cm3/dm3,
         bd1 = readmap("{0}{1}.map".format(SG_names_[5],str(x)))   # bulk density in cg/m3
 
         #output map name strings
@@ -254,16 +258,14 @@ class PedoTransfer(StaticModel):
 
         unitmap = readmap(landuseName)
 
-        S = ifthenelse(unitmap == unitBuild_, 0.6, S)
-        C = ifthenelse(unitmap == unitBuild_, 0.28, C)
-        Si = ifthenelse(unitmap == unitBuild_, 0.12, Si)
-        S = ifthenelse(unitmap == unitWater_, 0, S)
-        C = ifthenelse(unitmap == unitWater_, 0, C)
-        Si = ifthenelse(unitmap == unitWater_, 1.0, Si)
+        # quick and dirty filling up from the sides
+        S = scalar(spreadzone(nominal(S),0,1))
+        Si = scalar(spreadzone(nominal(Si),0,1))
+        C = scalar(spreadzone(nominal(C),0,1))
+        OM = scalar(spreadzone(nominal(OM),0,1))
+        bd1 = scalar(spreadzone(nominal(bd1),0,1))
+        Grv = scalar(spreadzone(nominal(Grv),0,1))
 
-        mask = ifthen(S+C+Si > 0.01,mask) # assume areas where sum text is not 1 = MV
-
-        OM = OM*mask
         report(OM, om1)
         Dens = 1.0
         if docover:
@@ -271,7 +273,7 @@ class PedoTransfer(StaticModel):
         # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
         bdsg = bd1*10            #bulkdensity cg/m3 to kg/m3
         bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
-        Gravel = Gravel1/1000  # from cm3/dm3 (1000 cc in a liter)
+        Gravel = Grv/1000  # from cm3/dm3 (1000 cc in a liter)
         Densityfactor = bdsg/standardBD*Dens #(1-0.1*cover)
         report(Densityfactor,Densityfactor1)
 
@@ -312,10 +314,10 @@ class PedoTransfer(StaticModel):
         FC = M33adj* mask
         PAW = (M33adj - M1500adj)*(1-Gravel)* mask
 
-        POROSITY = ifthenelse(unitmap == unitBuild_, Poreurban_, POROSITY)
-        Ksat = ifthenelse(unitmap == unitBuild_, Ksaturban_, Ksat)
-        POROSITY = ifthenelse(unitmap == unitWater_, 0, POROSITY)
-        Ksat = ifthenelse(unitmap == unitWater_, 0, Ksat)
+        # POROSITY = ifthenelse(unitmap == unitBuild_, Poreurban_, POROSITY)
+        # Ksat = ifthenelse(unitmap == unitBuild_, Ksaturban_, Ksat)
+        # POROSITY = ifthenelse(unitmap == unitWater_, 0, POROSITY)
+        # Ksat = ifthenelse(unitmap == unitWater_, 0, Ksat)
 
         initmoist = fractionmoisture*POROSITY+ (1-fractionmoisture)*FC
 
@@ -367,8 +369,12 @@ class PedoTransfer(StaticModel):
                 d90p = pcr2numpy(D90, -9999)
 
                 step = 1
+                star = ["|","/","-","\\"]
+                sr = 0
                 for row in range(1,nrRows) :
-                    sss = "["+"#"*step+"."*(100-step)+"]"
+                    sss = "["+"#"*step+star[sr]+"."*(100-step-1)+"]"
+                    sr+= 1
+                    if sr == 4: sr = 0
                     if row % int(nrRows/100) == 0 :
                         step += 1
 
@@ -397,6 +403,7 @@ class PedoTransfer(StaticModel):
                 report(D50*mask,d50Name)
                 D90 = numpy2pcr(Scalar,d90p,-9999)
                 report(D90*mask,d90Name)
+                print("\n")
 
 
 ### ---------- class DEMderivatives() ---------- ###
@@ -469,6 +476,7 @@ class DEMderivatives(StaticModel):
         report(soildepth2,soildep2Name)
 
 
+
 ### ---------- class SurfaceMaps() ---------- ###
 
 class SurfaceMaps(StaticModel):
@@ -524,7 +532,6 @@ class SurfaceMaps(StaticModel):
             # report(D90,d90Name)
 
 ### ---------- class ChannelMaps() ---------- ###
-
 class ChannelMaps(StaticModel):
     #! --lddout
     def __init__(self):
@@ -535,7 +542,7 @@ class ChannelMaps(StaticModel):
         mainout = mainout_
         DEM = DEM_
 
-        rivers=readmap(chanmaskName)
+        rivers=readmap(riversinName)
         chanmask = ifthen(rivers > 0, scalar(1))*mask
         # create missing value outside channel
 
@@ -561,12 +568,14 @@ class ChannelMaps(StaticModel):
         dx = celllength()
         af = accuflux(Ldd_, dx/3.22e4)
         chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
+        report(chanwidth,chanwidthName)
         ##  culvert_fraction_width = 0.8;
         ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
         ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
            #-0.5 +
         chandepth = max(1.0,chanwidth**0.2)
         chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
+        report(chandepth,chandepthName)
 
         chanmaxq = 0*mask#if(culverts gt 0, 2, 0)*mask;
         report(chanmaxq,chanmaxqName)
@@ -581,7 +590,17 @@ class ChannelMaps(StaticModel):
         report(baseflow,baseflowName)
         # assuming 0.5 m/s baseflow
 
+
 ### ---------- START ---------- ###
+
+# NIOTE: preperatory actions
+# 1. QGIS: download SRTM
+# 2. PCRaster create an ldd using 1e8 as weight and --lddin
+# 3. create watersheds: pcrcalc ws.map=catchment()ldd.map, pit(ldd.map))
+# 4. select appropriate water (cauvery has nr 78)
+# craete a mask from this watershed abnd use resample to eliminate ros and cols with missing cvalue
+
+
 
 workingDir = 'C:/data/India/Cauvery/Base/'
 lulcDIR = 'C:/\data/India/Decadal_LULC_India_1336/data/'
@@ -589,7 +608,7 @@ os.chdir(workingDir)
 
 print('read base maps')
 
-masknamemap_ = 'maskbasin.map'  # pcraster file for exact basin mask
+masknamemap_ = maskinName  # pcraster file for exact basin mask
 # some general options
 Debug_ = False
 fillDEM = 1e4  # use fill dem with lddcreatedem, if this value = 0 then this is not used
@@ -597,12 +616,6 @@ catchmentsize_ = 1e8
 optionErosionMaps = True
 optionChannelMaps = True
 optionD50 = True
-
-# get ESPG number
-maskname_ = 'dem200m.tif'   # tif file for projection ESPG id
-masktif = gdal.Open(maskname_, gdalconst.GA_ReadOnly)
-ESPG = osr.SpatialReference(wkt=masktif.GetProjection()).GetAttrValue('AUTHORITY',1)
-masktif = None
 
 # set the overall mask
 setclone(masknamemap_)
@@ -620,6 +633,7 @@ ury = maskgdal.GetGeoTransform()[3]
 urx = llx + nrCols*dx
 lly = ury + dy*nrRows
 maskbox = [llx,lly,urx,ury]
+SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
 
 #maps that are neede in multiple classes
 soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
@@ -633,9 +647,13 @@ unitBuild_ = scalar(3)  # to adapt ksat pore urban areas
 unitWater_ = scalar(9)  # to adapt ksat pore water
 report(DEM_,'zero.map')
 
+
 print('Get land use map for the area')
 lulcTIF = lulcDIR+LULCinName
 src = gdal.Open(lulcTIF)
+# get ESPG number
+ESPG = osr.SpatialReference(wkt=src.GetProjection()).GetAttrValue('AUTHORITY',1)
+#cutout and convert
 dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
                             gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
 dst.SetGeoTransform( maskgdal.GetGeoTransform() )
@@ -646,8 +664,8 @@ src = None
 
 
 # print('dem derivatives, slope, LDD etc')
-staticModelDEM = StaticFramework(DEMderivatives())
-staticModelDEM.run()
+# staticModelDEM = StaticFramework(DEMderivatives())
+# staticModelDEM.run()
 
 if optionChannelMaps :
     print('channel maps')
@@ -655,27 +673,48 @@ if optionChannelMaps :
     staticModelCH.run()
 
 # print('surface and land use related maps')
-staticModelSURF = StaticFramework(SurfaceMaps())
-staticModelSURF.run()
+# staticModelSURF = StaticFramework(SurfaceMaps())
+# staticModelSURF.run()
 
-# soil and infiltration maps
-print("downloading SOILGRIDS layers...")
-SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
-#soigrid map names for texture, doil organic carbon, course fragments, bulk dens
-for x in range(0,6):
-    GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],2,1)
-for x in range(0,6):
-    GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],4,2)
+# # soil and infiltration maps
+# print("downloading SOILGRIDS layers...")
+# #soigrid map names for texture, doil organic carbon, course fragments, bulk dens
+# for x in range(0,6):
+#     GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],2,1)
+# for x in range(0,6):
+#     GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],4,2)
 
-initmoisture_ = 0.7
-standardbulkdensity_ = 1450.0
-docover = False
-# optional, can use for bulkdensity, higher cover is more structure, lower density
+# initmoisture_ = 0.7
+# standardbulkdensity_ = 1450.0
+# docover = False
+# # optional, can use for bulkdensity, higher cover is more structure, lower density
 
-staticModel = StaticFramework(PedoTransfer())
-layer_ = 1
-staticModel.run()
-layer_ = 2
-staticModel.run()
+# staticModel = StaticFramework(PedoTransfer())
+# layer_ = 1
+# staticModel.run()
+# layer_ = 2
+# staticModel.run()
 
 print("Done")
+
+# 		rr	n	height
+# 	0	1	2	3
+# 1- Deciduous Broadleaf Forest	1	2	0.05	10
+# 2- Cropland	2	1	0.04	1.5
+# 3- Built-up Land	3	0.5	0.1	8
+# 4- Mixed Forest	4	2	0.1	10
+# 5- Shrubland	5	2	0.08	5
+# 6- Barren Land	6	1	0.035	0.2
+# 7- Fallow Land	7	1	0.05	0.1
+# 8- Wasteland	8	1	0.05	0.1
+# 9- Water Bodies	9	0.5	0.01	0
+# 10- Plantations	10	1.5	0.05	8
+# 11- Aquaculture	11	1	0.06	0.5
+# 12- Mangrove Forest	12	2	0.09	8
+# 13- Salt Pan	13	0.5	0.03	0
+# 14- Grassland	14	1	0.1	0.5
+# 15- Evergreen Broadleaf Forest	15	2	0.1	12
+# 16- Deciduous Needleleaf Forest	16	2	0.09	12
+# 17- Permanent Wetlands	17	1	0.1	1
+# 18- Snow & Ice	18	1	0.03	0
+# 19- Evergreen Needleleaf Forest	19	2	0.09	10
