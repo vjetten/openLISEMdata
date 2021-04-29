@@ -20,6 +20,7 @@ public:
     QString ScriptFileName;
     QString LULCDirName;
     QString BaseDirName;
+    QString ScriptDirName;
     QString BaseDEMName;
     QString BaseChannelName;
     QString MapsDirName;
@@ -30,6 +31,7 @@ public:
     int SG2;
     double initmoist;
     double refBulkDens;
+    int DEMfill;
     int optionDEM;
     int optionChannels;
     int optionLULC;
@@ -37,6 +39,7 @@ public:
     int optionInfil;
     int optionErosion;
     int optionUseBD;
+    int optionFillDEM;
 
     void setupModel();
     bool GetCondaEnvs();
@@ -51,7 +54,7 @@ public:
     void getIni();
     void readValuesfromUI();
     void writeValuestoUI();
-    QString getFileorDir(QString inputdir,QString title, QStringList filters, bool doFile);
+    QString getFileorDir(QString inputdir,QString title, QStringList filters, int doFile);
 
 private slots:
 

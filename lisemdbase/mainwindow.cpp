@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupModel();
 
     getIni();
+    ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
     writeValuestoUI();
     readValuesfromUI();
 
@@ -28,9 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    //writeValuestoUI();
     readValuesfromUI();
-    setIni("LISEMdbase.ini");
+    setIni(qApp->applicationDirPath()+"/LISEMdbase.ini");
 }
 
 bool MainWindow::GetCondaEnvs()
@@ -58,7 +58,7 @@ bool MainWindow::GetCondaEnvs()
 void MainWindow::on_toolButton_base_clicked()
 {
     QStringList filters;
-    BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, false);
+    BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, 0);
     if (!BaseDirName.isEmpty())
         lineEdit_Base->setText(BaseDirName);
 }
@@ -66,7 +66,7 @@ void MainWindow::on_toolButton_base_clicked()
 void MainWindow::on_toolButton_maps_clicked()
 {
     QStringList filters;
-    MapsDirName = getFileorDir(lineEdit_Maps->text(),"Select Maps folder", filters, false);
+    MapsDirName = getFileorDir(lineEdit_Maps->text(),"Select Maps folder", filters, 0);
     if (!MapsDirName.isEmpty())
         lineEdit_Maps->setText(MapsDirName);
 
@@ -75,7 +75,7 @@ void MainWindow::on_toolButton_maps_clicked()
 void MainWindow::on_toolButton_script_clicked()
 {
     QStringList filters({"Python (*.py)","Any files (*)"});
-    ScriptFileName = getFileorDir(ScriptFileName,"Select python script", filters, true);
+    ScriptFileName = getFileorDir(ScriptFileName,"Select python script", filters, 2);
     if (!ScriptFileName.isEmpty())
         lineEdit_Script->setText(ScriptFileName);
 }
@@ -83,7 +83,7 @@ void MainWindow::on_toolButton_script_clicked()
 void MainWindow::on_toolButton_LULC_clicked()
 {
     QStringList filters({"GeoTiff maps(*.tif)","Any files (*)"});
-    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, false);
+    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, 0);
     if (!LULCDirName.isEmpty())
         lineEdit_LULC->setText(LULCDirName);
 }
@@ -92,7 +92,7 @@ void MainWindow::on_toolButton_LULCTable_clicked()
 {
         QString tmp = LULCDirName+lineEdit_LULCTable->text();
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
-    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, true);
+    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 1);
     if (!LULCtableName.isEmpty())
         lineEdit_LULCTable->setText(LULCtableName);
 }
@@ -101,7 +101,7 @@ void MainWindow::on_toolButton_LULCMap_clicked()
 {
     QString tmp = LULCDirName+lineEdit_LULCMap->text();
     QStringList filters({"GeoTiff (*.tif)","Any files (*)"});
-    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, true);
+    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 1);
     if (!LULCmapName.isEmpty())
         lineEdit_LULCMap->setText(LULCmapName);
 }
@@ -111,7 +111,7 @@ void MainWindow::on_toolButton_baseDEM_clicked()
 {
     QString tmp = BaseDirName+lineEdit_baseDEM->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseDEMName = getFileorDir(tmp,"Select Base DEM", filters, true);
+    BaseDEMName = getFileorDir(tmp,"Select Base DEM", filters, 1);
     if (!BaseDEMName.isEmpty())
         lineEdit_baseDEM->setText(BaseDEMName);
 }
@@ -120,7 +120,7 @@ void MainWindow::on_toolButton_baseChannel_clicked()
 {
     QString tmp = BaseDirName+lineEdit_baseChannel->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseChannelName = getFileorDir(tmp,"Select Channel mask", filters, true);
+    BaseChannelName = getFileorDir(tmp,"Select Channel mask", filters, 1);
     if (!BaseChannelName.isEmpty())
         lineEdit_baseChannel->setText(BaseChannelName);
 }
@@ -144,12 +144,15 @@ void MainWindow::on_toolButton_clear_clicked()
     text_out->clear();
 }
 
-
-QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, bool doFile)
+// select a file or directory
+// doFile = 0: select a directory;
+// dofile = 1 select a file and return file name only;
+// dofile = 2 return filename wioth full path
+QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, int doFile)
 {
     QFileDialog dialog;
     QString dirout = inputdir;
-    if (doFile) {
+    if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         dialog.setFileMode(QFileDialog::ExistingFile);
@@ -163,11 +166,15 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
     dialog.setLabelText(QFileDialog::LookIn,title);
     dialog.exec();
 
-    if (doFile) {
+    if (doFile > 0) {
         dirout = "";
         if (dialog.selectedFiles().count() > 0)
             dirout = dialog.selectedFiles().at(0);
-        dirout = QFileInfo(dirout).fileName();
+        if (doFile == 1)
+            dirout = QFileInfo(dirout).fileName();
+        if (doFile == 2)
+            dirout = QFileInfo(dirout).absoluteFilePath();
+        qDebug() << dirout;
     } else {
         dirout = dialog.selectedUrls().at(0).path();
         dirout.remove(0,1);

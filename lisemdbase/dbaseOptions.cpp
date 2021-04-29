@@ -4,7 +4,7 @@
 
 void MainWindow::setIni(QString sss)
 {
-    QSettings settings(qApp->applicationDirPath()+"/"+sss,QSettings::IniFormat);
+    QSettings settings(sss,QSettings::IniFormat);
     settings.clear();
 
     settings.setValue("CondaDirectory", CondaBaseDirName);
@@ -24,6 +24,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionSG", QString::number(optionSG));
     settings.setValue("optionLULC", QString::number(optionLULC));
     settings.setValue("optionUseBD", QString::number(optionUseBD));
+    settings.setValue("optionFillDEM", QString::number(optionFillDEM));
 
     double v = spin_refBD->value();
     settings.setValue("refBulkDens", QString::number(v, 'f', 0));
@@ -33,6 +34,8 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionSG1", QString::number(i));
     i = comboBox_SGlayer2->currentIndex();
     settings.setValue("optionSG2", QString::number(i));
+    i = spin_DEMfill->value();
+    settings.setValue("DEMfill", QString::number(i));
 
     settings.sync();
 }
@@ -59,11 +62,13 @@ void MainWindow::getIni()
     optionLULC = settings.value("optionLULC").toInt();
     optionErosion = settings.value("optionErosion").toInt();
     optionUseBD = settings.value("optionUseBD").toInt();
+    optionFillDEM = settings.value("optionFillDEM").toInt();
 
     refBulkDens = settings.value("refBulkDens").toDouble();
     initmoist = settings.value("initmoist").toDouble();
     SG1 = settings.value("optionSG1").toInt();
     SG2 = settings.value("optionSG2").toInt();
+    DEMfill = settings.value("DEMfill").toInt();
 }
 
 void MainWindow::readValuesfromUI()
@@ -81,6 +86,7 @@ void MainWindow::readValuesfromUI()
     ScriptFileName= lineEdit_Script->text();
     initmoist = spin_initmoist->value();
     refBulkDens = spin_refBD->value();
+    DEMfill = spin_DEMfill->value();
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
@@ -89,6 +95,7 @@ void MainWindow::readValuesfromUI()
     optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
     optionInfil = checkBox_Infil->isChecked() ? 1 : 0;
     optionErosion = checkBox_erosion->isChecked() ? 1 : 0;
+    optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
 }
 
 void MainWindow::writeValuestoUI()
@@ -96,6 +103,7 @@ void MainWindow::writeValuestoUI()
     combo_envs->setCurrentText(CondaBaseDirName);
     comboBox_SGlayer1->setCurrentIndex(SG1);
     comboBox_SGlayer2->setCurrentIndex(SG2);
+
     lineEdit_Base->setText(BaseDirName );
     lineEdit_baseChannel->setText(BaseChannelName);
     lineEdit_baseDEM->setText(BaseDEMName);
@@ -104,8 +112,11 @@ void MainWindow::writeValuestoUI()
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
     lineEdit_Script->setText(ScriptFileName);
+
     spin_initmoist->setValue(initmoist);
     spin_refBD->setValue(refBulkDens);
+    spin_DEMfill->setValue(DEMfill);
+
     checkBox_DEM->setChecked(optionDEM > 0);
     checkBox_Channels->setChecked(optionChannels > 0);
     checkBox_LULC->setChecked(optionLULC > 0);
@@ -113,5 +124,6 @@ void MainWindow::writeValuestoUI()
     checkBox_Infil->setChecked(optionInfil > 0);
     checkBox_erosion->setChecked(optionErosion > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
+    checkBox_correctDEM->setChecked(optionFillDEM > 0);
 }
 
