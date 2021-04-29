@@ -26,7 +26,17 @@ public:
     QString LULCmapName;
     QString LULCtableName;
     bool CondaInstall;
-    QString bufprev;
+    int SG1;
+    int SG2;
+    double initmoist;
+    double refBulkDens;
+    int optionDEM;
+    int optionChannels;
+    int optionLULC;
+    int optionSG;
+    int optionInfil;
+    int optionErosion;
+    int optionUseBD;
 
     void setupModel();
     bool GetCondaEnvs();
@@ -35,7 +45,12 @@ public:
     int layer1;
     int layer2;
 
-    void setPyOptions();
+    QString bufprev;
+
+    void setIni(QString sss);
+    void getIni();
+    void readValuesfromUI();
+    void writeValuestoUI();
     QString getFileorDir(QString inputdir,QString title, QStringList filters, bool doFile);
 
 private slots:
@@ -57,6 +72,18 @@ private slots:
     void on_toolButton_baseDEM_clicked();
 
     void on_toolButton_baseChannel_clicked();
+
+    void on_toolButton_LULCMap_clicked();
+
+    void on_comboBox_SGlayer1_currentIndexChanged(int index);
+
+    void on_comboBox_SGlayer2_currentIndexChanged(int index);
+
+    void on_checkBox_Infil_toggled(bool checked);
+
+    void on_checkBox_Soilgrids_toggled(bool checked);
+
+    void on_toolButton_clicked();
 
 private:
     Ui::MainWindow *ui;

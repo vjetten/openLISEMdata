@@ -35,22 +35,22 @@ setglobaloption("matrixtable")
 ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
 
 ### input maps ###
-workingDir = 'C:/CRCLisem/maps/'      #  folder with lisem input database
-inputDir = 'C:/CRCLisem/base/'        #  folder with PCRaster base maps
+workingDir = 'C:/CRCLisem/maps/'        #  folder with lisem input database
+inputDir = 'C:/CRCLisem/base/'          #  folder with PCRaster base maps
 lulcDIR = 'C:/\data/India/Decadal_LULC_India_1336/data/'  # folder name of India LU map
 
-DEMinName = 'dem0.map'              # digital elevation model, area must be <= mask
+DEMinName = 'dem0.map'                  # digital elevation model, area must be <= mask
 buffersinName = 'zero.map'              # in m, positive valuesName = dike, negative values is basin, added to the DEM
-maskinName = 'mask0.map'            # mask to the catchment , 1 and MV
-maskinNameTif = 'mask0.tif'            # mask to the catchment , 1 and MV
+maskinName = 'mask0.map'                # mask to the catchment , 1 and MV
+maskinNameTif = 'mask0.tif'             # mask to the catchment , 1 and MV
 
 LULCinName = 'LULC_2005.tif'            # land use types
 lutblName = 'ludata.tbl'                # land use surface properties
                                         # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover, 5 is bulkdensity factor
 
-riversinName = 'river0.map'          # river mask
-mainoutinName = 'mainout0.map'           # forced outlet rivers to the sea, because of imperfect dem
-outpointuserinName = 'mainout0.map'      # points for user output hydrographs
+riversinName = 'river0.map'             # river mask
+mainoutinName = 'mainout0.map'          # forced outlet rivers to the sea, because of imperfect dem
+outpointuserinName = 'mainout0.map'     # points for user output hydrographs
 
 housecoverinName = 'zero.map'           # housing density fraction (0-1)
 hardsurfinName = 'zero.map'             # hard surfaces (0-1) such as airport, parking lots etc
@@ -60,7 +60,6 @@ NDVIinName = 'zero.map'                 # NDVI for cover and LAI
 ### output maps ###
 
 # basic topography related maps
-# basic topography related maps
 DEMName= workingDir+'dem.map'             # adjusted dem
 IDName= workingDir+'id.map'               # raingauge zones, def set to 1
 buffersName= workingDir+'buffer.map'      # changes in m to the dem (+ or -)
@@ -68,7 +67,7 @@ LddName= workingDir+'ldd.map'             # Local Drain Direction for surface ru
 gradName= workingDir+'grad.map'           # slope, sine! (0-1)
 idName= workingDir+'id.map'               # pluviograph influence zones
 outletName= workingDir+'outlet.map'       # location outlets and checkpoints
-landuseName= workingDir+'landuse.map'    # landuse/landcover for RR and manning
+landuseName= workingDir+'landuse.map'     # landuse/landcover for RR and manning
 outpointName= workingDir+'outpoint.map'   # user defined output locations
 upsName= workingDir+'ups.map'             # cumulative flow network, not used in lisem
 wsName= workingDir+'ws.map'               # watershed boundary map, not used in lisem
@@ -98,12 +97,14 @@ psiName= workingDir+'psi'                  # suction unsat zone (cm)
 soildep1Name= workingDir+'soildep1.map'    # soil depth (mm), assumed constant
 soildep2Name= workingDir+'soildep2.map'    # soil depth (mm), assumed constant
 
-cohName= workingDir+'coh'
-cohaddName= workingDir+'cohadd.map'
-asName= workingDir+'aggrstab.map'
-d50Name= workingDir+'d50.map'
-d90Name= workingDir+'d90.map'
+# # erosion parameters
+# cohName= workingDir+'coh'
+# cohaddName= workingDir+'cohadd.map'
+# asName= workingDir+'aggrstab.map'
+# d50Name= workingDir+'d50.map'
+# d90Name= workingDir+'d90.map'
 
+# compaction and crusting
 compactName= workingDir+'compfrc.map'      # fraction of compacted siurface (0-1)
 crustName= workingDir+'crustfrc.map'       # fraction of crusted siurface (0-1)
 ksatcompName= workingDir+'ksatcomp.map'    # ksat of compacted areas (mm/h)
@@ -118,7 +119,7 @@ stoneName= workingDir+'stonefrc.map'       # stone fraction on surface (-)
 crustName= workingDir+'crustfrc.map'       # crusted soil (-), not present
 compName= workingDir+'compfrc.map'         # compacted soil (-), murrum roads
 
-# erosion maps , not used
+# erosion maps
 cohsoilName= workingDir+'coh.map'          # cohesion (kPa)
 cohplantName= workingDir+'cohadd.map'      # added root cohesion (kPa)
 D50Name= workingDir+'d50.map'              # median of texture for suspended (mu)
@@ -131,7 +132,7 @@ chanwidthName= workingDir+'chanwidt.map'   # channel width (m)
 changradName= workingDir+'changrad.map'    # channel gradient, sine
 chanmanName= workingDir+'chanman.map'      # channel manning (-)
 chansideName= workingDir+'chanside.map'    # angle channel side walls, 0Name= workingDir+'rectangular
-chanmaskName= workingDir+'chanmask.map'   # copy of channel mask
+chanmaskName= workingDir+'chanmask.map'    # copy of channel mask
 chancohName= workingDir+'chancoh.map'      # channel cohesion (kPa)
 chandepthName= workingDir+'chandepth.map'  # channel depth (m)
 chanmaxqName= workingDir+'chanmaxq.map'    # maximum discharge (m3/s) in culvert locations in channel

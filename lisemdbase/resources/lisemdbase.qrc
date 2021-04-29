@@ -33,7 +33,13 @@
         <file>2X/noscreen.png</file>
         <file>2X/map2XBWa.png</file>
         <file>bullet.png</file>
-        <file>L.png</file>
+        <file>2X/Folder-Open-icon2.png</file>
+        <file>deltares.png</file>
+        <file>ITC.png</file>
+        <file>RHDHV.png</file>
+        <file>Screenshot.png</file>
+        <file>utwente.png</file>
+        <file>2X/Folder-icon - Copy.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

@@ -7,32 +7,30 @@ MainWindow::MainWindow(QWidget *parent)
     setupUi(this);
 
     CondaInstall = GetCondaEnvs();
-
-    setupModel();
-    lineEdit_Script->setText("C:/prgc/lisempy/inputlisem0.7options.py");
-    lineEdit_Base->setText("C:/CRCLisem/Base/");
-    lineEdit_baseDEM->setText("dem0.map");
-    lineEdit_baseChannel->setText("chanmask0.map");
-    lineEdit_Maps->setText("C:/CRCLisem/maps/");
-    lineEdit_LULC->setText("C:/data/India/Decadal_LULC_India_1336/data/LULC_2005.tif");
-    lineEdit_LULCTable->setText("ludata.tbl");
     QStringList sss;
-
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
-
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
 
-    comboBox_SGlayer1->setCurrentIndex(2);
-    comboBox_SGlayer2->setCurrentIndex(4);
-    BaseDirName = lineEdit_Base->text();
-    MapsDirName = lineEdit_Maps->text();
-    LULCmapName = lineEdit_LULC->text();
-    LULCDirName = QFileInfo(LULCmapName).absolutePath();
-    LULCtableName = lineEdit_LULCTable->text();
-    BaseChannelName = lineEdit_baseChannel->text();
-    BaseDEMName = lineEdit_baseDEM->text();
+    label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 
+    setupModel();
+
+    getIni();
+    writeValuestoUI();
+    readValuesfromUI();
+
+    for (int i = 0; i < combo_envs->count(); i++){
+        if (combo_envs->itemText(i) == CondaBaseDirName)
+            combo_envs->setCurrentIndex(i);
+    }
+}
+
+MainWindow::~MainWindow()
+{
+    //writeValuestoUI();
+    readValuesfromUI();
+    setIni("LISEMdbase.ini");
 }
 
 bool MainWindow::GetCondaEnvs()
@@ -49,7 +47,6 @@ bool MainWindow::GetCondaEnvs()
             QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
             QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
             bool found = QFileInfo(str).exists() && QFileInfo(str1).exists();
-            // qDebug() << str;
             if (found)
                 combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
         }
@@ -58,15 +55,9 @@ bool MainWindow::GetCondaEnvs()
     return(install);
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-
 void MainWindow::on_toolButton_base_clicked()
 {
-    QStringList filters({"PCRaster map (*.map)","Any files (*)"});
+    QStringList filters;
     BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, false);
     if (!BaseDirName.isEmpty())
         lineEdit_Base->setText(BaseDirName);
@@ -74,7 +65,7 @@ void MainWindow::on_toolButton_base_clicked()
 
 void MainWindow::on_toolButton_maps_clicked()
 {
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    QStringList filters;
     MapsDirName = getFileorDir(lineEdit_Maps->text(),"Select Maps folder", filters, false);
     if (!MapsDirName.isEmpty())
         lineEdit_Maps->setText(MapsDirName);
@@ -83,11 +74,8 @@ void MainWindow::on_toolButton_maps_clicked()
 
 void MainWindow::on_toolButton_script_clicked()
 {
-    ScriptFileName = lineEdit_Script->text();
     QStringList filters({"Python (*.py)","Any files (*)"});
-
     ScriptFileName = getFileorDir(ScriptFileName,"Select python script", filters, true);
-    qDebug() << ScriptFileName;
     if (!ScriptFileName.isEmpty())
         lineEdit_Script->setText(ScriptFileName);
 }
@@ -95,20 +83,27 @@ void MainWindow::on_toolButton_script_clicked()
 void MainWindow::on_toolButton_LULC_clicked()
 {
     QStringList filters({"GeoTiff maps(*.tif)","Any files (*)"});
-    LULCmapName = getFileorDir(lineEdit_LULC->text(),"Select LULC map", filters, true);
-    if (!LULCmapName.isEmpty())
-        lineEdit_LULC->setText(LULCmapName);
-    LULCDirName = QFileInfo(LULCmapName).absoluteDir().absolutePath();
+    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, false);
+    if (!LULCDirName.isEmpty())
+        lineEdit_LULC->setText(LULCDirName);
 }
 
 void MainWindow::on_toolButton_LULCTable_clicked()
 {
+        QString tmp = LULCDirName+lineEdit_LULCTable->text();
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
-    LULCtableName = getFileorDir(lineEdit_LULCTable->text(),"Select LULC table", filters, true);
+    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, true);
     if (!LULCtableName.isEmpty())
         lineEdit_LULCTable->setText(LULCtableName);
-  //  LULCDirName = QFileInfo(LULCtableName).absoluteDir().absolutePath();
+}
 
+void MainWindow::on_toolButton_LULCMap_clicked()
+{
+    QString tmp = LULCDirName+lineEdit_LULCMap->text();
+    QStringList filters({"GeoTiff (*.tif)","Any files (*)"});
+    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, true);
+    if (!LULCmapName.isEmpty())
+        lineEdit_LULCMap->setText(LULCmapName);
 }
 
 
@@ -116,8 +111,7 @@ void MainWindow::on_toolButton_baseDEM_clicked()
 {
     QString tmp = BaseDirName+lineEdit_baseDEM->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    tmp = getFileorDir(tmp,"Select Base DEM", filters, true);
-    BaseDEMName = QFileInfo(tmp).fileName();
+    BaseDEMName = getFileorDir(tmp,"Select Base DEM", filters, true);
     if (!BaseDEMName.isEmpty())
         lineEdit_baseDEM->setText(BaseDEMName);
 }
@@ -126,8 +120,7 @@ void MainWindow::on_toolButton_baseChannel_clicked()
 {
     QString tmp = BaseDirName+lineEdit_baseChannel->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    tmp = getFileorDir(tmp,"Select Channel mask", filters, true);
-    BaseChannelName = QFileInfo(tmp).fileName();
+    BaseChannelName = getFileorDir(tmp,"Select Channel mask", filters, true);
     if (!BaseChannelName.isEmpty())
         lineEdit_baseChannel->setText(BaseChannelName);
 }
@@ -140,6 +133,10 @@ void MainWindow::on_toolButton_CheckAll_toggled(bool checked)
     checkBox_LULC->setChecked(checked);
     checkBox_Infil->setChecked(checked);
     checkBox_Soilgrids->setChecked(checked);
+    checkBox_userefBD->setChecked(checked);
+    checkBox_erosion->setChecked(checked);
+    spin_initmoist->setValue(0.1);
+    spin_refBD->setValue(1350);
 }
 
 void MainWindow::on_toolButton_clear_clicked()
@@ -148,43 +145,21 @@ void MainWindow::on_toolButton_clear_clicked()
 }
 
 
-void MainWindow::setPyOptions()
-{
-    QSettings settings(qApp->applicationDirPath()+"/lisemdbaseoptions.cfg",QSettings::IniFormat);
-    settings.clear();
-    //settings.setValue("CondaDirectory", CondaBaseDirName);
-    settings.setValue("BaseDirectory", BaseDirName);
-    settings.setValue("MapsDirectory", MapsDirName);
-    settings.setValue("LULCDirectory", LULCDirName);
-    settings.setValue("LULCmap", LULCmapName);
-    settings.setValue("LULCtable", LULCtableName);
-    settings.setValue("optionDEM", checkBox_DEM->isChecked() ? "1":"0");
-    settings.setValue("optionChannels", checkBox_Channels->isChecked() ? "1":"0");
-    settings.setValue("optionInfil", checkBox_Infil->isChecked() ? "1":"0");
-    settings.setValue("optionSG", checkBox_Soilgrids->isChecked() ? "1":"0");
-    settings.setValue("optionLULC", checkBox_LULC->isChecked() ? "1":"0");
-    int i = comboBox_SGlayer1->currentIndex();
-    settings.setValue("optionSG1", QStringLiteral("%1").arg(i));
-    i = comboBox_SGlayer2->currentIndex();
-    settings.setValue("optionSG2", QStringLiteral("%1").arg(i));
-    settings.sync();
-}
-
 QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, bool doFile)
 {
     QFileDialog dialog;
-    dialog.setNameFilters(filters);
     QString dirout = inputdir;
     if (doFile) {
+        dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         dialog.setFileMode(QFileDialog::ExistingFile);
     } else {
+        filters.clear();
+        dialog.setNameFilters(filters);
         dialog.setDirectory(QDir(inputdir));
         dialog.setFileMode(QFileDialog::DirectoryOnly);
     }
 
-    dialog.setOption(QFileDialog::DontUseNativeDialog, true);
-    dialog.setOption(QFileDialog::ShowDirsOnly, false);
     dialog.setLabelText(QFileDialog::LookIn,title);
     dialog.exec();
 
@@ -192,8 +167,53 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
         dirout = "";
         if (dialog.selectedFiles().count() > 0)
             dirout = dialog.selectedFiles().at(0);
-    } else
-        dirout = QDir::toNativeSeparators(dialog.directory().absolutePath());
-    return dirout;//.absolutePath();
+        dirout = QFileInfo(dirout).fileName();
+    } else {
+        dirout = dialog.selectedUrls().at(0).path();
+        dirout.remove(0,1);
+        if (dirout.lastIndexOf('/') != dirout.length())
+            dirout = dirout + "/";
+    }
+
+    return dirout;
 }
 
+void MainWindow::on_comboBox_SGlayer1_currentIndexChanged(int index)
+{
+    SG1 = index;//comboBox_SGlayer1->currentIndex();
+}
+
+void MainWindow::on_comboBox_SGlayer2_currentIndexChanged(int index)
+{
+    SG2 = index;//comboBox_SGlayer2->currentIndex();
+}
+
+void MainWindow::on_checkBox_Infil_toggled(bool checked)
+{
+    infiloptions->setEnabled(checked);
+}
+
+void MainWindow::on_checkBox_Soilgrids_toggled(bool checked)
+{
+    SGoptions->setEnabled(checked);
+}
+
+void MainWindow::on_toolButton_clicked()
+{
+    QString filename;
+    filename=":/help1.html";
+    QFile file(filename);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    QTextEdit *helptxt = new QTextEdit;
+    helptxt->setHtml(stream.readAll());
+
+    QTextEdit *view = new QTextEdit(helptxt->toHtml());
+    view->createStandardContextMenu();
+    view->setWindowTitle("Option help");
+    view->setMinimumWidth(640);
+    view->setMinimumHeight(480);
+    view->setAttribute(Qt::WA_DeleteOnClose);
+
+    view->show();
+}

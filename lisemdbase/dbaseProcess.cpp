@@ -7,7 +7,6 @@ void MainWindow::setupModel()
 
     connect(Process, SIGNAL(readyReadStandardError()),this, SLOT(readFromStderr()) );
     connect(Process, SIGNAL(readyReadStandardOutput()),this, SLOT(readFromOutput()) );
-    //connect(Process, SIGNAL(finished(int)),this, SLOT(finishedModel(int)) );
     connect(pushButton_start, SIGNAL(clicked()), this, SLOT(runModel()));
 }
 
@@ -33,8 +32,10 @@ void MainWindow::runModel()
     env.insert("PATH", addpath + env.value("Path"));
     Process->setProcessEnvironment(env);
 
-    setPyOptions();
+    readValuesfromUI();
+    setIni("lisemdbaseoptions.cfg");
     QStringList pythonCommandArguments;
+    pythonCommandArguments << ScriptFileName;
     pythonCommandArguments << qApp->applicationDirPath()+"/lisemdbaseoptions.cfg";
 
     Process->start (condaenv+"/python", pythonCommandArguments);

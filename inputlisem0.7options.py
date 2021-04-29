@@ -1,29 +1,31 @@
-# -*- coding: utf-8 -*-
 """
 Created on Fri Mar 19 14:07:11 2021
-openlisem input script
+openlisem input script, v0.7
+to be used with Qt UI interface
 @author: v jetten, ITC
 """
 
+# In conda make sure the following libs are instaklled:
+#     conda create --name lisem python
+#     conda activate lisem
+#     conda install -c conda-forge pcraster owslib scipy gdal
+#     pip install osgeo
 
-# gdal stuff
-
+# gdal
 from osgeo import gdal, gdalconst, osr
 from owslib.wcs import WebCoverageService
 
-# pcraster stuff
+# pcraster
 from pcraster import *
 from pcraster.framework import *
 
-# operation system stuff
+# operation system
 import subprocess  # call exe from wihin script
-import os          # change dir and so on
+import os          # operating system, change dir
 import sys         # read commandline arguments
 
 # linear regression for D50 and D90
 from scipy import stats
-
-#print(sys.path)
 
 
 setglobaloption("lddin")
@@ -35,27 +37,30 @@ setglobaloption("matrixtable")
 ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
 
 ### input maps ###
-MapsDir = 'C:/CRCLisem/maps/'      #  folder with lisem input database
-BaseDir = 'C:/CRCLisem/base/'        #  folder with PCRaster base maps
-lulcDIR = 'C:/\data/India/Decadal_LULC_India_1336/data/'  # folder name of India LU map
+MapsDir = 'C:/CRCLisem/maps/'          # folder with lisem input database
+BaseDir = 'C:/CRCLisem/base/'          # folder with PCRaster base maps
+lulcDIR = 'C:/\data/India/Decadal_LULC_India_1336/data/'
+                                       # folder name of India LU map
 
-DEMinName = 'dem0.map'              # digital elevation model, area must be <= mask
-buffersinName = 'zero.map'              # in m, positive valuesName = dike, negative values is basin, added to the DEM
-maskinName = 'mask0.map'            # mask to the catchment , 1 and MV
-maskinNameTif = 'mask0.tif'            # mask to the catchment , 1 and MV
+DEMbaseName = 'dem0.map'                 # digital elevation model, area must be <= mask
+#buffersinName = 'zero.map'             # in m, positive valuesName = dike, negative values is basin, added to the DEM
+#maskinName = 'mask0.map'               # mask to the catchment , 1 and MV
+#maskinNameTif = 'mask0.tif'            # mask to the catchment , 1 and MV
 
-LULCinName = 'LULC_2005.tif'            # land use types
-lutblName = 'ludata.tbl'                # land use surface properties
-                                        # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover, 5 is bulkdensity factor
+LULCmap = 'LULC_2005.tif'           # land use types
+LULCtable = 'ludata.tbl'               # land use surface properties
+                                       # col 1=Micro roughness; 2 = manning's; 3 = plant height; 4 = cover, 5 is bulkdensity factor
 
-riversinName = 'river0.map'          # river mask
-mainoutinName = 'mainout0.map'           # forced outlet rivers to the sea, because of imperfect dem
-outpointuserinName = 'mainout0.map'      # points for user output hydrographs
+riversbaseName = 'river0.map'            # river mask
+#mainoutinName = 'mainout0.map'         # forced outlet rivers to the sea, because of imperfect dem
 
-housecoverinName = 'zero.map'           # housing density fraction (0-1)
-hardsurfinName = 'zero.map'             # hard surfaces (0-1) such as airport, parking lots etc
-roadinName = 'zero.map'                 # tarmac roads mask or type numbers
-NDVIinName = 'zero.map'                 # NDVI for cover and LAI
+# not used in CRC project, info dirctly from LULC map
+housecoverinName = 'zero.map'          # housing density fraction (0-1)
+hardsurfinName = 'zero.map'            # hard surfaces (0-1) such as airport, parking lots etc
+roadinName = 'zero.map'                # tarmac roads mask or type numbers
+
+# will be replaced by a timeseries
+#NDVIinName = 'NDVI'                    # NDVI for cover and LAI
 
 ### output maps ###
 
@@ -68,7 +73,7 @@ LddName= MapsDir+'ldd.map'             # Local Drain Direction for surface runof
 gradName= MapsDir+'grad.map'           # slope, sine! (0-1)
 idName= MapsDir+'id.map'               # pluviograph influence zones
 outletName= MapsDir+'outlet.map'       # location outlets and checkpoints
-landuseName= MapsDir+'landuse.map'    # landuse/landcover for RR and manning
+landuseName= MapsDir+'landuse.map'     # landuse/landcover for RR and manning
 outpointName= MapsDir+'outpoint.map'   # user defined output locations
 upsName= MapsDir+'ups.map'             # cumulative flow network, not used in lisem
 wsName= MapsDir+'ws.map'               # watershed boundary map, not used in lisem
@@ -148,7 +153,10 @@ class DEMderivatives(StaticModel):
         mask = mask_
         size = catchmentsize_
         global mainout_
-        mainout = mainout_
+        # mainout = mainout_
+        global DEM_
+        DEM = DEM_
+        global Ldd_
 
         ID = mask
         report(ID,IDName)
@@ -156,19 +164,22 @@ class DEMderivatives(StaticModel):
         barriers = scalar(0) #readmap(buffersinName)*mask
         report(barriers,buffersName);
 
-        DEM = readmap(DEMinName)*mask
+        #DEM = readmap(BaseDir+DEMbaseName)*mask
+        DEMc = DEM
         if fillDEM > 0 :
             DEMc = lddcreatedem(DEM, fillDEM,fillDEM,fillDEM,fillDEM)
-        DEMm = DEM + barriers;
+        DEMm = DEMc + barriers;
         report(DEMm, DEMName)
-        DEM_ =- DEMm
+        DEM_ = DEMm
 
         chanm = scalar(0)
-        if doProcesses[1] == 1:
-            chanm = readmap(riversinName)*mask
-            chanm = cover(ifthen(chanm > 1, scalar(1)),0)*mask
+        if doProcessesChannels == 1:
+            chanm = readmap(BaseDir+riversbaseName)*mask
+            #chanm = cover(ifthen(chanm > 1, scalar(1)),0)*mask
+            chanm = cover(chanm, 0)*mask
 
-        Ldd = lddcreate (DEMm-chanm*10-mainout*10, size, size, size, size)
+        #Ldd = lddcreate (DEMm-chanm*10-mainout*10, size, size, size, size)
+        Ldd = lddcreate (DEMm-chanm*10, size, size, size, size)
         report(Ldd, LddName)
         Ldd_ = Ldd
         mainout_ = cover(scalar(pit(Ldd)),0)*mask
@@ -196,16 +207,15 @@ class DEMderivatives(StaticModel):
 
         distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
        # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
-        soild = mask*cover((1-min(1,grad))       # steeper slopes giver undeep soils
+        soild = mask*cover((1-min(1,slope(DEMm)))       # steeper slopes giver undeep soils
                -0.5*distriv/mapmaximum(distriv)  # perpendicular distance to river, closer gives deeper soils
               # +0.5*(distsea/mapmaximum(distsea))**0.1
                ,0)
         soildb = 1500*(soild)**1.5
-        report(chanm,inputDir+"try.map")
 
         # m to mm for lisem, higher power emphasizes deep, updeep
-        soildepth1 = soildepth1depth
-        soildepth2 = mask*(soildepth1+cover(windowaverage(soildb,3*celllength()),mask))
+        soildepth1 = soildepth1depth*mask
+        soildepth2 = mask*(soildepth1+windowaverage(soildb,3*celllength()))
 
         report(soildepth1,soildep1Name)
         report(soildepth2,soildep2Name)
@@ -340,12 +350,15 @@ class PedoTransfer(StaticModel):
 
         report(OM, om1)
 
-        densityveg = lookupscalar(lulcTable, 5, lun)
+        densityveg = lookupscalar(LULCtable, 5, lun)
 
         bdsg = bd1*10            #bulkdensity cg/m3 to kg/m3
         bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
         Gravel = Grv/1000  # from cm3/dm3 (1000 cc in a liter)
-        Densityfactor = densityveg * scalar(0.95) #bdsg/standardBD*Dens #(1-0.1*cover)
+        Densityfactor = scalar(1.0)
+        #Densityfactor = densityveg * scalar(0.95) #bdsg/standardBD*Dens #(1-0.1*cover)
+        if useBulkdensity == 1:
+            Densityfactor = min(max(0.9, standardBD/bdsg), 1.2)
         # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
         report(Densityfactor,Densityfactor1)
 
@@ -412,7 +425,7 @@ class PedoTransfer(StaticModel):
         ## estimation based on clay content       ##
         ## adapted from Morgan, 2001              ##
         ############################################
-        if optionErosionMaps and x == 1:
+        if optionerosion == 1 and x == 1:
             Coh = max(1.0, 4.316*ln(C+1.0) - 6.955)
             # log fit using values below
             Coh = ifthenelse((unitmap == unitBuild_) | (unitmap == unitWater_) , -1, Coh)
@@ -439,17 +452,15 @@ class PedoTransfer(StaticModel):
                 d90p = pcr2numpy(D90, -9999)
 
                 step = 1
-                star = ["|","/","-","\\"]
-                sr = 0
+                #star = ["|","/","-","\\"]
+                #sr = 0
                 for row in range(1,nrRows) :
-                    sss = "["+"#"*step+star[sr]+"."*(100-step-1)+"]"
-                    sr+= 1
-                    if sr == 4: sr = 0
-                    if row % int(nrRows/100) == 0 :
+                    sss = "D50/D90 ["+"#"*step+"-"*(50-step-1)+"]"
+                    #sr+= 1
+                   # if sr == 4: sr = 0
+                    if row % int(nrRows/50+0.5) == 0 :
                         step += 1
-
-                    #print("\r" + str("{:.0%}".format(row/nrRows)), end="")
-                    print("\r" + sss, end="", flush=True)
+                        print("\r" + sss, end="", flush=True)
                     for col in range(1,nrCols) :
                         c = cp[row][col]#cellvalue(C, row, col)
                         si = sip[row][col]#cellvalue(Si, row, col)
@@ -488,18 +499,17 @@ class SurfaceMaps(StaticModel):
         if Debug_ :
             print('create RR, n etc', flush=True)
 
-
-        rr = cover(max(lookupscalar(lulcTable, 1, unitmap), 0.5),1.0) * mask
+        rr = cover(max(lookupscalar(LULCtable, 1, unitmap), 0.5),1.0) * mask
         report(rr,rrName)
          # micro relief, random roughness (=std dev in cm)
 
-        mann = lookupscalar(lulcTable, 2, unitmap) * mask
+        mann = lookupscalar(LULCtable, 2, unitmap) * mask
         mann = cover(mann,0.05)*mask
         # mann = 0.01*rr + 0.1*Cover
         report(mann,mannName)
          # in the lisem code Manning's n is increased with house effect
 
-        Cover = lookupscalar(lulcTable, 4, unitmap) * mask
+        Cover = lookupscalar(LULCtable, 4, unitmap) * mask
         Cover = min(0.95,Cover)
         report(Cover,coverName)
 
@@ -508,8 +518,8 @@ class SurfaceMaps(StaticModel):
         LAI = max(min(6.5, LAI), 0.0)*mask
         report(LAI, laiName)
 
-
-        smaxnr = lookupscalar(lulcTable, 6, unitmap)
+        # NOTE: this is valid for the Indian LULC map as provided
+        smaxnr = lookupscalar(LULCtable, 6, unitmap)
         #report(smaxnr,'smaxnr.map')
 
         a = [0, 1.412, 0.2331, 0.3165, 1.46, 0.0918, 0.2856, 0.1713,0.59]
@@ -549,8 +559,8 @@ class SurfaceMaps(StaticModel):
         report(building,housecovName)
 
 
-        if optionErosionMaps :
-            cropheight = lookupscalar(lulcTable, 3, unitmap) * mask #plant height in m
+        if optionerosion == 1:
+            cropheight = lookupscalar(LULCtable, 3, unitmap) * mask #plant height in m
             report(cropheight,cropheightName)
 
             aggrstab = 6 * mask;  # aggregate stability
@@ -569,9 +579,11 @@ class ChannelMaps(StaticModel):
         mask = mask_
         global mainout_
         mainout = mainout_
-        DEM = readmap(DEMinName)
+        DEM = readmap(DEMName)
+        # global LDD_
+        # Ldd_ = LDD_
 
-        rivers=readmap(riversinName)
+        rivers = readmap(BaseDir+riversbaseName)
         chanmask = ifthen(rivers > 0, scalar(1))*mask
         # create missing value outside channel
 
@@ -579,6 +591,7 @@ class ChannelMaps(StaticModel):
         cm=ifthen(accuflux(lddchan,1) > 1,chanmask)*mask
         lddchan = lddcreate((DEM-mainout*10)*cm,1e20,1e20,1e20,1e20)
         report(lddchan,lddchanName)
+        cm = cover(cm, 0)*mask
         report(cm, chanmaskName)
 
         outpoint = cover(scalar(pit(lddchan)),0)*mask
@@ -588,25 +601,26 @@ class ChannelMaps(StaticModel):
         report(outpoint,outpointName)
 
         changrad = min(0.5,max(0.01,sin(atan(slope(chanmask*DEM)))))
-        changrad = windowaverage(changrad, 5*celllength())*chanmask
+        changrad = windowaverage(changrad, 3*celllength())*chanmask
         report(changrad,changradName)
 
-        chanman = chanmask*0.05
+        chanman = cover(chanmask*0.05,0)*mask
         report(chanman,chanmanName) # fairly rough and rocky channel beds
-        chanside = chanmask*scalar(0)  # ALWAYS rectangular channel
+        chanside = mask*0 #chanmask*scalar(0)  # ALWAYS rectangular channel
         report(chanside, chansideName)
 
         # relation by Allen and Pavelski (2015)
+        Ldd = readmap(LddName)
         dx = celllength()
-        af = accuflux(Ldd_, dx/3.22e4)
+        af = accuflux(Ldd, dx/3.22e4)
         chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
         report(chanwidth,chanwidthName)
         ##  culvert_fraction_width = 0.8;
         ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
         ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
            #-0.5 +
-        chandepth = max(1.0,chanwidth**0.2)
-        chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
+        chandepth = cover(max(1.0,chanwidth**0.2),0)*mask
+        #chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
         report(chandepth,chandepthName)
 
         chanmaxq = 0*mask#if(culverts gt 0, 2, 0)*mask;
@@ -635,30 +649,25 @@ class ChannelMaps(StaticModel):
 
 if __name__ == "__main__":
 
-    # settings.setValue("BaseDirectory", BaseDirName);
-    # settings.setValue("MapsDirectory", MapsDirName);
-    # settings.setValue("LULCDirectory", LULCDirName);
-    # settings.setValue("LULCmap", LULCmapName);
-    # settings.setValue("LULCtable", LULCtableName);
-    # settings.setValue("optionDEM", checkBox_DEM->isChecked() ? "1":"0");
-    # settings.setValue("optionChannels", checkBox_Channels->isChecked() ? "1":"0");
-    # settings.setValue("optionInfil", checkBox_Infil->isChecked() ? "1":"0");
-    # settings.setValue("optionSG", checkBox_Soilgrids->isChecked() ? "1":"0");
-    # settings.setValue("optionLULC", checkBox_LULC->isChecked() ? "1":"0");
-    # settings.setValue("optionSG1", QString(comboBox_SGlayer1->currentIndex()));
-    # settings.setValue("optionSG2", QString(comboBox_SGlayer2->currentIndex()));
+    os.chdir(BaseDir)  # change to base directory, not needed?
 
-
-    #default
-    doProcessesDEM = 0
+    #default values
+    doProcessesDEM = 1
     doProcessesChannels = 1
     doProcessesInFil = 1
     doProcessesSG = 1
     doProcessesLULC = 1
+    optionerosion = 1
+    optionD50 = 0
     optionSG1 = 2
     optionSG2 = 4
+    useBulkdensity = 0
+    standardbulkdensity_ = 1350.0
+    initmoisture_ = 0.1
 
-    # Read options input file
+
+    # Read options input file generated by the UI interface
+    # file has the name=value format, all strings
     with open(sys.argv[1], 'r') as fh:
         for line in fh:
             if '=' not in line:
@@ -666,8 +675,15 @@ if __name__ == "__main__":
             #line = line.replace('"', '')
             S0 = (line.split('='))[0].strip()
             S1 = (line.split('='))[1].strip()
+            if S1.isnumeric() :
+                i1 = int(S1)
+                v1 = float(S1)
             if  S0 == "BaseDirectory":
-                 BaseDir = S1
+                BaseDir = S1
+            if  S0 == "BaseDEM":
+                DEMbaseName = S1
+            if  S0 == "BaseChannel":
+                riversbaseName = S1
             if  S0 == "MapsDirectory":
                  MapsDir = S1
             if  S0 == "LULCDirectory":
@@ -677,35 +693,62 @@ if __name__ == "__main__":
             if  S0 == "LULCtable":
                  lulcTable = S1
             if  S0 == "optionDEM":
-                doProcessesDEM = S1
-                print(doProcessesDEM)
+                doProcessesDEM = i1
             if  S0 == "optionChannels":
-                doProcessesChannels = S1
+                doProcessesChannels = i1
             if  S0 == "optionInfil":
-                doProcessesInFil = S1
+                doProcessesInFil = i1
             if  S0 == "optionSG":
-                doProcessesSG = S1
+                doProcessesSG = i1
             if  S0 == "optionLULC":
-                doProcessesLULC = S1
+                doProcessesLULC = i1
+            if  S0 == "optionErosion":
+                optionD50 = i1
             if  S0 == "optionSG1":
-                optionSG1 = S1
+                optionSG1 = i1+1
             if  S0 == "optionSG2":
-                optionSG2 = S1
-
-
-    os.chdir(BaseDir)
+                optionSG2 = i1+1
+            if  S0 == "refBulkDens":
+                standardbulkdensity_ = v1
+            if  S0 == "initmoist":
+                initmoisture_ = v1
+            if  S0 == "optionUseBD":
+                useBulkdensity = i1
 
     print(">>> read base maps from {0}".format(BaseDir),flush=True)
 
-    masknamemap_ = maskinName  # pcraster file for exact basin mask
+    setclone(BaseDir+DEMbaseName) # set the overall mask for PCRaster operations
+    # now we can do map = scalar(v) and other pcrcalc stuff
 
-    # set the overall mask
-    setclone(masknamemap_)
-    mask_ = readmap(masknamemap_)
+    # read DEM and create mask
+    DEM_ = readmap(BaseDir+DEMbaseName)
+    masknamemap_ = "mask0.map" #mapmaskinName  # pcraster file for exact basin mask
+    mask_ = (DEM_*0) + scalar(1)
+    report(mask_, BaseDir+masknamemap_)
+    report(mask_, MapsDir+masknamemap_)
+    zero_ = mask_*0
+    report(zero_,MapsDir+"zero.map")
 
-    # set the gdal details of the mask, bounding box, rows and cols
-    maskgdal=gdal.Open(masknamemap_) # get mask details
-    #print(maskgdal)
+    #maps that are needed in multiple classes
+    soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
+    #mainout_ = readmap(BaseDir+mainoutinName)       # can be zero
+    LDD_ = ldd(0*mask_)
+    #DEM_ = scalar(0)
+    Ksaturban_ = scalar(5)
+    Poreurban_ = scalar(0.45)
+    unitBuild_ = nominal(3)  # to adapt ksat pore urban areas
+    unitWater_ = nominal(9)  # to adapt ksat pore water
+    fillDEM = 1e4  # use fill dem with lddcreatedem, if this value = 0 then this is not used
+    catchmentsize_ = 1e9
+    standardBD = scalar(standardbulkdensity_)
+
+    Debug_ = False
+
+    SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
+
+    # get the gdal details of the mask, bounding box, rows and cols
+    #print(BaseDir+DEMbaseName,flush=True)
+    maskgdal=gdal.Open(BaseDir+DEMbaseName) # get mask details
     maskproj = maskgdal.GetProjection()
     nrRows = maskgdal.RasterYSize
     nrCols = maskgdal.RasterXSize
@@ -717,34 +760,10 @@ if __name__ == "__main__":
     lly = ury + dy*nrRows
     maskbox = [llx,lly,urx,ury]
 
-    # soilgrid layer rootnames
-    SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']
-
-    #maps that are needed in multiple classes
-    soildepth1depth = scalar(300)           # mm of first layer and minimal soildepth
-    mainout_ = readmap(mainoutinName)       # can be zero
-    Ldd_ = ldd(0*mask_)
-    DEM_ = scalar(0)
-    Ksaturban_ = scalar(5)
-    Poreurban_ = scalar(0.45)
-    unitBuild_ = nominal(3)  # to adapt ksat pore urban areas
-    unitWater_ = nominal(9)  # to adapt ksat pore water
-    report(DEM_,'zero.map')
-    initmoisture_ = 0.1
-    standardbulkdensity_ = scalar(1450.0)
-    fillDEM = 1e4  # use fill dem with lddcreatedem, if this value = 0 then this is not used
-    catchmentsize_ = 1e9
-
-    optionErosionMaps = True
-    optionD50 = False
-    useBulkdensity = False
-
-    Debug_ = False
-
     print('>>> Get land use map for the area', flush=True)
-    lulcTable = lulcDIR+lutblName
-    lulcTIF = lulcDIR #+LULCinName
-    src = gdal.Open(lulcTIF)
+    LULCtable = lulcDIR+lulcTable
+    LULCmap = lulcDIR+lulcTIF
+    src = gdal.Open(LULCmap)
     # get ESPG number
     ESPG = osr.SpatialReference(wkt=src.GetProjection()).GetAttrValue('AUTHORITY',1)
     print('ESPG:'+ESPG, flush=True)
@@ -759,7 +778,7 @@ if __name__ == "__main__":
 
     lun = readmap(landuseName)
     # lun = nominal(lu)
-    lun = spreadzone(lun,0,1)
+    lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units
     #report(lun,landuseName)
 
     mask_ = ifthen( boolean(mask_ == 1) & boolean(lun != 0),scalar(1))
@@ -783,8 +802,11 @@ if __name__ == "__main__":
 
     # soil and infiltration maps
     if doProcessesSG == 1:
+         # soilgrid layer rootnames: S, Si, C, soil org carbon, coarse fragments, bulk dens
+
         print(">>> Downloading SOILGRIDS layers and creating infiltration maps", flush=True)
         #soigrid map names for texture, doil organic carbon, course fragments, bulk dens
+        #print(optionSG1,optionSG2, flush=True)
         for x in range(0,6):
             GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG1,1)
         for x in range(0,6):
