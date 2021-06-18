@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupUi(this);
 
     CondaInstall = GetCondaEnvs();
+    CondaInstall = GetMiniCondaEnvs();
     QStringList sss;
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
     comboBox_SGlayer1->addItems(sss);
@@ -16,24 +17,80 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupModel();
 
-    getIni();
-    ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
-    writeValuestoUI();
-    readValuesfromUI();
+    QDirIterator it(qApp->applicationDirPath(), QStringList() << "*.ini", QDir::NoFilter);
+    while (it.hasNext()) {
+        QFile f(it.next());
+        combo_iniName->addItem(f.fileName());
+    }
+
+    QString s = combo_iniName->currentText();//QString(qApp->applicationDirPath()+"/LISEMdbase.ini");
+    if (QFileInfo(s).exists())
+    {
+        lineEdit_iniName->setText(s);
+        getIni(s);
+        ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
+        writeValuestoUI();
+        readValuesfromUI();
+    }
 
     for (int i = 0; i < combo_envs->count(); i++){
         if (combo_envs->itemText(i) == CondaBaseDirName)
             combo_envs->setCurrentIndex(i);
     }
+
+
+    tabWidget->setCurrentIndex(0);
+    tabWidget->removeTab(2);
+
+
 }
 
 MainWindow::~MainWindow()
 {
-    readValuesfromUI();
-    setIni(qApp->applicationDirPath()+"/LISEMdbase.ini");
+    //readValuesfromUI();
+   // setIni(qApp->applicationDirPath()+"/LISEMdbase.ini");
 }
 
+
 bool MainWindow::GetCondaEnvs()
+{
+    bool install = false;
+    QString name = qgetenv("USER");
+    if (name.isEmpty())
+        name = qgetenv("USERNAME");
+    CondaBaseDirName = QString("c:/Users/" +name + "/anaconda3/envs");
+    if (QFileInfo(CondaBaseDirName).dir().exists()) {
+        QDir const source(CondaBaseDirName);
+        QStringList const folders = source.entryList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
+        for (int i = 0; i < folders.size(); i++) {
+            QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
+            QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
+            QString str2 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/gdalinfo.exe";
+            bool pythonfound = QFileInfo(str).exists();
+            bool pcrasterfound = QFileInfo(str1).exists();
+            bool gdalfound = QFileInfo(str2).exists();
+
+            if (pythonfound && pcrasterfound && gdalfound)
+                combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
+            else {
+                QString error;
+                if (!pythonfound) error = QString("Python not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+
+                QMessageBox msgBox;
+                msgBox.setText(error);
+                msgBox.exec();
+            }
+        }
+        install = combo_envs->count() > 0;
+    }
+    return(install);
+}
+
+bool MainWindow::GetMiniCondaEnvs()
 {
     bool install = false;
     QString name = qgetenv("USER");
@@ -46,9 +103,24 @@ bool MainWindow::GetCondaEnvs()
         for (int i = 0; i < folders.size(); i++) {
             QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
             QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
-            bool found = QFileInfo(str).exists() && QFileInfo(str1).exists();
-            if (found)
+            QString str2 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/gdalinfo.exe";
+            bool pythonfound = QFileInfo(str).exists();
+            bool pcrasterfound = QFileInfo(str1).exists();
+            bool gdalfound = QFileInfo(str2).exists();
+
+            if (pythonfound && pcrasterfound && gdalfound)
                 combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
+            else {
+                QString error;
+                if (!pythonfound) error = QString("Python not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!pcrasterfound) error = QString("PCRaster not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!gdalfound) error = QString("GDAL not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                QMessageBox msgBox;
+                msgBox.setText(error);
+                msgBox.exec();
+            }
         }
         install = combo_envs->count() > 0;
     }
@@ -106,7 +178,6 @@ void MainWindow::on_toolButton_LULCMap_clicked()
         lineEdit_LULCMap->setText(LULCmapName);
 }
 
-
 void MainWindow::on_toolButton_baseDEM_clicked()
 {
     QString tmp = BaseDirName+lineEdit_baseDEM->text();
@@ -125,6 +196,14 @@ void MainWindow::on_toolButton_baseChannel_clicked()
         lineEdit_baseChannel->setText(BaseChannelName);
 }
 
+void MainWindow::on_toolButton_userOutlets_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userOutlets->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    BaseOutletsName = getFileorDir(tmp,"Select outlet map", filters, 1);
+    if (!BaseOutletsName.isEmpty())
+        lineEdit_userOutlets->setText(BaseOutletsName);
+}
 
 void MainWindow::on_toolButton_CheckAll_toggled(bool checked)
 {
@@ -134,9 +213,9 @@ void MainWindow::on_toolButton_CheckAll_toggled(bool checked)
     checkBox_Infil->setChecked(checked);
     checkBox_Soilgrids->setChecked(checked);
     checkBox_userefBD->setChecked(checked);
+    checkBox_useLUdensity->setChecked(checked);
     checkBox_erosion->setChecked(checked);
-    spin_initmoist->setValue(0.1);
-    spin_refBD->setValue(1350);
+    checkBox_D50->setChecked(checked);
 }
 
 void MainWindow::on_toolButton_clear_clicked()
@@ -152,6 +231,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 {
     QFileDialog dialog;
     QString dirout = inputdir;
+    qDebug() << inputdir;
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
@@ -223,4 +303,57 @@ void MainWindow::on_toolButton_clicked()
     view->setAttribute(Qt::WA_DeleteOnClose);
 
     view->show();
+}
+
+void MainWindow::on_checkBox_DEM_toggled(bool checked)
+{
+    DEMoptions->setEnabled(checked);
+}
+
+void MainWindow::on_toolButton_SaveIni_clicked()
+{
+    readValuesfromUI();
+    setIni(lineEdit_iniName->text());
+}
+
+void MainWindow::on_toolButton_stop_clicked()
+{
+    Process->kill();
+    text_out->appendPlainText("User interrupt");
+}
+
+void MainWindow::on_toolButton_loadIni_clicked()
+{
+
+//    QString tmp = qApp->applicationDirPath()+"/"+lineEdit_iniName->text();
+    QString tmp = lineEdit_iniName->text();
+    QStringList filters({"ini file (*.ini *.txt)","Any files (*)"});
+    iniName = getFileorDir(tmp,"Select lisemDbase ini file", filters, 2);
+    if (iniName.isEmpty())
+        iniName = "LISEMdbase.ini";
+    lineEdit_iniName->setText(iniName);
+    getIni(iniName);
+    writeValuestoUI();
+    readValuesfromUI();
+}
+
+
+
+void MainWindow::on_combo_iniName_currentIndexChanged(int index)
+{
+    getIni(combo_iniName->currentText());
+    writeValuestoUI();
+    readValuesfromUI();
+}
+
+void MainWindow::on_toolButton_6_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File as ini",
+                               qApp->applicationDirPath(),
+                               "*.ini");
+    if (!fileName.isEmpty()) {
+        readValuesfromUI();
+        setIni(fileName);
+        combo_iniName->addItem(fileName);
+    }
 }

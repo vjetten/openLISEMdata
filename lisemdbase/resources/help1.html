@@ -1,29 +1,37 @@
 <p><strong>CRC India - openLISEM datbase generator</strong></p>
-<p>This program generates a database by calling a python script. The input and output directories and main options are chosen in this interface. A configuration file (lisemdbaseoptions.cfg) is generated that is read by python and run with the script.</p>
-<p>It is assumed that python, PCRaster, GDAL and other software is installed using (mini)conda. In order to work, a conda encironment must be created with the following commands:</p>
+<p>This program generates a database for openLISEM by calling a python script. The input and output directories and main options are chosen in this interface. A configuration file (lisemdbaseoptions.cfg) is generated that is used by the script.</p>
+<p>It is assumed that python, PCRaster, GDAL and other software is installed using (mini)conda. In order to work, a conda environment must be created with the following commands:</p>
 <ol>
 <li class="code"><em>conda create --name lisem python</em></li>
 <li class="code"><em>conda activate lisem</em></li>
 <li class="code"><em>conda install -c conda-forge pcraster owslib scipy gdal</em></li>
 <li class="code"><em>pip install osgeo</em></li>
 </ol>
-<p>This will ctreate a conda environment 'lisem' which is used to run the database generation script.</p>
+<p>This will create a conda environment 'lisem' which is used to run the database generation script.</p>
+<p> Do not forget to do sometimes: <class="code"><em>conda update --all</em></p>
 <p><strong>Maps and Folders<br /></strong></p>
 <ul>
+<li>LISEMDbase ini file - lets you choose from different ini files that you createfor different projects.</li>
 <li>Conda environment - lets you choose from your environments the one that has the above installation</li>
-<li>Python dbase script - lets you select the latest script</li>
-<li>openLISEM Maps folder - is the output folder that contains all mapsthat openLISEM needs</li>
-<li>Base data input folder - is the folder that has the run domain DEM and channel maskl maps. The Soilgrids texture maps will be stored here as well.</li>
-<li>Base DEM and Base channel mask map, the minimum maos that you need.</li>
+<li>Python dbase script - lets you select the latest openLISEM DBase script</li>
+<li>openLISEM Maps folder - is the output folder that contains all maps that openLISEM needs.</li>
+<li>Base data input folder - is the folder that has the domain DEM and channel mask maps. The SOILGRIDS.ORG texture maps will be stored here as well.</li>
+<li>Base DEM and Base channel mask map and optional outlet nase map, the minimum maps that the script needs.</li>
+<li>ESPG number - the number of the cartographic projection of all output map. Note that the PCRaster maps will have this projection and grdisize, but the cartographic projection information is NOT STORED in the header of PCRaster maps.</li>
 <li>LULC folder - the folder that contains the GeoTiff LULC map containing the area</li>
-<li>LULC table is a <a href="https://textfancy.com">text</a> file (ludata.tbl) with certain values for land use classeOptions</li>
+<li>LULC table is a text file (ludata.tbl) with certain values for land use classes</li>
 </ul>
 <p><strong>Options</strong></p>
-<p>Note: not all optione have to be generated each time you run the script. If you run it for the first time, select everything.</p>
+<p>Note: not all options have to be generated each time you run the script. If you run it for the first time, select everything.</p>
 <ul>
-<li>If you have not downloaded soil data from SOILGRIDS.ORG do this once. The data layers are stred in the base directory for future use. Slect a layer depth for the first soil layer and for the second soil latyer (6 depths are available). The data is provided by <a href="https://www.isric.org/">ISRIC</a>.<br />NOTE: You need an internet connection for this option</li>
-<li>Infiltration: the pedotransfer functions by Saxton and Rawls (2006) use a density factor. This factor is 0.9 for very loose soils to 1.2 for dense compacted soils. The reference bulk density can be used to generate higher or lower Ksat values. This is calculated as the reference bulk density value (def 1350) divided by the bulkdensity from SOILGRIDS.</li>
-<li>Initial moisture content at the start of the openLISEM run: scaled between Field capacity (0) and completely saturated (1.0). Default value is 0.1, slightly wetter than FC.</li>
-<li>Erosion simulation needs the median of the texture D50 for suspended matter calculations, and D90 for bedload transport. These can be estimated assuming that the texture percentages represnt the cumulative density distribution.</li>
+<li>DEM: Catchment size threshold for the PCRaster <class="code"><em>lddcreate</em> command, in case multiple catchments exist (def 1.0e9)</li>
+<li>- DEM: optional pits are filled up to a certain size using a threshold value for the PCRaster <class="code"><em>lddcreatedem</em> command, a map <class="code">demcorr.map</em> is generated for verification (def 1.0e6)</li>
+<li>- Prune 1 cell from the river network branches: sometimes single cell branches are generated which are deleted.</li>
+<li>LULC data is used to generate Manning's n, surface roughness and canopy storage caopacity maps.</li>
+<li>Include SOILGRIDS data: if you have not downloaded soil data from SOILGRIDS.ORG do this once. The data layers are stred in the base directory for future use. Select a layer depth for the first soil layer and for the second soil latyer (6 depths are available). The data is provided by <a href="https://www.isric.org/">ISRIC</a>.<br />NOTE: You need an internet connection for this option</li>
+<li>Infiltration and erosion: the pedotransfer functions by Saxton and Rawls (2006) are used to generate Ksat, porosity, initial moisture content and wetting front suction for infiltration, for 2 layers.</li>
+<li>- Use a reference buldensity (def 1350 kg/m3): The pedotrabnsfer functions assume a standard bulkdensity, making this bulkdensity lower will results in a looser soil with a higher Ksat, giving a higher value results in a lower Ksat (denser soil).</li>
+<li>- Initial moisture content at the start of the openLISEM run: scaled between Field Capacity (0) and completely saturated (1.0). Default value is 0.1, slightly wetter than FC.</li>
+<li>- Erosion simulation needs the median of the texture D50 for suspended matter calculations, and the upper 90% quantile D90 for bedload transport. These can be estimated assuming that the texture percentages represnt the cumulative density distribution for every cell (can be slow depending on catchment size).</li>
 </ul>
 <p>&nbsp;</p>

@@ -16,33 +16,42 @@ public:
     ~MainWindow();
 
     QString CondaBaseDirName;
-
+    QString iniName;
     QString ScriptFileName;
     QString LULCDirName;
     QString BaseDirName;
     QString ScriptDirName;
     QString BaseDEMName;
     QString BaseChannelName;
+    QString BaseOutletsName;
     QString MapsDirName;
     QString LULCmapName;
     QString LULCtableName;
+    QString ESPGnumber;
     bool CondaInstall;
     int SG1;
     int SG2;
     double initmoist;
     double refBulkDens;
-    int DEMfill;
+    double DEMfill;
+    double CatchmentSize;
     int optionDEM;
     int optionChannels;
     int optionLULC;
     int optionSG;
     int optionInfil;
     int optionErosion;
+    int optionD50;
     int optionUseBD;
+    int optionUseDensity;
     int optionFillDEM;
+    int optionCatchments;
+    int optionUserOutlets;
+    int optionPruneBranch;
 
     void setupModel();
     bool GetCondaEnvs();
+    bool GetMiniCondaEnvs();
     QProcess *Process;
 
     int layer1;
@@ -51,11 +60,11 @@ public:
     QString bufprev;
 
     void setIni(QString sss);
-    void getIni();
+    void getIni(QString name);
     void readValuesfromUI();
     void writeValuestoUI();
     QString getFileorDir(QString inputdir,QString title, QStringList filters, int doFile);
-
+    QStringList findFiles(const QStringList &files, const QString &text);
 private slots:
 
     void on_toolButton_base_clicked();
@@ -87,6 +96,21 @@ private slots:
     void on_checkBox_Soilgrids_toggled(bool checked);
 
     void on_toolButton_clicked();
+
+    void on_checkBox_DEM_toggled(bool checked);
+
+    void on_toolButton_SaveIni_clicked();
+
+
+    void on_toolButton_userOutlets_clicked();
+
+    void on_toolButton_stop_clicked();
+
+    void on_toolButton_loadIni_clicked();
+
+    void on_combo_iniName_currentIndexChanged(int index);
+
+    void on_toolButton_6_clicked();
 
 private:
     Ui::MainWindow *ui;
