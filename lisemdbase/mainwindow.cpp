@@ -6,8 +6,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
-    CondaInstall = GetCondaEnvs();
-    CondaInstall = GetMiniCondaEnvs();
+    //CondaInstall = GetCondaEnvs();
+    //CondaInstall = GetMiniCondaEnvs();
+
+    CondaInstall = GetCondaAllEnvs(0);
+    CondaInstall = GetCondaAllEnvs(1);
+    CondaInstall = GetCondaAllEnvs(2);
+    CondaInstall = GetCondaAllEnvs(3);
+
     QStringList sss;
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
     comboBox_SGlayer1->addItems(sss);
@@ -23,10 +29,14 @@ MainWindow::MainWindow(QWidget *parent)
         combo_iniName->addItem(f.fileName());
     }
 
+
+    if (combo_iniName->currentText().isEmpty())
+        combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
+
     QString s = combo_iniName->currentText();//QString(qApp->applicationDirPath()+"/LISEMdbase.ini");
     if (QFileInfo(s).exists())
     {
-        lineEdit_iniName->setText(s);
+        //lineEdit_iniName->setText(s);
         getIni(s);
         ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
         writeValuestoUI();
@@ -51,6 +61,58 @@ MainWindow::~MainWindow()
    // setIni(qApp->applicationDirPath()+"/LISEMdbase.ini");
 }
 
+bool MainWindow::GetCondaAllEnvs(int cda)
+{
+    bool install = false;
+    QString name = qgetenv("USER");
+    if (name.isEmpty())
+        name = qgetenv("USERNAME");
+
+    if (cda == 0) {
+        CondaBaseDirName = QString("c:/Users/" +name + "/Miniconda3/envs");
+    }
+    if (cda == 1) {
+        CondaBaseDirName = QString("c:/Users/" +name + "/Anaconda3/envs");
+    }
+    if (cda == 2) {
+        CondaBaseDirName = QString("c:/ProgramData/Miniconda3/envs");
+    }
+    if (cda == 3) {
+        CondaBaseDirName = QString("c:/ProgramData/Anaconda3/envs");
+    }
+    if (QFileInfo(CondaBaseDirName).dir().exists()) {
+    //    qDebug() << CondaBaseDirName;
+        QDir const source(CondaBaseDirName);
+        QStringList const folders = source.entryList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
+  //      qDebug() << folders;
+        for (int i = 0; i < folders.size(); i++) {
+            QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
+            QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
+            QString str2 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/gdalinfo.exe";
+            bool pythonfound = QFileInfo(str).exists();
+            bool pcrasterfound = QFileInfo(str1).exists();
+            bool gdalfound = QFileInfo(str2).exists();
+
+            if (pythonfound && pcrasterfound && gdalfound)
+                combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
+            else {
+                QString error;
+                if (!pythonfound) error = QString("Python not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+
+                QMessageBox msgBox;
+                msgBox.setText(error);
+                msgBox.exec();
+            }
+        }
+        install = combo_envs->count() > 0;
+    }
+    return(install);
+}
+
 
 bool MainWindow::GetCondaEnvs()
 {
@@ -58,6 +120,7 @@ bool MainWindow::GetCondaEnvs()
     QString name = qgetenv("USER");
     if (name.isEmpty())
         name = qgetenv("USERNAME");
+
     CondaBaseDirName = QString("c:/Users/" +name + "/anaconda3/envs");
     if (QFileInfo(CondaBaseDirName).dir().exists()) {
         QDir const source(CondaBaseDirName);
@@ -205,17 +268,13 @@ void MainWindow::on_toolButton_userOutlets_clicked()
         lineEdit_userOutlets->setText(BaseOutletsName);
 }
 
-void MainWindow::on_toolButton_CheckAll_toggled(bool checked)
+void MainWindow::on_toolButton_Dams_clicked()
 {
-    checkBox_DEM->setChecked(checked);
-    checkBox_Channels->setChecked(checked);
-    checkBox_LULC->setChecked(checked);
-    checkBox_Infil->setChecked(checked);
-    checkBox_Soilgrids->setChecked(checked);
-    checkBox_userefBD->setChecked(checked);
-    checkBox_useLUdensity->setChecked(checked);
-    checkBox_erosion->setChecked(checked);
-    checkBox_D50->setChecked(checked);
+    QString tmp = BaseDirName+lineEdit_Dams->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    BaseDamsName = getFileorDir(tmp,"Select dams map", filters, 1);
+    if (!BaseDamsName.isEmpty())
+        lineEdit_Dams->setText(BaseDamsName);
 }
 
 void MainWindow::on_toolButton_clear_clicked()
@@ -313,7 +372,11 @@ void MainWindow::on_checkBox_DEM_toggled(bool checked)
 void MainWindow::on_toolButton_SaveIni_clicked()
 {
     readValuesfromUI();
-    setIni(lineEdit_iniName->text());
+    if (combo_iniName->currentText().isEmpty())
+        combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
+    QString sss = combo_iniName->currentText();
+    qDebug() << sss;
+    setIni(combo_iniName->currentText());
 }
 
 void MainWindow::on_toolButton_stop_clicked()
@@ -322,20 +385,20 @@ void MainWindow::on_toolButton_stop_clicked()
     text_out->appendPlainText("User interrupt");
 }
 
-void MainWindow::on_toolButton_loadIni_clicked()
-{
+//void MainWindow::on_toolButton_loadIni_clicked()
+//{
 
-//    QString tmp = qApp->applicationDirPath()+"/"+lineEdit_iniName->text();
-    QString tmp = lineEdit_iniName->text();
-    QStringList filters({"ini file (*.ini *.txt)","Any files (*)"});
-    iniName = getFileorDir(tmp,"Select lisemDbase ini file", filters, 2);
-    if (iniName.isEmpty())
-        iniName = "LISEMdbase.ini";
-    lineEdit_iniName->setText(iniName);
-    getIni(iniName);
-    writeValuestoUI();
-    readValuesfromUI();
-}
+// //    QString tmp = qApp->applicationDirPath()+"/"+lineEdit_iniName->text();
+//    QString tmp = lineEdit_iniName->text();
+//    QStringList filters({"ini file (*.ini *.txt)","Any files (*)"});
+//    iniName = getFileorDir(tmp,"Select lisemDbase ini file", filters, 2);
+//    if (iniName.isEmpty())
+//        iniName = "LISEMdbase.ini";
+//    lineEdit_iniName->setText(iniName);
+//    getIni(iniName);
+//    writeValuestoUI();
+//    readValuesfromUI();
+//}
 
 
 
@@ -357,3 +420,37 @@ void MainWindow::on_toolButton_6_clicked()
         combo_iniName->addItem(fileName);
     }
 }
+
+void MainWindow::on_toolButton_CheckAll_clicked()
+{
+    spin_initmoist->setValue(0.7);
+    spin_refBD->setValue(1350);
+    E_DEMfill->setText(QString::number(1e6,'e',1));
+    E_catchmentSize->setText(QString::number(1e10,'e',1));
+    spin_chA->setValue(1.000);
+    spin_chB->setValue(0.459);
+    spin_chC->setValue(0.300);
+bool checked = true;
+        checkBox_DEM->setChecked(checked);
+        checkBox_Channels->setChecked(checked);
+        checkBox_LULC->setChecked(checked);
+        checkBox_Infil->setChecked(checked);
+        checkBox_Soilgrids->setChecked(checked);
+        checkBox_userefBD->setChecked(checked);
+        checkBox_useLUdensity->setChecked(!checked);
+        checkBox_erosion->setChecked(checked);
+        checkBox_D50->setChecked(checked);
+}
+
+
+void MainWindow::on_checkBox_useLUdensity_toggled(bool checked)
+{
+ //   checkBox_userefBD->setChecked(!checked);
+}
+
+void MainWindow::on_checkBox_userefBD_toggled(bool checked)
+{
+   // checkBox_useLUdensity->setChecked(!checked);
+}
+
+

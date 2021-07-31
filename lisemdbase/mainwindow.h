@@ -24,6 +24,7 @@ public:
     QString BaseDEMName;
     QString BaseChannelName;
     QString BaseOutletsName;
+    QString BaseDamsName;
     QString MapsDirName;
     QString LULCmapName;
     QString LULCtableName;
@@ -48,9 +49,14 @@ public:
     int optionCatchments;
     int optionUserOutlets;
     int optionPruneBranch;
+    int optionIncludeDams;
+    double chA;
+    double chB;
+    double chC;
 
     void setupModel();
     bool GetCondaEnvs();
+    bool GetCondaAllEnvs(int cda);
     bool GetMiniCondaEnvs();
     QProcess *Process;
 
@@ -72,7 +78,6 @@ private slots:
     void on_toolButton_script_clicked();
     void on_toolButton_LULC_clicked();
 
-    void on_toolButton_CheckAll_toggled(bool checked);
     void runModel();
     void readFromStderr();
     void readFromOutput();
@@ -106,11 +111,21 @@ private slots:
 
     void on_toolButton_stop_clicked();
 
-    void on_toolButton_loadIni_clicked();
+    //void on_toolButton_loadIni_clicked();
 
     void on_combo_iniName_currentIndexChanged(int index);
 
     void on_toolButton_6_clicked();
+
+    void on_toolButton_CheckAll_clicked();
+
+    void on_checkBox_useLUdensity_toggled(bool checked);
+
+    void on_checkBox_userefBD_toggled(bool checked);
+
+
+
+    void on_toolButton_Dams_clicked();
 
 private:
     Ui::MainWindow *ui;

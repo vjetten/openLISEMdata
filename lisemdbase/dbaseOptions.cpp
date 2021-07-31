@@ -13,6 +13,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("BaseDEM", BaseDEMName);
     settings.setValue("BaseChannel", BaseChannelName);
     settings.setValue("BaseOutlets", BaseOutletsName);
+    settings.setValue("BaseDams", BaseDamsName);
     settings.setValue("MapsDirectory", MapsDirName);
     settings.setValue("LULCDirectory", LULCDirName);
     settings.setValue("LULCmap", LULCmapName);
@@ -32,19 +33,17 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionCatchments", QString::number(optionCatchments));
     settings.setValue("optionUserOutlets", QString::number(optionUserOutlets));
     settings.setValue("optionPruneBranch", QString::number(optionPruneBranch));
+    settings.setValue("optionIncludeDams", QString::number(optionIncludeDams));
 
-    double v = spin_refBD->value();
-    settings.setValue("refBulkDens", QString::number(v, 'f', 0));
-    v = spin_initmoist->value();
-    settings.setValue("initmoist", QString::number(v, 'f', 1));
-    int i = comboBox_SGlayer1->currentIndex();
-    settings.setValue("optionSG1", QString::number(i));
-    i = comboBox_SGlayer2->currentIndex();
-    settings.setValue("optionSG2", QString::number(i));
-    v = DEMfill;// E_DEMfill->text().toDouble();
-    settings.setValue("DEMfill", QString::number(v, 'f', 1));
-    v = CatchmentSize;//E_catchmentSize->text().toDouble();
-    settings.setValue("CatchmentSize", QString::number(v, 'f', 1));
+    settings.setValue("refBulkDens", QString::number(refBulkDens, 'f', 0));
+    settings.setValue("initmoist", QString::number(initmoist, 'f', 2));
+    settings.setValue("optionSG1", QString::number(SG1));
+    settings.setValue("optionSG2", QString::number(SG2));
+    settings.setValue("DEMfill", QString::number(DEMfill, 'f', 2));
+    settings.setValue("CatchmentSize", QString::number(CatchmentSize, 'f', 2));
+    settings.setValue("chA", QString::number(chA, 'f', 3));
+    settings.setValue("chB", QString::number(chB, 'f', 3));
+    settings.setValue("chC", QString::number(chC, 'f', 3));
 
     settings.sync();
 }
@@ -60,6 +59,7 @@ void MainWindow::getIni(QString name)
     BaseDEMName = settings.value("BaseDEM").toString();
     BaseChannelName = settings.value("BaseChannel").toString();
     BaseOutletsName = settings.value("BaseOutlets").toString();
+    BaseDamsName = settings.value("BaseDams").toString();
     MapsDirName = settings.value("MapsDirectory").toString();
     LULCDirName = settings.value("LULCDirectory").toString();
     LULCmapName = settings.value("LULCmap").toString();
@@ -79,6 +79,7 @@ void MainWindow::getIni(QString name)
     optionCatchments = settings.value("optionCatchments").toInt();
     optionUserOutlets = settings.value("optionUserOutlets").toInt();
     optionPruneBranch = settings.value("optionPruneBranch").toInt();
+    optionIncludeDams = settings.value("optionIncludeDams").toInt();
 
     refBulkDens = settings.value("refBulkDens").toDouble();
     initmoist = settings.value("initmoist").toDouble();
@@ -86,6 +87,9 @@ void MainWindow::getIni(QString name)
     SG2 = settings.value("optionSG2").toInt();
     DEMfill = settings.value("DEMfill").toDouble();
     CatchmentSize = settings.value("CatchmentSize").toDouble();
+    chA = settings.value("chA").toDouble();
+    chB = settings.value("chB").toDouble();
+    chC = settings.value("chC").toDouble();
 }
 
 void MainWindow::readValuesfromUI()
@@ -97,6 +101,7 @@ void MainWindow::readValuesfromUI()
     BaseDEMName = lineEdit_baseDEM->text();
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();
+    BaseDamsName = lineEdit_Dams->text();
     MapsDirName = lineEdit_Maps->text();
     LULCDirName = lineEdit_LULC->text();
     LULCmapName = lineEdit_LULCMap->text();
@@ -107,6 +112,9 @@ void MainWindow::readValuesfromUI()
     refBulkDens = spin_refBD->value();
     DEMfill = E_DEMfill->text().toDouble();
     CatchmentSize = E_catchmentSize->text().toDouble();
+    chA = spin_chA->value();
+    chB = spin_chB->value();
+    chC = spin_chC->value();
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
@@ -121,6 +129,7 @@ void MainWindow::readValuesfromUI()
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
     optionUserOutlets = checkBox_userOutlets->isChecked() ? 1 : 0;
     optionPruneBranch = checkBox_pruneBranch->isChecked() ? 1 : 0;
+    optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
 }
 
 void MainWindow::writeValuestoUI()
@@ -143,6 +152,9 @@ void MainWindow::writeValuestoUI()
     spin_refBD->setValue(refBulkDens);
     E_DEMfill->setText(QString::number(DEMfill,'e',1));
     E_catchmentSize->setText(QString::number(CatchmentSize,'e',1));
+    spin_chA->setValue(chA);
+    spin_chB->setValue(chB);
+    spin_chC->setValue(chC);
 
     checkBox_DEM->setChecked(optionDEM > 0);
     checkBox_Channels->setChecked(optionChannels > 0);
@@ -157,5 +169,6 @@ void MainWindow::writeValuestoUI()
     checkBox_Catchments->setChecked(optionCatchments > 0);
     checkBox_userOutlets->setChecked(optionUserOutlets > 0);
     checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
+    checkBox_createDams->setChecked(optionIncludeDams > 0);
 }
 
