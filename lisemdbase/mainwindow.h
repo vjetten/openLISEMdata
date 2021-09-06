@@ -53,6 +53,9 @@ public:
     double chA;
     double chB;
     double chC;
+    double chD;
+    double chWidth;
+    double chDepth;
 
     void setupModel();
     bool GetCondaEnvs();
@@ -126,6 +129,10 @@ private slots:
 
 
     void on_toolButton_Dams_clicked();
+
+    void on_spin_chWidth_valueChanged(double arg1);
+
+    void on_spin_chDepth_valueChanged(double arg1);
 
 private:
     Ui::MainWindow *ui;

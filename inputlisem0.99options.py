@@ -619,10 +619,10 @@ class PedoTransfer(StaticModel):
         CC = C**2
         PP = POROSITY**2
         Psi1 =10*exp(6.53-7.326*POROSITY+15.8*CC+3.809*PP+3.44*S*C-4.989*S*POROSITY+16*SS*PP+16*CC*PP-13.6*SS*C-34.8*CC*POROSITY-7.99*SS*POROSITY)
+        Psi1 = Psi1 * max(0.1,1-fractionmoisture)
+        # correct psi slightly for initmoisture, where psi1 is assumed to corrspond to FC
         report(Psi1,psi1)
         report(initmoist/POROSITY,"se1.map")
-        
-        
         
 
 ### ---------- class Erosion() ---------- ###

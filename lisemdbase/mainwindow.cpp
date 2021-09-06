@@ -423,23 +423,28 @@ void MainWindow::on_toolButton_6_clicked()
 
 void MainWindow::on_toolButton_CheckAll_clicked()
 {
-    spin_initmoist->setValue(0.7);
+    spin_initmoist->setValue(0.0);
     spin_refBD->setValue(1350);
     E_DEMfill->setText(QString::number(1e6,'e',1));
     E_catchmentSize->setText(QString::number(1e10,'e',1));
-    spin_chA->setValue(1.000);
+    //spin_chA->setValue(1.000);
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
-bool checked = true;
-        checkBox_DEM->setChecked(checked);
-        checkBox_Channels->setChecked(checked);
-        checkBox_LULC->setChecked(checked);
-        checkBox_Infil->setChecked(checked);
-        checkBox_Soilgrids->setChecked(checked);
-        checkBox_userefBD->setChecked(checked);
-        checkBox_useLUdensity->setChecked(!checked);
-        checkBox_erosion->setChecked(checked);
-        checkBox_D50->setChecked(checked);
+    spin_chWidth->setValue(500.0);
+    spin_chDepth->setValue(10.0);
+    chA = 1.0/spin_chWidth->value();
+    chD = 1.0/spin_chDepth->value();;
+
+    bool checked = true;
+    checkBox_DEM->setChecked(checked);
+    checkBox_Channels->setChecked(checked);
+    checkBox_LULC->setChecked(checked);
+    checkBox_Infil->setChecked(checked);
+    checkBox_Soilgrids->setChecked(checked);
+    checkBox_userefBD->setChecked(checked);
+    checkBox_useLUdensity->setChecked(!checked);
+    checkBox_erosion->setChecked(checked);
+    checkBox_D50->setChecked(checked);
 }
 
 
@@ -454,3 +459,15 @@ void MainWindow::on_checkBox_userefBD_toggled(bool checked)
 }
 
 
+
+void MainWindow::on_spin_chWidth_valueChanged(double arg1)
+{
+    chA = 1.0/arg1;
+    qDebug() << chA;
+}
+
+void MainWindow::on_spin_chDepth_valueChanged(double arg1)
+{
+    chD = 1.0/arg1;
+    qDebug() << chD;
+}

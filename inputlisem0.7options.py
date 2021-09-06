@@ -308,7 +308,7 @@ class PedoTransfer(StaticModel):
         fractionmoisture = scalar(initmoisture_)   #inital moisture as fraction between porosity and field capacity
         x = layer_
         mask = mask_
-
+        print(fractionmoisture)
         S1 = readmap("{0}{1}.map".format(SG_names_[0],str(x)))  # sand g/kg
         Si1 = readmap("{0}{1}.map".format(SG_names_[1],str(x))) # silt g/kg
         C1 = readmap("{0}{1}.map".format(SG_names_[2],str(x)))  # clay g/kg
@@ -714,7 +714,7 @@ if __name__ == "__main__":
                 initmoisture_ = v1
             if  S0 == "optionUseBD":
                 useBulkdensity = i1
-
+    print(initmoisture_)
     print(">>> read base maps from {0}".format(BaseDir),flush=True)
 
     setclone(BaseDir+DEMbaseName) # set the overall mask for PCRaster operations

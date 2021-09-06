@@ -44,6 +44,9 @@ void MainWindow::setIni(QString sss)
     settings.setValue("chA", QString::number(chA, 'f', 3));
     settings.setValue("chB", QString::number(chB, 'f', 3));
     settings.setValue("chC", QString::number(chC, 'f', 3));
+    settings.setValue("chD", QString::number(chD, 'f', 3));
+    settings.setValue("chWidth", QString::number(chWidth, 'f', 1));
+    settings.setValue("chDepth", QString::number(chDepth, 'f', 1));
 
     settings.sync();
 }
@@ -90,6 +93,9 @@ void MainWindow::getIni(QString name)
     chA = settings.value("chA").toDouble();
     chB = settings.value("chB").toDouble();
     chC = settings.value("chC").toDouble();
+    chD = settings.value("chD").toDouble();
+    chWidth = settings.value("chWidth").toDouble();
+    chDepth = settings.value("chDepth").toDouble();
 }
 
 void MainWindow::readValuesfromUI()
@@ -112,9 +118,11 @@ void MainWindow::readValuesfromUI()
     refBulkDens = spin_refBD->value();
     DEMfill = E_DEMfill->text().toDouble();
     CatchmentSize = E_catchmentSize->text().toDouble();
-    chA = spin_chA->value();
+    //chA = spin_chA->value();
     chB = spin_chB->value();
     chC = spin_chC->value();
+    chWidth = spin_chWidth->value();
+    chDepth= spin_chDepth->value();
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
@@ -152,9 +160,11 @@ void MainWindow::writeValuestoUI()
     spin_refBD->setValue(refBulkDens);
     E_DEMfill->setText(QString::number(DEMfill,'e',1));
     E_catchmentSize->setText(QString::number(CatchmentSize,'e',1));
-    spin_chA->setValue(chA);
+    //spin_chA->setValue(chA);
     spin_chB->setValue(chB);
     spin_chC->setValue(chC);
+    spin_chWidth->setValue(chWidth);
+    spin_chDepth->setValue(chDepth);
 
     checkBox_DEM->setChecked(optionDEM > 0);
     checkBox_Channels->setChecked(optionChannels > 0);

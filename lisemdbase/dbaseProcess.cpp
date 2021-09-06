@@ -33,13 +33,13 @@ void MainWindow::runModel()
     Process->setProcessEnvironment(env);
 
     readValuesfromUI();
-    setIni(ScriptDirName+"/lisemdbaseoptions.cfg");
+    setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg");
     QStringList pythonCommandArguments;
     pythonCommandArguments << ScriptFileName;
-    pythonCommandArguments << ScriptDirName+"/lisemdbaseoptions.cfg";
-
+    //pythonCommandArguments << ScriptDirName+"/lisemdbaseoptions.cfg";
+    pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
+    qDebug() << pythonCommandArguments;
     Process->start (condaenv+"/python", pythonCommandArguments);
-
     Process->setReadChannel(QProcess::StandardOutput);
 }
 

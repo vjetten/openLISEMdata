@@ -1,18 +1,19 @@
 """
 Created on Fri Mar 19 14:07:11 2021
-openlisem input script, v0.7
+openlisem input script, v0.94
 to be used with Qt UI interface
 @author: v jetten, ITC
 """
 
-# In conda make sure the following libs are instaklled:
+# In (mini) conda make sure the following libs are installed:
 #     conda create --name lisem python
 #     conda activate lisem
 #     conda install -c conda-forge pcraster owslib scipy gdal
 #     pip install osgeo
 
+
+
 # gdal
-#from osgeo import gdal
 from osgeo import gdal, gdalconst, osr
 from owslib.wcs import WebCoverageService
 
@@ -29,10 +30,19 @@ import sys         # read commandline arguments
 from scipy import stats
 
 
+# Classes
+# class DEMderivatives(StaticModel):
+# class ChannelMaps(StaticModel):
+# class SurfaceMaps(StaticModel):
+# class GetSoilGridsLayer:
+# class PedoTransfer(StaticModel):
+# if __name__ == "__main__":
+
+
+# global PCRaster options:
 setglobaloption("lddin")
 setglobaloption("lddfill")
 setglobaloption("matrixtable")
-
 
 
 ### ---------- class DEMderivatives() ---------- ###
@@ -45,10 +55,11 @@ class DEMderivatives(StaticModel):
         size = catchmentsize_
         global mainout_
         global DEM_
-        DEM = DEM_
         global Ldd_
         global doCorrectDEM
         global fillDEM
+        global rivers_
+        DEM = DEM_
 
         ID = mask
         report(ID,IDName)
@@ -73,8 +84,7 @@ class DEMderivatives(StaticModel):
 
         chanm = scalar(0)
         if  doProcessesChannels == 1:
-            chanm = readmap(BaseDir+riversbaseName)*mask
-            #chanm = cover(ifthen(chanm > 1, scalar(1)),0)*mask
+            chanm = rivers_ #readmap(BaseDir+riversbaseName)*mask
             chanm = cover(chanm, 0)*mask
 
         Ldd = lddcreate (DEMm-chanm*10-mainout_*10, size, size, size, size)
@@ -94,33 +104,208 @@ class DEMderivatives(StaticModel):
 
         #### not used in lisem, auxilary maps
 
-        ups=accuflux(Ldd,1)
+        ups = accuflux(Ldd,1)
         report(ups,upsName)  # not used
-        ws=catchment(Ldd, pit(Ldd));
+        ws = catchment(Ldd, pit(Ldd));
         report(ws,wsName)
 
         asp = scalar( aspect(DEMm));
         shade = cos(15)*sin(grad)*cos(asp+45) + sin(15)*cos(grad);
         shade = 0.7*(shade-mapminimum(shade))/(mapmaximum(shade)-mapminimum(shade))
         + 0.3*(DEM-mapminimum(DEM))/(mapmaximum(DEM)-mapminimum(DEM))
-
         report(shade,shadeName)  # not used in lisem
 
+        buffer = DEM*0.0;
+        report(buffer, bufferName);
 
-        distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
-       # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
-        soild = mask*cover((1-min(1,slope(DEMm)))       # steeper slopes giver undeep soils
-               -0.5*distriv/mapmaximum(distriv)  # perpendicular distance to river, closer gives deeper soils
-              # +0.5*(distsea/mapmaximum(distsea))**0.1
-               ,0)
-        soildb = 1500*(soild)**1.5
 
-        # m to mm for lisem, higher power emphasizes deep, updeep
-        soildepth1 = soildepth1depth*mask
-        soildepth2 = mask*(soildepth1+windowaverage(soildb,3*celllength()))
+    #   distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+    #  # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
+    #   soild = mask*cover((1-min(1,slope(DEMm)))       # steeper slopes giver undeep soils
+    #          -0.5*distriv/mapmaximum(distriv)  # perpendicular distance to river, closer gives deeper soils
+    #         # +0.5*(distsea/mapmaximum(distsea))**0.1
+    #          ,0)
+    #   soildb = 1500*(soild)**1.5
+    #
+    #   # m to mm for lisem, higher power emphasizes deep, updeep
+    #   soildepth1 = soildepth1depth*mask
+    #   soildepth2 = mask*(soildepth1+windowaverage(soildb,3*celllength()))
+    #
+    #   report(soildepth1,soildep1Name)
+    #   report(soildepth2,soildep2Name)
 
-        report(soildepth1,soildep1Name)
-        report(soildepth2,soildep2Name)
+
+### ---------- class ChannelMaps() ---------- ###
+
+class ChannelMaps(StaticModel):
+    #! --lddout
+    def __init__(self):
+        StaticModel.__init__(self)
+    def initial(self):
+        mask = mask_
+        global mainout_  # is zero or if dem is done is endpoints ldd, or userdefined endpoints
+        DEM = readmap(DEMName)
+        global Ldd_
+        global doUserOutlets
+
+        rivers = readmap(BaseDir+riversbaseName)
+        chanmask = ifthen(rivers > 0, scalar(1))*mask
+        # create missing value outside channel
+
+        lddchan = lddcreate((DEM-mainout_*10)*chanmask,1e20,1e20,1e20,1e20)
+        cm = chanmask
+        if doPruneBranch == 1:
+            # delete isolated branches of 1 cell
+            cm = ifthen(accuflux(lddchan,1) > 1,chanmask)*mask
+            lddchan = lddcreate((DEM-mainout_*10)*cm,1e20,1e20,1e20,1e20)
+            cm = cover(cm, 0)*mask
+
+        report(lddchan,lddchanName)
+        report(cm, chanmaskName)
+
+        if doUserOutlets == 0 :
+            mainout_ = cover(scalar(pit(lddchan)),0)*mask
+
+        outpoint = mainout_
+        outlet = mainout_
+        report(outlet,outletName)
+        report(outpoint,outpointName)
+
+        changrad = min(0.5,max(0.01,sin(atan(slope(chanmask*DEM)))))
+        changrad = windowaverage(changrad, 3*celllength())*chanmask
+        report(changrad,changradName)
+
+        chanman = cover(chanmask*0.05,0)*mask
+        report(chanman,chanmanName) # fairly rough and rocky channel beds
+        chanside = mask*0 #chanmask*scalar(0)  # ALWAYS rectangular channel
+        report(chanside, chansideName)
+
+        # relation by Allen and Pavelski (2015)
+        # area = 3.22e4 * width^-1.18 where area is in km2
+        Ldd = readmap(LddName)
+        dx = celllength()
+        # C=3.24×1010m
+
+        #af = accuflux(Ldd, (dx)/1e6)/3.22e4
+        #chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
+        chanlen = accuflux(lddchan, dx)
+
+        #chanwidth = (af**(1.18))*chanmask
+        #chanwidth = 20000*(chanlen/3.67e10)**(1.0/2.64)   #Hydro1K allen and pavelsky page 399
+        #chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
+        chanwidth = chA*(chanlen)**(chB)   #Hydro1K allen and pavelsky page 399
+        report(chanwidth,chanwidthName)
+        ##  culvert_fraction_width = 0.8;
+        ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
+        ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
+        chandepth = cover(max(1.0,chanwidth**chC),0)*mask
+        #chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
+        report(chandepth,chandepthName)
+
+        chanmaxq = 0*mask#if(culverts gt 0, 2, 0)*mask;
+        report(chanmaxq,chanmaxqName)
+        chanksat = 0*mask
+        report(chanksat,chanksatName)
+
+        #bridges=clump(nominal(cover(if(chanwidth gt 9 and roadwidth gt 0 , 1, 0),0)*mask)); #and so ge 4
+        ws=catchment(Ldd_, pit(lddchan));
+        report(ws,wsName)
+
+        ### VJ 210522
+        bfh = min(1.0, 0.5*chandepth) # baseflow water height is 1.0m or 0.5 of channelhwight
+        baseflow=cover(scalar(pit(lddchan) != 0)*bfh*chanwidth*0.5,0)*mask
+        report(baseflow,baseflowName)
+        # assuming 0.5 m/s baseflow
+
+        ### VJ 210522
+        chancoh = 10*mask;
+        report (chancoh, chancohName);
+
+class DaminRiver(StaticModel):
+    #! --lddout
+    def __init__(self):
+        StaticModel.__init__(self)
+    def initial(self):
+        mask = mask_
+        global mainout_  # is zero or if dem is done is endpoints ldd, or userdefined endpoints
+        DEM = readmap(DEMName)
+        BUF = readmap(Buffer
+        global Ldd_
+
+
+
+### ---------- class SurfaceMaps() ---------- ###
+
+class SurfaceMaps(StaticModel):
+    def __init__(self):
+        StaticModel.__init__(self)
+    def initial(self):
+        mask = mask_
+        unitmap = lun #readmap(landuseName)
+
+        if Debug_ :
+            print('create RR, n etc', flush=True)
+
+        rr = cover(max(lookupscalar(LULCtable, 1, unitmap), 0.5),1.0) * mask
+        report(rr,rrName)
+         # micro relief, random roughness (=std dev in cm)
+
+        mann = lookupscalar(LULCtable, 2, unitmap) * mask
+        mann = cover(mann,0.05)*mask
+        # mann = 0.01*rr + 0.1*Cover
+        report(mann,mannName)
+         # in the lisem code Manning's n is increased with house effect
+
+        Cover = lookupscalar(LULCtable, 4, unitmap) * mask
+        Cover = min(0.95,Cover)
+        report(Cover,coverName)
+
+        # cover = exp(-0.4*LAI)
+        LAI = ifthenelse(Cover > 0,ln(Cover)/-0.4,0)
+        LAI = max(min(6.5, LAI), 0.0)*mask
+        report(LAI, laiName)
+
+        # NOTE: this is valid for the Indian LULC map as provided
+        smaxnr = lookupscalar(LULCtable, 6, unitmap)
+        #report(smaxnr,'smaxnr.map')
+
+        a = [0, 1.412, 0.2331, 0.3165, 1.46, 0.0918, 0.2856, 0.1713,0.59]
+        b = [0, 0.531, 0     , 0     , 0.56, 1.04  , 0     , 0     ,0.88]
+
+        smax1 = ifthenelse(smaxnr == 1, a[1]*LAI**b[1],0)*mask
+        smax2 = ifthenelse(smaxnr == 2, a[2]*LAI,0)*mask
+        smax3 = ifthenelse(smaxnr == 2, a[3]*LAI,0)*mask
+        smax4 = ifthenelse(smaxnr == 3, a[4]*LAI**b[4],0)*mask
+        smax5 = ifthenelse(smaxnr == 4, a[5]*LAI**b[5],0)*mask
+        smax6 = ifthenelse(smaxnr == 5, a[6]*LAI,0)*mask
+        smax7 = ifthenelse(smaxnr == 6, a[7]*LAI,0)*mask
+        smax8 = ifthenelse(smaxnr == 7, a[8]*LAI**b[8],0)*mask
+
+        Smax = smax1+smax2+smax3+smax4+smax5+smax6+smax7
+        report(Smax, smaxName)
+
+        crust = mask*0
+        report(crust,crustName)
+        # crust fraction assumed zero
+        compact = mask*0
+        report(compact,compactName)
+        # compact fraction assumed zero
+
+        stone = mask*0
+        report(stone,stoneName)
+        # compact fraction assumed zero
+
+        hardsurf = readmap(hardsurfinName)*mask
+        report(hardsurf ,hardsurfName)
+         #hard surface, here airports and large impenetrable areas
+
+        roadwidth = readmap(roadinName)*mask
+        report(roadwidth,roadwidthName)
+
+        building = readmap(housecoverinName)*mask
+        report(building,housecovName)
+
+
 
 ### ---------- class GetSoilGridsLayer ---------- ###
 
@@ -210,6 +395,8 @@ class PedoTransfer(StaticModel):
         fractionmoisture = scalar(initmoisture_)   #inital moisture as fraction between porosity and field capacity
         x = layer_
         mask = mask_
+        global DEM_
+        DEM = DEM_
 
        # S1 = readmap("{0}{1}.map".format(SG_names_[0],str(x)))  # sand g/kg
        # Si1 = readmap("{0}{1}.map".format(SG_names_[1],str(x))) # silt g/kg
@@ -333,6 +520,23 @@ class PedoTransfer(StaticModel):
         Psi1= aA * initmoist**-bB *100/9.8
         report(Psi1,psi1)
         report(initmoist/POROSITY,"se1.map")
+        
+        # soil depth from DEM and Channelmask
+        chanm = readmap(BaseDir+riversbaseName)        
+        distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+        # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
+        soild = mask*cover((1-min(1,slope(DEMm)))       # steeper slopes giver undeep soils
+               -0.5*distriv/mapmaximum(distriv)  # perpendicular distance to river, closer gives deeper soils
+                # +0.5*(distsea/mapmaximum(distsea))**0.1
+               ,0)
+        soildb = 1500*(soild)**1.5
+        # m to mm for lisem, higher power emphasizes deeper
+        soildepth1 = soildepth1depth*mask
+        soildepth2 = mask*(soildepth1+windowaverage(soildb,3*celllength()))
+
+        report(soildepth1,soildep1Name)
+        report(soildepth2,soildep2Name)
+        
 
 
 ### ---------- class Erosion() ---------- ###
@@ -441,172 +645,7 @@ class ErosionMaps(StaticModel):
 
 
 
-### ---------- class SurfaceMaps() ---------- ###
-
-class SurfaceMaps(StaticModel):
-    def __init__(self):
-        StaticModel.__init__(self)
-    def initial(self):
-        mask = mask_
-        unitmap = lun #readmap(landuseName)
-
-        if Debug_ :
-            print('create RR, n etc', flush=True)
-
-        rr = cover(max(lookupscalar(LULCtable, 1, unitmap), 0.5),1.0) * mask
-        report(rr,rrName)
-         # micro relief, random roughness (=std dev in cm)
-
-        mann = lookupscalar(LULCtable, 2, unitmap) * mask
-        mann = cover(mann,0.05)*mask
-        # mann = 0.01*rr + 0.1*Cover
-        report(mann,mannName)
-         # in the lisem code Manning's n is increased with house effect
-
-        Cover = lookupscalar(LULCtable, 4, unitmap) * mask
-        Cover = min(0.95,Cover)
-        report(Cover,coverName)
-
-        # cover = exp(-0.4*LAI)
-        LAI = ifthenelse(Cover > 0,ln(Cover)/-0.4,0)
-        LAI = max(min(6.5, LAI), 0.0)*mask
-        report(LAI, laiName)
-
-        # NOTE: this is valid for the Indian LULC map as provided
-        smaxnr = lookupscalar(LULCtable, 6, unitmap)
-        #report(smaxnr,'smaxnr.map')
-
-        a = [0, 1.412, 0.2331, 0.3165, 1.46, 0.0918, 0.2856, 0.1713,0.59]
-        b = [0, 0.531, 0     , 0     , 0.56, 1.04  , 0     , 0     ,0.88]
-
-        smax1 = ifthenelse(smaxnr == 1, a[1]*LAI**b[1],0)*mask
-        smax2 = ifthenelse(smaxnr == 2, a[2]*LAI,0)*mask
-        smax3 = ifthenelse(smaxnr == 2, a[3]*LAI,0)*mask
-        smax4 = ifthenelse(smaxnr == 3, a[4]*LAI**b[4],0)*mask
-        smax5 = ifthenelse(smaxnr == 4, a[5]*LAI**b[5],0)*mask
-        smax6 = ifthenelse(smaxnr == 5, a[6]*LAI,0)*mask
-        smax7 = ifthenelse(smaxnr == 6, a[7]*LAI,0)*mask
-        smax8 = ifthenelse(smaxnr == 7, a[8]*LAI**b[8],0)*mask
-
-        Smax = smax1+smax2+smax3+smax4+smax5+smax6+smax7
-        report(Smax, smaxName)
-
-        crust = mask*0
-        report(crust,crustName)
-        # crust fraction assumed zero
-        compact = mask*0
-        report(compact,compactName)
-        # compact fraction assumed zero
-
-        stone = mask*0
-        report(stone,stoneName)
-        # compact fraction assumed zero
-
-        hardsurf = readmap(hardsurfinName)*mask
-        report(hardsurf ,hardsurfName)
-         #hard surface, here airports and large impenetrable areas
-
-        roadwidth = readmap(roadinName)*mask
-        report(roadwidth,roadwidthName)
-
-        building = readmap(housecoverinName)*mask
-        report(building,housecovName)
-
-
-
-### ---------- class ChannelMaps() ---------- ###
-class ChannelMaps(StaticModel):
-    #! --lddout
-    def __init__(self):
-        StaticModel.__init__(self)
-    def initial(self):
-        mask = mask_
-        global mainout_  # is zero or if dem is done is endpoints ldd, or userdefined endpoints
-        DEM = readmap(DEMName)
-        global Ldd_
-        global doUserOutlets
-
-        rivers = readmap(BaseDir+riversbaseName)
-        chanmask = ifthen(rivers > 0, scalar(1))*mask
-        # create missing value outside channel
-
-        lddchan = lddcreate((DEM-mainout_*10)*chanmask,1e20,1e20,1e20,1e20)
-        cm = chanmask
-        if doPruneBranch == 1:
-            # delete isolated branches of 1 cell
-            cm = ifthen(accuflux(lddchan,1) > 1,chanmask)*mask
-            lddchan = lddcreate((DEM-mainout_*10)*cm,1e20,1e20,1e20,1e20)
-            cm = cover(cm, 0)*mask
-
-        report(lddchan,lddchanName)
-        report(cm, chanmaskName)
-
-        if doUserOutlets == 0 :
-            mainout_ = cover(scalar(pit(lddchan)),0)*mask
-
-        outpoint = mainout_
-        outlet = mainout_
-        report(outlet,outletName)
-        report(outpoint,outpointName)
-
-        changrad = min(0.5,max(0.01,sin(atan(slope(chanmask*DEM)))))
-        changrad = windowaverage(changrad, 3*celllength())*chanmask
-        report(changrad,changradName)
-
-        chanman = cover(chanmask*0.05,0)*mask
-        report(chanman,chanmanName) # fairly rough and rocky channel beds
-        chanside = mask*0 #chanmask*scalar(0)  # ALWAYS rectangular channel
-        report(chanside, chansideName)
-
-        # relation by Allen and Pavelski (2015)
-        # area = 3.22e4 * width^-1.18 where area is in km2
-        Ldd = readmap(LddName)
-        dx = celllength()
-        # C=3.24×1010m
-
-        #af = accuflux(Ldd, (dx)/1e6)/3.22e4
-        #chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
-        chanlen = accuflux(lddchan, dx)
-
-        #chanwidth = (af**(1.18))*chanmask
-        #chanwidth = 20000*(chanlen/3.67e10)**(1.0/2.64)   #Hydro1K allen and pavelsky page 399
-        chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
-        report(chanwidth,chanwidthName)
-        ##  culvert_fraction_width = 0.8;
-        ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
-        ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
-        chandepth = cover(max(1.0,2*chanwidth**0.2),0)*mask
-        #chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
-        report(chandepth,chandepthName)
-
-        chanmaxq = 0*mask#if(culverts gt 0, 2, 0)*mask;
-        report(chanmaxq,chanmaxqName)
-        chanksat = 0*mask
-        report(chanksat,chanksatName)
-
-        #bridges=clump(nominal(cover(if(chanwidth gt 9 and roadwidth gt 0 , 1, 0),0)*mask)); #and so ge 4
-        ws=catchment(Ldd_, pit(lddchan));
-        report(ws,wsName)
-
-        ### VJ 210522
-        bfh = min(1.0, 0.5*chandepth) # baseflow water height is 1.0m or 0.5 of channelhwight
-        baseflow=cover(scalar(pit(lddchan) != 0)*bfh*chanwidth*0.5,0)*mask
-        report(baseflow,baseflowName)
-        # assuming 0.5 m/s baseflow
-
-        ### VJ 210522
-        chancoh = 10*mask;
-        report (chancoh, chancohName);
-
-
 ### ---------- START ---------- ###
-
-# NIOTE: preperatory actions
-# 1. QGIS: download SRTM
-# 2. PCRaster create an ldd using 1e8 as weight and --lddin
-# 3. create watersheds: pcrcalc ws.map=catchment()ldd.map, pit(ldd.map))
-# 4. select appropriate water (cauvery has nr 78)
-# craete a mask from this watershed abnd use resample to eliminate ros and cols with missing cvalue
 
 
 if __name__ == "__main__":
@@ -705,7 +744,7 @@ if __name__ == "__main__":
         doPruneBranch = 0
 
 
-    ### ------ ALL STABDARD OPENLISEM MAPNAMES ------ ###
+    ### ------ ALL STANDARD OPENLISEM MAPNAMES ------ ###
 
     buffersinName = 'zero.map'             # in m, positive valuesName = dike, negative values is basin, added to the DEM
     maskinName = 'mask0.map'               # mask to the catchment , 1 and MV
@@ -780,6 +819,7 @@ if __name__ == "__main__":
     stoneName= MapsDir+'stonefrc.map'       # stone fraction on surface (-)
     crustName= MapsDir+'crustfrc.map'       # crusted soil (-), not present
     compName= MapsDir+'compfrc.map'         # compacted soil (-), murrum roads
+    bufferName = MapsDir+'buffers.map'      # buffers/dams (m): negative value subtracted from DEM in Lisem, positive value added
 
     # erosion maps , not used
     cohsoilName= MapsDir+'coh.map'          # cohesion (kPa)
@@ -813,14 +853,16 @@ if __name__ == "__main__":
     # read DEM and create mask
     DEM_ = readmap(BaseDir+DEMbaseName)
     mask_ = (DEM_*0) + scalar(1)
+    rivers_ = readmap(BaseDir+riversbaseName)    
+
+    # create maps with 0 and 1  and add to both directories
     report(mask_, BaseDir+masknamemap_)
-    report(mask_, MapsDir+masknamemap_)
-    # create maps with 0 and add to both directories
+    report(mask_, MapsDir+masknamemap_)   
     zero_ = mask_*0
     report(zero_,MapsDir+"zero.map")
     report(zero_,BaseDir+"zero.map")
     # find user defined outlets if any, else zero and lddchan is used
-    mainout_=zero_
+    mainout_= zero_
     if doUserOutlets == 1:
         mainout_ = readmap(BaseDir+OutletsbaseName)
 
