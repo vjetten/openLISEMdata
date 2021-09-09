@@ -1,6 +1,38 @@
 #include "mainwindow.h"
 
+void MainWindow::setIniStart()
+{
+    QSettings settings(qApp->applicationDirPath()+"/lisemdbase.ini",QSettings::IniFormat);
+    settings.clear();
+    for (int i = 0; i < combo_iniName->count(); i++) {
+        settings.setValue(QString(i),combo_iniName->itemText(i));
+    }
+}
 
+void MainWindow::getIniStart()
+{
+    QSettings settings(qApp->applicationDirPath()+"/lisemdbase.ini",QSettings::IniFormat);
+    settings.sync();
+    QStringList keys = settings.allKeys();
+    QStringList skeys;
+    for (int i = 0; i < keys.size(); i++) {
+        QString s = settings.value(QString(i)).toString();
+        skeys << s;
+    }
+    skeys.removeDuplicates();
+    combo_iniName->addItems(skeys);
+
+//    qDebug() << keys;
+//    keys.removeDuplicates();
+//    qDebug() << keys;
+//    combo_iniName->clear();
+//    for (int i = 0; i < keys.size(); i++) {
+//        QString s = settings.value(QString(i)).toString();
+//        if (!s.isEmpty())
+//            combo_iniName->addItem(s);
+//        //settings.setValue(QString(i),combo_iniName->itemText(i));
+//    }
+}
 
 void MainWindow::setIni(QString sss)
 {
@@ -36,15 +68,16 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionIncludeDams", QString::number(optionIncludeDams));
 
     settings.setValue("refBulkDens", QString::number(refBulkDens, 'f', 0));
+    settings.setValue("refRootzone", QString::number(refRootzone, 'f', 0));
     settings.setValue("initmoist", QString::number(initmoist, 'f', 2));
     settings.setValue("optionSG1", QString::number(SG1));
     settings.setValue("optionSG2", QString::number(SG2));
     settings.setValue("DEMfill", QString::number(DEMfill, 'f', 2));
     settings.setValue("CatchmentSize", QString::number(CatchmentSize, 'f', 2));
-    settings.setValue("chA", QString::number(chA, 'f', 3));
+    settings.setValue("chA", QString::number(chWidth, 'f', 1));
     settings.setValue("chB", QString::number(chB, 'f', 3));
     settings.setValue("chC", QString::number(chC, 'f', 3));
-    settings.setValue("chD", QString::number(chD, 'f', 3));
+    settings.setValue("chD", QString::number(chDepth, 'f', 1));
     settings.setValue("chWidth", QString::number(chWidth, 'f', 1));
     settings.setValue("chDepth", QString::number(chDepth, 'f', 1));
 
@@ -85,6 +118,7 @@ void MainWindow::getIni(QString name)
     optionIncludeDams = settings.value("optionIncludeDams").toInt();
 
     refBulkDens = settings.value("refBulkDens").toDouble();
+    refRootzone = settings.value("refRootzone").toDouble();
     initmoist = settings.value("initmoist").toDouble();
     SG1 = settings.value("optionSG1").toInt();
     SG2 = settings.value("optionSG2").toInt();
@@ -116,6 +150,7 @@ void MainWindow::readValuesfromUI()
     ScriptFileName= lineEdit_Script->text();
     initmoist = spin_initmoist->value();
     refBulkDens = spin_refBD->value();
+    refRootzone = spin_Rootzone->value();
     DEMfill = E_DEMfill->text().toDouble();
     CatchmentSize = E_catchmentSize->text().toDouble();
     //chA = spin_chA->value();
@@ -123,6 +158,7 @@ void MainWindow::readValuesfromUI()
     chC = spin_chC->value();
     chWidth = spin_chWidth->value();
     chDepth= spin_chDepth->value();
+    refRootzone = spin_Rootzone->value();
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
@@ -165,6 +201,7 @@ void MainWindow::writeValuestoUI()
     spin_chC->setValue(chC);
     spin_chWidth->setValue(chWidth);
     spin_chDepth->setValue(chDepth);
+    spin_Rootzone->setValue(refRootzone);
 
     checkBox_DEM->setChecked(optionDEM > 0);
     checkBox_Channels->setChecked(optionChannels > 0);

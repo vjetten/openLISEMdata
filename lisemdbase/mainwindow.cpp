@@ -23,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupModel();
 
+    combo_iniName->clear();
+    combo_iniName->setDuplicatesEnabled(false);
+
+    getIniStart();
+    /*
     QDirIterator it(qApp->applicationDirPath(), QStringList() << "*.ini", QDir::NoFilter);
     while (it.hasNext()) {
         QFile f(it.next());
@@ -32,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (combo_iniName->currentText().isEmpty())
         combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
-
-    QString s = combo_iniName->currentText();//QString(qApp->applicationDirPath()+"/LISEMdbase.ini");
+    */
+    QString s = combo_iniName->currentText();
     if (QFileInfo(s).exists())
     {
         //lineEdit_iniName->setText(s);
@@ -51,14 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     tabWidget->setCurrentIndex(0);
     tabWidget->removeTab(2);
-
-
 }
 
 MainWindow::~MainWindow()
 {
-    //readValuesfromUI();
-   // setIni(qApp->applicationDirPath()+"/LISEMdbase.ini");
+    setIniStart();
 }
 
 bool MainWindow::GetCondaAllEnvs(int cda)
@@ -432,8 +434,9 @@ void MainWindow::on_toolButton_CheckAll_clicked()
     spin_chC->setValue(0.300);
     spin_chWidth->setValue(500.0);
     spin_chDepth->setValue(10.0);
-    chA = 1.0/spin_chWidth->value();
-    chD = 1.0/spin_chDepth->value();;
+    chA = spin_chWidth->value();
+    chD = spin_chDepth->value();
+    spin_Rootzone->setValue(0.6);
 
     bool checked = true;
     checkBox_DEM->setChecked(checked);
@@ -462,12 +465,54 @@ void MainWindow::on_checkBox_userefBD_toggled(bool checked)
 
 void MainWindow::on_spin_chWidth_valueChanged(double arg1)
 {
-    chA = 1.0/arg1;
-    qDebug() << chA;
+    chA = arg1;
 }
 
 void MainWindow::on_spin_chDepth_valueChanged(double arg1)
 {
-    chD = 1.0/arg1;
-    qDebug() << chD;
+    chD = arg1;
+}
+
+
+void MainWindow::on_toolButton_openIni_clicked()
+{
+    QStringList filters({"dbase ini file (*.ini)","Any files (*)"});
+    QString FileName = getFileorDir(ScriptFileName,"Select dbase ini file", filters, 2);
+    if (!FileName.isEmpty()) {
+        combo_iniName->insertItem(0,FileName);
+        combo_iniName->setCurrentIndex(0);
+        setIniStart();
+    }
+
+}
+
+void MainWindow::on_toolButton_help2_clicked()
+{
+    ShowHelp(2);
+}
+
+void MainWindow::on_toolButton_help1_clicked()
+{
+    ShowHelp(1);
+}
+
+void MainWindow::ShowHelp(int i)
+{
+    QString filename;
+    if (i == 1) filename=":/help1.html";
+    if (i == 2) filename=":/help2.html";
+    QFile file(filename);
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    QTextEdit *helptxt = new QTextEdit;
+    helptxt->setHtml(stream.readAll());
+
+    QTextEdit *view = new QTextEdit(helptxt->toHtml());
+    view->createStandardContextMenu();
+    view->setWindowTitle("Option help");
+    view->setMinimumWidth(800);
+    view->setMinimumHeight(600);
+    view->setAttribute(Qt::WA_DeleteOnClose);
+
+    view->show();
 }

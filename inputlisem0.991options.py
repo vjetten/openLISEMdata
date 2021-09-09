@@ -197,13 +197,14 @@ class ChannelMaps(StaticModel):
         #chanwidth = (af**(1.18))*chanmask
         #chanwidth = 20000*(chanlen/3.67e10)**(1.0/2.64)   #Hydro1K allen and pavelsky page 399
         #chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
-        chanwidth = chA/dx*(chanlen)**(chB)   #Hydro1K allen and pavelsky page 399
+        chanwidth = (chanlen)**(chB)   #Hydro1K allen and pavelsky page 399
+        chanwidth *= chA/mapmaximum(chanwidth)
         report(chanwidth,chanwidthName)
         ##  culvert_fraction_width = 0.8;
         ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
         ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
         chandepth = cover(max(1.0,chanwidth**chC),0)*mask
-        chandepth *= chB/mapmaximum(chandepth)
+        chandepth *= chD/mapmaximum(chandepth)
         #chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
         report(chandepth,chandepthName)
 
@@ -803,6 +804,7 @@ if __name__ == "__main__":
     DEMbaseName = myvars["BaseDEM"]
     riversbaseName = myvars["BaseChannel"]
     damsbaseName = myvars["BaseDams"]
+    outletsbaseName = myvars["BaseOutlets"]
     MapsDir = myvars["MapsDirectory"]
     lulcDir = myvars["LULCDirectory"]
     lulcTIF = myvars["LULCmap"]
@@ -848,7 +850,7 @@ if __name__ == "__main__":
 
     buffersinName = 'buffers0.map'         # in m, positive is barries, negative values is basin, added to the DEM
     maskinName = 'mask0.map'               # mask to the catchment , 1 and MV
-    mainoutinName = 'mainout0.map'         # forced outlet rivers to the sea, because of imperfect dem
+    mainoutinName = 'mainout0.map'         # forced outlet rivers, because of imperfect dem
 
 
     # not used in CWC project, info directly from LULC map
@@ -965,7 +967,7 @@ if __name__ == "__main__":
     # find user defined outlets if any, else zero and lddchan is used
     mainout_=zero_
     if doUserOutlets == 1:
-        mainout_ = readmap(BaseDir+OutletsbaseName)
+        mainout_ = readmap(BaseDir+outletsbaseName)
 
     #maps that are needed in multiple classes
     soildepth1depth = scalar(600)           # mm of first layer and minimal soildepth

@@ -56,6 +56,7 @@ public:
     double chD;
     double chWidth;
     double chDepth;
+    double refRootzone;
 
     void setupModel();
     bool GetCondaEnvs();
@@ -68,12 +69,16 @@ public:
 
     QString bufprev;
 
+    void setIniStart();
+    void getIniStart();
     void setIni(QString sss);
     void getIni(QString name);
     void readValuesfromUI();
     void writeValuestoUI();
     QString getFileorDir(QString inputdir,QString title, QStringList filters, int doFile);
     QStringList findFiles(const QStringList &files, const QString &text);
+    void ShowHelp(int i);
+
 private slots:
 
     void on_toolButton_base_clicked();
@@ -133,6 +138,12 @@ private slots:
     void on_spin_chWidth_valueChanged(double arg1);
 
     void on_spin_chDepth_valueChanged(double arg1);
+
+    void on_toolButton_openIni_clicked();
+
+    void on_toolButton_help2_clicked();
+
+    void on_toolButton_help1_clicked();
 
 private:
     Ui::MainWindow *ui;

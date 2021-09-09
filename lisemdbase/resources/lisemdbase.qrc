@@ -40,6 +40,7 @@
         <file>Screenshot.png</file>
         <file>utwente.png</file>
         <file>2X/Folder-icon - Copy.png</file>
+        <file>help2.html</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
