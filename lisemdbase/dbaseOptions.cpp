@@ -171,7 +171,7 @@ void MainWindow::readValuesfromUI()
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
-    optionUserOutlets = checkBox_userOutlets->isChecked() ? 1 : 0;
+    //optionUserOutlets = checkBox_userOutlets->isChecked() ? 1 : 0;
     optionPruneBranch = checkBox_pruneBranch->isChecked() ? 1 : 0;
     optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
 }
@@ -214,7 +214,7 @@ void MainWindow::writeValuestoUI()
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     checkBox_Catchments->setChecked(optionCatchments > 0);
-    checkBox_userOutlets->setChecked(optionUserOutlets > 0);
+    //checkBox_userOutlets->setChecked(optionUserOutlets > 0);
     checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
     checkBox_createDams->setChecked(optionIncludeDams > 0);
 }

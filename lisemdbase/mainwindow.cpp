@@ -405,3 +405,13 @@ void MainWindow::on_toolButton_openIni_clicked()
 
 
 
+
+void MainWindow::on_toolButton_9_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userOutlets->text();
+    QStringList filters({"Text table (*.tbl)","Any files (*)"});
+    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 1);
+    if (!OutletstableName.isEmpty())
+        lineEdit_userOutlets->setText(OutletstableName);
+}
+
