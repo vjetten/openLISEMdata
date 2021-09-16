@@ -55,7 +55,30 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     tabWidget->setCurrentIndex(0);
-    tabWidget->removeTab(2);
+    //tabWidget->removeTab(2);
+
+    int ncol = 6;
+    int nrow = 0;
+    model = new QStandardItemModel( nrow, ncol, this );  
+    model->setHorizontalHeaderItem( 0, new QStandardItem("Random \nRoughness (cm)"));
+    model->setHorizontalHeaderItem( 1, new QStandardItem("Manning's n\n (-)"));
+    model->setHorizontalHeaderItem( 2, new QStandardItem("Plant Height\n (m)"));
+    model->setHorizontalHeaderItem( 3, new QStandardItem("Plant Cover\n (-)"));
+    model->setHorizontalHeaderItem( 4, new QStandardItem("Density\n factor (0.9-1.2)"));
+    model->setHorizontalHeaderItem( 5, new QStandardItem("Smax type\n (1-7)"));
+    tableViewLULC->setModel(model);
+
+    fillLULCTable();
+
+    ncol = 4;
+    nrow = 0;
+    modelOutlets = new QStandardItemModel( nrow, ncol, this );
+    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet name"));
+    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Outlet map number"));
+    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel width (m)"));
+    modelOutlets->setHorizontalHeaderItem( 3, new QStandardItem("Channel Depth (m)"));
+    tableViewOutlets->setModel(modelOutlets);
+
 }
 
 MainWindow::~MainWindow()
@@ -116,81 +139,50 @@ bool MainWindow::GetCondaAllEnvs(int cda)
 }
 
 
-bool MainWindow::GetCondaEnvs()
+// select a file or directory
+// doFile = 0: select a directory;
+// dofile = 1 select a file and return file name only;
+// dofile = 2 return filename wioth full path
+QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, int doFile)
 {
-    bool install = false;
-    QString name = qgetenv("USER");
-    if (name.isEmpty())
-        name = qgetenv("USERNAME");
-
-    CondaBaseDirName = QString("c:/Users/" +name + "/anaconda3/envs");
-    if (QFileInfo(CondaBaseDirName).dir().exists()) {
-        QDir const source(CondaBaseDirName);
-        QStringList const folders = source.entryList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
-        for (int i = 0; i < folders.size(); i++) {
-            QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
-            QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
-            QString str2 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/gdalinfo.exe";
-            bool pythonfound = QFileInfo(str).exists();
-            bool pcrasterfound = QFileInfo(str1).exists();
-            bool gdalfound = QFileInfo(str2).exists();
-
-            if (pythonfound && pcrasterfound && gdalfound)
-                combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
-            else {
-                QString error;
-                if (!pythonfound) error = QString("Python not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                else
-                if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                else
-                if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
-
-                QMessageBox msgBox;
-                msgBox.setText(error);
-                msgBox.exec();
-            }
-        }
-        install = combo_envs->count() > 0;
+    QFileDialog dialog;
+    QString dirout = inputdir;
+    qDebug() << inputdir;
+    if (doFile > 0) {
+        dialog.setNameFilters(filters);
+        dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
+        dialog.setFileMode(QFileDialog::ExistingFile);
+    } else {
+        filters.clear();
+        dialog.setNameFilters(filters);
+        dialog.setDirectory(QDir(inputdir));
+        dialog.setFileMode(QFileDialog::DirectoryOnly);
     }
-    return(install);
+
+    dialog.setLabelText(QFileDialog::LookIn,title);
+    dialog.exec();
+
+    if (doFile > 0) {
+        dirout = "";
+        if (dialog.selectedFiles().count() > 0)
+            dirout = dialog.selectedFiles().at(0);
+        if (doFile == 1)
+            dirout = QFileInfo(dirout).fileName();
+        if (doFile == 2)
+            dirout = QFileInfo(dirout).absoluteFilePath();
+        qDebug() << dirout;
+    } else {
+        dirout = dialog.selectedUrls().at(0).path();
+        dirout.remove(0,1);
+        if (dirout.lastIndexOf('/') != dirout.length())
+            dirout = dirout + "/";
+    }
+
+    return dirout;
 }
 
-bool MainWindow::GetMiniCondaEnvs()
-{
-    bool install = false;
-    QString name = qgetenv("USER");
-    if (name.isEmpty())
-        name = qgetenv("USERNAME");
-    CondaBaseDirName = QString("c:/Users/" +name + "/miniconda3/envs");
-    if (QFileInfo(CondaBaseDirName).dir().exists()) {
-        QDir const source(CondaBaseDirName);
-        QStringList const folders = source.entryList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
-        for (int i = 0; i < folders.size(); i++) {
-            QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
-            QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
-            QString str2 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/gdalinfo.exe";
-            bool pythonfound = QFileInfo(str).exists();
-            bool pcrasterfound = QFileInfo(str1).exists();
-            bool gdalfound = QFileInfo(str2).exists();
+//====================================================================================
 
-            if (pythonfound && pcrasterfound && gdalfound)
-                combo_envs->addItem(CondaBaseDirName+"/"+folders.at(i));
-            else {
-                QString error;
-                if (!pythonfound) error = QString("Python not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                else
-                if (!pcrasterfound) error = QString("PCRaster not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                else
-                if (!gdalfound) error = QString("GDAL not found in Miniconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                QMessageBox msgBox;
-                msgBox.setText(error);
-                msgBox.exec();
-            }
-        }
-        install = combo_envs->count() > 0;
-    }
-    return(install);
-}
 
 void MainWindow::on_toolButton_base_clicked()
 {
@@ -227,11 +219,14 @@ void MainWindow::on_toolButton_LULC_clicked()
 
 void MainWindow::on_toolButton_LULCTable_clicked()
 {
-        QString tmp = LULCDirName+lineEdit_LULCTable->text();
+    QString tmp = LULCDirName+lineEdit_LULCTable->text();
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
-    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 1);
+    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 2);
     if (!LULCtableName.isEmpty())
         lineEdit_LULCTable->setText(LULCtableName);
+
+    if (!LULCtableName.isEmpty())
+        fillLULCTable();
 }
 
 void MainWindow::on_toolButton_LULCMap_clicked()
@@ -284,48 +279,6 @@ void MainWindow::on_toolButton_clear_clicked()
     text_out->clear();
 }
 
-// select a file or directory
-// doFile = 0: select a directory;
-// dofile = 1 select a file and return file name only;
-// dofile = 2 return filename wioth full path
-QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, int doFile)
-{
-    QFileDialog dialog;
-    QString dirout = inputdir;
-    qDebug() << inputdir;
-    if (doFile > 0) {
-        dialog.setNameFilters(filters);
-        dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
-        dialog.setFileMode(QFileDialog::ExistingFile);
-    } else {
-        filters.clear();
-        dialog.setNameFilters(filters);
-        dialog.setDirectory(QDir(inputdir));
-        dialog.setFileMode(QFileDialog::DirectoryOnly);
-    }
-
-    dialog.setLabelText(QFileDialog::LookIn,title);
-    dialog.exec();
-
-    if (doFile > 0) {
-        dirout = "";
-        if (dialog.selectedFiles().count() > 0)
-            dirout = dialog.selectedFiles().at(0);
-        if (doFile == 1)
-            dirout = QFileInfo(dirout).fileName();
-        if (doFile == 2)
-            dirout = QFileInfo(dirout).absoluteFilePath();
-        qDebug() << dirout;
-    } else {
-        dirout = dialog.selectedUrls().at(0).path();
-        dirout.remove(0,1);
-        if (dirout.lastIndexOf('/') != dirout.length())
-            dirout = dirout + "/";
-    }
-
-    return dirout;
-}
-
 void MainWindow::on_comboBox_SGlayer1_currentIndexChanged(int index)
 {
     SG1 = index;//comboBox_SGlayer1->currentIndex();
@@ -344,26 +297,6 @@ void MainWindow::on_checkBox_Infil_toggled(bool checked)
 void MainWindow::on_checkBox_Soilgrids_toggled(bool checked)
 {
     SGoptions->setEnabled(checked);
-}
-
-void MainWindow::on_toolButton_clicked()
-{
-    QString filename;
-    filename=":/help1.html";
-    QFile file(filename);
-    file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&file);
-    QTextEdit *helptxt = new QTextEdit;
-    helptxt->setHtml(stream.readAll());
-
-    QTextEdit *view = new QTextEdit(helptxt->toHtml());
-    view->createStandardContextMenu();
-    view->setWindowTitle("Option help");
-    view->setMinimumWidth(640);
-    view->setMinimumHeight(480);
-    view->setAttribute(Qt::WA_DeleteOnClose);
-
-    view->show();
 }
 
 void MainWindow::on_checkBox_DEM_toggled(bool checked)
@@ -387,22 +320,6 @@ void MainWindow::on_toolButton_stop_clicked()
     text_out->appendPlainText("User interrupt");
 }
 
-//void MainWindow::on_toolButton_loadIni_clicked()
-//{
-
-// //    QString tmp = qApp->applicationDirPath()+"/"+lineEdit_iniName->text();
-//    QString tmp = lineEdit_iniName->text();
-//    QStringList filters({"ini file (*.ini *.txt)","Any files (*)"});
-//    iniName = getFileorDir(tmp,"Select lisemDbase ini file", filters, 2);
-//    if (iniName.isEmpty())
-//        iniName = "LISEMdbase.ini";
-//    lineEdit_iniName->setText(iniName);
-//    getIni(iniName);
-//    writeValuestoUI();
-//    readValuesfromUI();
-//}
-
-
 
 void MainWindow::on_combo_iniName_currentIndexChanged(int index)
 {
@@ -411,7 +328,7 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     readValuesfromUI();
 }
 
-void MainWindow::on_toolButton_6_clicked()
+void MainWindow::on_toolButton_saveas_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Save File as ini",
                                qApp->applicationDirPath(),
@@ -486,33 +403,5 @@ void MainWindow::on_toolButton_openIni_clicked()
 
 }
 
-void MainWindow::on_toolButton_help2_clicked()
-{
-    ShowHelp(2);
-}
 
-void MainWindow::on_toolButton_help1_clicked()
-{
-    ShowHelp(1);
-}
 
-void MainWindow::ShowHelp(int i)
-{
-    QString filename;
-    if (i == 1) filename=":/help1.html";
-    if (i == 2) filename=":/help2.html";
-    QFile file(filename);
-    file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&file);
-    QTextEdit *helptxt = new QTextEdit;
-    helptxt->setHtml(stream.readAll());
-
-    QTextEdit *view = new QTextEdit(helptxt->toHtml());
-    view->createStandardContextMenu();
-    view->setWindowTitle("Option help");
-    view->setMinimumWidth(800);
-    view->setMinimumHeight(600);
-    view->setAttribute(Qt::WA_DeleteOnClose);
-
-    view->show();
-}

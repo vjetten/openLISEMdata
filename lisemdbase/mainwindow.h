@@ -24,6 +24,7 @@ public:
     QString BaseDEMName;
     QString BaseChannelName;
     QString BaseOutletsName;
+    QString OutletstableName;
     QString BaseDamsName;
     QString MapsDirName;
     QString LULCmapName;
@@ -59,9 +60,7 @@ public:
     double refRootzone;
 
     void setupModel();
-    bool GetCondaEnvs();
     bool GetCondaAllEnvs(int cda);
-    bool GetMiniCondaEnvs();
     QProcess *Process;
 
     int layer1;
@@ -78,6 +77,14 @@ public:
     QString getFileorDir(QString inputdir,QString title, QStringList filters, int doFile);
     QStringList findFiles(const QStringList &files, const QString &text);
     void ShowHelp(int i);
+    QStandardItemModel *model;
+    void fillLULCTable();
+    void loadLULCnames();
+    void resetLULCTable();
+    void fillOutletsTable();
+    void resetOutletsTable();
+
+    QStandardItemModel *modelOutlets;
 
 private slots:
 
@@ -108,8 +115,6 @@ private slots:
 
     void on_checkBox_Soilgrids_toggled(bool checked);
 
-    void on_toolButton_clicked();
-
     void on_checkBox_DEM_toggled(bool checked);
 
     void on_toolButton_SaveIni_clicked();
@@ -123,7 +128,7 @@ private slots:
 
     void on_combo_iniName_currentIndexChanged(int index);
 
-    void on_toolButton_6_clicked();
+    void on_toolButton_saveas_clicked();
 
     void on_toolButton_CheckAll_clicked();
 
@@ -144,6 +149,18 @@ private slots:
     void on_toolButton_help2_clicked();
 
     void on_toolButton_help1_clicked();
+
+    void on_toolButton_loadLULCtable_clicked();
+
+    void on_lineEdit_LULCTable_textChanged(const QString &arg1);
+
+    void on_toolButton_saveLULC_clicked();
+
+    void on_toolButton_resetLULC_clicked();
+
+    void on_toolButton_SaveOutlets_clicked();
+
+    void on_toolButton_resetOutlets_clicked();
 
 private:
     Ui::MainWindow *ui;

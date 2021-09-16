@@ -68,7 +68,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionIncludeDams", QString::number(optionIncludeDams));
 
     settings.setValue("refBulkDens", QString::number(refBulkDens, 'f', 0));
-    settings.setValue("refRootzone", QString::number(refRootzone, 'f', 0));
+    settings.setValue("refRootzone", QString::number(refRootzone, 'f', 2));
     settings.setValue("initmoist", QString::number(initmoist, 'f', 2));
     settings.setValue("optionSG1", QString::number(SG1));
     settings.setValue("optionSG2", QString::number(SG2));
@@ -158,7 +158,7 @@ void MainWindow::readValuesfromUI()
     chC = spin_chC->value();
     chWidth = spin_chWidth->value();
     chDepth= spin_chDepth->value();
-    refRootzone = spin_Rootzone->value();
+
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;

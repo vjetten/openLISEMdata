@@ -110,27 +110,27 @@ class DEMderivatives(StaticModel):
 
         report(shade,shadeName)  # not used in lisem
 
-        rivfact = mask*0
-        if  doProcessesChannels == 1:
-            distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
-            rivfact = -0.5*distriv/mapmaximum(distriv)
-            # perpendicular distance to river, closer gives deeper soils            
+   #   rivfact = mask*0
+   #   if  doProcessesChannels == 1:
+   #       distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+   #       rivfact = -0.5*distriv/mapmaximum(distriv)
+   #       # perpendicular distance to river, closer gives deeper soils            
             
-       # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
-       # +0.5*(distsea/mapmaximum(distsea))**0.1
-       
-       # steeper slopes giver undeep soils
-        soild = mask*cover((1-min(1,slope(DEMc)))+rivfact,0)
-        soildb = 2000*(soild)**1.5
-        # m to mm for lisem, higher power emphasizes depth
-        soildb = windowaverage(soildb,3*celllength())
-        # smooth because soil depth does not follow dem exactly
-        
-        soildepth1 = soildepth1depth*mask
-        soildepth2 = mask*(soildepth1+soildb)
-     
-        report(soildepth1,soildep1Name)
-        report(soildepth2,soildep2Name)
+    #  # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
+    #  # +0.5*(distsea/mapmaximum(distsea))**0.1
+    #  
+    #  # steeper slopes giver undeep soils
+    #   soild = mask*cover((1-min(1,slope(DEMc)))+rivfact+100*profcurv(DEMc),0)  #
+    #   soildb = 2000*(soild)**1.5
+    #   # m to mm for lisem, higher power emphasizes depth
+    #   soildb = windowaverage(soildb,3*celllength())
+    #   # smooth because soil depth does not follow dem exactly
+    #   
+    #   soildepth1 = soildepth1depth*mask
+    #   soildepth2 = mask*(soildepth1+soildb)
+    #
+    #   report(soildepth1,soildep1Name)
+    #   report(soildepth2,soildep2Name)
 
 
 
@@ -486,13 +486,16 @@ class PedoTransfer(StaticModel):
     # from SOILGRID.ORG GTiff maps for texture, org matter, gravel and bulkdensity
     # Using Saxton And Rawls 2006 pedotransferfunctions
     # https://hrsl.ba.ars.usda.gov/SPAW/Index.htm
-    def __init__(self,mask=0,layer=1,moisture=0.7,sBD=1350.0):
+    def __init__(self,mask=0,layer=1,moisture=0,sBD=1350.0):
         StaticModel.__init__(self)
     def initial(self):
         standardBD = scalar(standardbulkdensity_)  # standard bulk dens assumed by saxton and rawls. High! 1350 would be better
         fractionmoisture = scalar(initmoisture_)   #inital moisture as fraction between porosity and field capacity
         x = layer_
         mask = mask_
+        global DEM_
+        global rivers_
+        DEM = DEM_
 
         S1 = readmap("sand{0}.map".format(str(x)))  # sand g/kg
         Si1 = readmap("silt{0}.map".format(str(x))) # silt g/kg
@@ -625,6 +628,34 @@ class PedoTransfer(StaticModel):
         # correct psi slightly for initmoisture, where psi1 is assumed to corrspond to FC
         report(Psi1,psi1)
         report(initmoist/POROSITY,"se1.map")
+        
+        
+        #SOILDEPTH
+       # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
+       # +0.5*(distsea/mapmaximum(distsea))**0.1
+        chanm = scalar(0)
+        rivfact = mask*0
+        if  doProcessesChannels == 1:
+            chanm = rivers_ 
+            chanm = cover(chanm, 0)*mask       
+        distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+        rivfact = -0.5*distriv/mapmaximum(distriv)
+            # perpendicular distance to river, closer gives deeper soils          
+       
+        if x == 1 :
+            soildepth1 = soildepth1depth*mask
+            report(soildepth1,soildep1Name)
+        if x == 2 :                                      
+            # steeper slopes giver undeep soils
+            #soild = mask*cover((1-min(1,slope(DEM)))+rivfact,0)
+            soild = mask*cover((1-min(1,slope(DEM)))+rivfact+100*profcurv(DEM),0) #
+            soildb = 2000*(soild)**1.5
+            # m to mm for lisem, higher power emphasizes depth
+            soildb = windowaverage(soildb,3*celllength())
+            # smooth because soil depth does not follow dem exactly        
+            soildepth1 = soildepth1depth*mask
+            soildepth2 = mask*(soildepth1+soildb)     
+            report(soildepth2,soildep2Name)
         
 
 ### ---------- class Erosion() ---------- ###
@@ -761,6 +792,7 @@ if __name__ == "__main__":
     useLUdensity = 0
     standardbulkdensity_ = 1350.0
     initmoisture_ = 0.0
+    rootzone = 0.6
     
     ### input maps ###
     MapsDir = "/Maps"
@@ -834,6 +866,7 @@ if __name__ == "__main__":
     chB = float(myvars["chB"]) 
     chC = float(myvars["chC"]) 
     chD = float(myvars["chD"]) 
+    rootzone = float(myvars["refRootzone"]) 
 
     # main options determine the suboptions:
     if doProcessesInfil == 0 :
@@ -970,14 +1003,14 @@ if __name__ == "__main__":
         mainout_ = readmap(BaseDir+outletsbaseName)
 
     #maps that are needed in multiple classes
-    soildepth1depth = scalar(600)           # mm of first layer and minimal soildepth
+    soildepth1depth = rootzone*1000           # mm of first layer and minimal soildepth
     Ldd_ = ldd(0*mask_)
     Ksaturban_ = scalar(5)
     Poreurban_ = scalar(0.45)
     unitBuild_ = nominal(3)  # to adapt ksat pore urban areas
     unitWater_ = nominal(9)  # to adapt ksat pore water
     standardBD = scalar(standardbulkdensity_)
-
+    
     Debug_ = False
 
     SG_names_ = ['sand','silt','clay','soc','cfvo','bdod']

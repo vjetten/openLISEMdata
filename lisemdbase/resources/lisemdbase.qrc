@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>help1.html</file>
         <file>2X/bullet2X.png</file>
-        <file>2X/chart-line-stacked-icon2X.png</file>
         <file>2X/diropen2X.png</file>
         <file>2X/filesave2X.png</file>
         <file>2X/filesaveas2X.png</file>
@@ -10,8 +9,6 @@
         <file>2X/fontsmaller2X.png</file>
         <file>2X/information_42X.png</file>
         <file>2X/map2X.png</file>
-        <file>2X/map32X.png</file>
-        <file>2X/map42X.png</file>
         <file>2X/Mscreenshots2X.png</file>
         <file>2X/onewfile2X.png</file>
         <file>2X/openLisem2X.png</file>
@@ -41,6 +38,10 @@
         <file>utwente.png</file>
         <file>2X/Folder-icon - Copy.png</file>
         <file>help2.html</file>
+        <file>settings2.png</file>
+        <file>2X/table.png</file>
+        <file>2X/rain.png</file>
+        <file>2X/Plant-icon.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
