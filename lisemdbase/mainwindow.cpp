@@ -403,15 +403,31 @@ void MainWindow::on_toolButton_openIni_clicked()
 
 }
 
-
-
-
-void MainWindow::on_toolButton_9_clicked()
+void MainWindow::on_toolButton_OutletsTable_clicked()
 {
     QString tmp = BaseDirName+lineEdit_userOutlets->text();
     QStringList filters({"Text table (*.tbl)","Any files (*)"});
     OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 1);
     if (!OutletstableName.isEmpty())
         lineEdit_userOutlets->setText(OutletstableName);
+}
+
+void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
+{
+    spin_chDepth->setEnabled(checked);
+    spin_chWidth->setEnabled(checked);
+    spin_chBaseflow->setEnabled(checked);
+    label_15->setEnabled(checked);
+    label_51->setEnabled(checked);
+}
+
+
+void MainWindow::on_radioButton_OutletMultiple_toggled(bool checked)
+{
+    lineEdit_outletsTable->setEnabled(checked);
+    lineEdit_userOutlets->setEnabled(checked);
+    label_13->setEnabled(checked);
+    toolButton_OutletsTable->setEnabled(checked);
+    toolButton_userOutlets->setEnabled(checked);
 }
 

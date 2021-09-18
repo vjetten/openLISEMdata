@@ -162,7 +162,11 @@ private slots:
 
     void on_toolButton_resetOutlets_clicked();
 
-    void on_toolButton_9_clicked();
+    void on_toolButton_OutletsTable_clicked();
+
+    void on_radioButton_OutletSIngle_toggled(bool checked);
+
+    void on_radioButton_OutletMultiple_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
