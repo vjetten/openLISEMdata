@@ -157,8 +157,8 @@ void MainWindow::readValuesfromUI()
     chB = spin_chB->value();
     chC = spin_chC->value();
     chWidth = spin_chWidth->value();
-    chDepth= spin_chDepth->value();
-
+    chDepth = spin_chDepth->value();
+    chBaseflow = spin_chBaseflow->value();
 
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
@@ -171,9 +171,9 @@ void MainWindow::readValuesfromUI()
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
-    //optionUserOutlets = checkBox_userOutlets->isChecked() ? 1 : 0;
     optionPruneBranch = checkBox_pruneBranch->isChecked() ? 1 : 0;
     optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
+    optionUserOutlets = radioButton_OutletMultiple->isChecked() ? 1 : 0;
 }
 
 void MainWindow::writeValuestoUI()
@@ -201,6 +201,7 @@ void MainWindow::writeValuestoUI()
     spin_chC->setValue(chC);
     spin_chWidth->setValue(chWidth);
     spin_chDepth->setValue(chDepth);
+    spin_chBaseflow->setValue(chBaseflow);
     spin_Rootzone->setValue(refRootzone);
 
     checkBox_DEM->setChecked(optionDEM > 0);
@@ -214,7 +215,7 @@ void MainWindow::writeValuestoUI()
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     checkBox_Catchments->setChecked(optionCatchments > 0);
-    //checkBox_userOutlets->setChecked(optionUserOutlets > 0);
+    radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
     checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
     checkBox_createDams->setChecked(optionIncludeDams > 0);
 }

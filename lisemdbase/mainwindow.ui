@@ -2516,6 +2516,9 @@
                 <property name="text">
                  <string>Channels are non-erodible</string>
                 </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
              </layout>
@@ -2602,8 +2605,12 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_5">
+       <attribute name="icon">
+        <iconset resource="resources/lisemdbase.qrc">
+         <normaloff>:/2X/river.png</normaloff>:/2X/river.png</iconset>
+       </attribute>
        <attribute name="title">
-        <string>Page</string>
+        <string/>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_17">
         <item row="0" column="3">

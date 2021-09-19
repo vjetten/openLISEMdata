@@ -57,6 +57,7 @@ public:
     double chD;
     double chWidth;
     double chDepth;
+    double chBaseflow;
     double refRootzone;
 
     void setupModel();

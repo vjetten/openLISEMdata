@@ -42,6 +42,7 @@
         <file>2X/table.png</file>
         <file>2X/rain.png</file>
         <file>2X/Plant-icon.png</file>
+        <file>2X/river.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

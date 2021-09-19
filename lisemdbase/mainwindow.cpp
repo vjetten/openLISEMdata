@@ -73,10 +73,10 @@ MainWindow::MainWindow(QWidget *parent)
     ncol = 4;
     nrow = 0;
     modelOutlets = new QStandardItemModel( nrow, ncol, this );
-    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet name"));
-    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Outlet map number"));
-    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel width (m)"));
-    modelOutlets->setHorizontalHeaderItem( 3, new QStandardItem("Channel Depth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet \nname"));
+    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Outlet map \nnumber"));
+    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel \nwidth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 3, new QStandardItem("Channel \nDepth (m)"));
     tableViewOutlets->setModel(modelOutlets);
 
 }
@@ -344,13 +344,13 @@ void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
     spin_refBD->setValue(1350);
-    E_DEMfill->setText(QString::number(1e6,'e',1));
-    E_catchmentSize->setText(QString::number(1e10,'e',1));
-    //spin_chA->setValue(1.000);
+    E_DEMfill->setText(QString::number(1e5,'e',1));
+    E_catchmentSize->setText(QString::number(1e10,'e',1));    
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
     spin_chWidth->setValue(500.0);
     spin_chDepth->setValue(10.0);
+    spin_chBaseflow->setValue(0.0);
     chA = spin_chWidth->value();
     chD = spin_chDepth->value();
     spin_Rootzone->setValue(0.6);

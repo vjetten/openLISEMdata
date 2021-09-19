@@ -41,7 +41,7 @@ void MainWindow::fillLULCTable()
 
         int r = 0;
         while(!in.atEnd()) {
-            QString line = in.readLine();
+            QString line = in.readLine().simplified();
             if (r > 0) {
                 QStringList fields = line.split(QRegExp("\\s+"));
 
