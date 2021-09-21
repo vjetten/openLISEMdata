@@ -5,7 +5,7 @@
 
 void MainWindow::resetLULCTable()
 {
-    label_LULCname->setText(LULCtableName);
+    //label_LULCname->setText(LULCtableName);
     QFile file(LULCtableName);
 
     QStringList sl;
@@ -33,7 +33,7 @@ void MainWindow::resetLULCTable()
 
 void MainWindow::fillLULCTable()
 {
-    label_LULCname->setText(LULCtableName);
+    //label_LULCname->setText(LULCtableName);
     QFile file(LULCtableName);
     if(file.open(QIODevice::ReadOnly)) {
 

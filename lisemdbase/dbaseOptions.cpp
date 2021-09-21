@@ -66,6 +66,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("optionUserOutlets", QString::number(optionUserOutlets));
     settings.setValue("optionPruneBranch", QString::number(optionPruneBranch));
     settings.setValue("optionIncludeDams", QString::number(optionIncludeDams));
+    settings.setValue("optionChannelsNoEros", QString::number(optionChannelsNoEros));
 
     settings.setValue("refBulkDens", QString::number(refBulkDens, 'f', 0));
     settings.setValue("refRootzone", QString::number(refRootzone, 'f', 2));
@@ -80,6 +81,8 @@ void MainWindow::setIni(QString sss)
     settings.setValue("chD", QString::number(chDepth, 'f', 1));
     settings.setValue("chWidth", QString::number(chWidth, 'f', 1));
     settings.setValue("chDepth", QString::number(chDepth, 'f', 1));
+    settings.setValue("chBaseflow", QString::number(chBaseflow, 'f', 1));
+
 
     settings.sync();
 }
@@ -116,6 +119,7 @@ void MainWindow::getIni(QString name)
     optionUserOutlets = settings.value("optionUserOutlets").toInt();
     optionPruneBranch = settings.value("optionPruneBranch").toInt();
     optionIncludeDams = settings.value("optionIncludeDams").toInt();
+    optionChannelsNoEros = settings.value("optionChannelNoEros").toInt();
 
     refBulkDens = settings.value("refBulkDens").toDouble();
     refRootzone = settings.value("refRootzone").toDouble();
@@ -130,6 +134,8 @@ void MainWindow::getIni(QString name)
     chD = settings.value("chD").toDouble();
     chWidth = settings.value("chWidth").toDouble();
     chDepth = settings.value("chDepth").toDouble();
+    chBaseflow = settings.value("chBaseflow").toDouble();
+
 }
 
 void MainWindow::readValuesfromUI()
@@ -171,9 +177,11 @@ void MainWindow::readValuesfromUI()
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
-    optionPruneBranch = checkBox_pruneBranch->isChecked() ? 1 : 0;
+    optionPruneBranch = 1; //checkBox_pruneBranch->isChecked() ? 1 : 0;
     optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
     optionUserOutlets = radioButton_OutletMultiple->isChecked() ? 1 : 0;
+    optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
+
 }
 
 void MainWindow::writeValuestoUI()
@@ -194,8 +202,8 @@ void MainWindow::writeValuestoUI()
 
     spin_initmoist->setValue(initmoist);
     spin_refBD->setValue(refBulkDens);
-    E_DEMfill->setText(QString::number(DEMfill,'e',1));
-    E_catchmentSize->setText(QString::number(CatchmentSize,'e',1));
+    E_DEMfill->setText(QString::number(DEMfill,'f',1));
+    E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
     //spin_chA->setValue(chA);
     spin_chB->setValue(chB);
     spin_chC->setValue(chC);
@@ -215,8 +223,9 @@ void MainWindow::writeValuestoUI()
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     checkBox_Catchments->setChecked(optionCatchments > 0);
+    checkBox_ChannelsNoErosion->setChecked(optionChannelsNoEros > 0);
     radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
-    checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
+    //checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
     checkBox_createDams->setChecked(optionIncludeDams > 0);
 }
 

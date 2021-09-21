@@ -51,6 +51,7 @@ public:
     int optionUserOutlets;
     int optionPruneBranch;
     int optionIncludeDams;
+    int optionChannelsNoEros;
     double chA;
     double chB;
     double chC;
@@ -168,6 +169,8 @@ private slots:
     void on_radioButton_OutletSIngle_toggled(bool checked);
 
     void on_radioButton_OutletMultiple_toggled(bool checked);
+
+    void on_checkBox_erosion_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

@@ -43,6 +43,9 @@
         <file>2X/rain.png</file>
         <file>2X/Plant-icon.png</file>
         <file>2X/river.png</file>
+        <file>2X/eros1bw.png</file>
+        <file>2X/soil5.png</file>
+        <file>2X/water.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

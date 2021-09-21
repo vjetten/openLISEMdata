@@ -292,6 +292,8 @@ void MainWindow::on_comboBox_SGlayer2_currentIndexChanged(int index)
 void MainWindow::on_checkBox_Infil_toggled(bool checked)
 {
     infiloptions->setEnabled(checked);
+    SGoptions->setEnabled(checked);
+    checkBox_Soilgrids->setEnabled(checked);
 }
 
 void MainWindow::on_checkBox_Soilgrids_toggled(bool checked)
@@ -344,8 +346,8 @@ void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
     spin_refBD->setValue(1350);
-    E_DEMfill->setText(QString::number(1e5,'e',1));
-    E_catchmentSize->setText(QString::number(1e10,'e',1));    
+    E_DEMfill->setText(QString::number(10,'f',1));
+    E_catchmentSize->setText(QString::number(10000,'f',1));
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
     spin_chWidth->setValue(500.0);
@@ -429,5 +431,12 @@ void MainWindow::on_radioButton_OutletMultiple_toggled(bool checked)
     label_13->setEnabled(checked);
     toolButton_OutletsTable->setEnabled(checked);
     toolButton_userOutlets->setEnabled(checked);
+    tableViewOutlets->setEnabled(checked);
+}
+
+
+void MainWindow::on_checkBox_erosion_toggled(bool checked)
+{
+    erosionoptions->setEnabled(checked);
 }
 
