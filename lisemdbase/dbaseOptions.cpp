@@ -51,6 +51,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("LULCmap", LULCmapName);
     settings.setValue("LULCtable", LULCtableName);
     settings.setValue("ESPGnumber", ESPGnumber);
+    settings.setValue("Outletstable", OutletstableName);
 
     settings.setValue("optionDEM", QString::number(optionDEM));
     settings.setValue("optionChannels", QString::number(optionChannels));
@@ -104,6 +105,7 @@ void MainWindow::getIni(QString name)
     LULCmapName = settings.value("LULCmap").toString();
     LULCtableName = settings.value("LULCtable").toString();
     ESPGnumber = settings.value("ESPGnumber").toString();
+    OutletstableName = settings.value("Outletstable").toString();
 
     optionDEM = settings.value("optionDEM").toInt();
     optionChannels = settings.value("optionChannels").toInt();
@@ -152,12 +154,13 @@ void MainWindow::readValuesfromUI()
     LULCDirName = lineEdit_LULC->text();
     LULCmapName = lineEdit_LULCMap->text();
     LULCtableName = lineEdit_LULCTable->text();
+    OutletstableName = lineEdit_outletsTable->text();
     ESPGnumber = E_ESPGnumber->text();
     ScriptFileName= lineEdit_Script->text();
     initmoist = spin_initmoist->value();
     refBulkDens = spin_refBD->value();
     refRootzone = spin_Rootzone->value();
-    DEMfill = E_DEMfill->text().toDouble();
+    DEMfill = spin_DEMfill->value();
     CatchmentSize = E_catchmentSize->text().toDouble();
     //chA = spin_chA->value();
     chB = spin_chB->value();
@@ -197,12 +200,16 @@ void MainWindow::writeValuestoUI()
     lineEdit_LULC->setText(LULCDirName);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
+
+    lineEdit_outletsTable->setText(OutletstableName);
+
     lineEdit_Script->setText(ScriptFileName);
     E_ESPGnumber->setText(ESPGnumber);
 
     spin_initmoist->setValue(initmoist);
     spin_refBD->setValue(refBulkDens);
-    E_DEMfill->setText(QString::number(DEMfill,'f',1));
+    //E_DEMfill->setText(QString::number(DEMfill,'f',1));
+    spin_DEMfill->setValue(DEMfill);
     E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
     //spin_chA->setValue(chA);
     spin_chB->setValue(chB);
@@ -225,7 +232,17 @@ void MainWindow::writeValuestoUI()
     checkBox_Catchments->setChecked(optionCatchments > 0);
     checkBox_ChannelsNoErosion->setChecked(optionChannelsNoEros > 0);
     radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
+    radioButton_OutletSIngle->setChecked(optionUserOutlets == 0);
     //checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
     checkBox_createDams->setChecked(optionIncludeDams > 0);
+
+    if (optionUserOutlets == 0) {
+        on_radioButton_OutletMultiple_toggled(false);
+        on_radioButton_OutletSIngle_toggled(true);
+    } else {
+        on_radioButton_OutletMultiple_toggled(true);
+        on_radioButton_OutletSIngle_toggled(false);
+    }
+
 }
 

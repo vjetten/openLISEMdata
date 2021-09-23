@@ -70,14 +70,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     fillLULCTable();
 
-    ncol = 4;
+    ncol = 3;
     nrow = 0;
     modelOutlets = new QStandardItemModel( nrow, ncol, this );
-    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet \nname"));
-    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Outlet map \nnumber"));
-    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel \nwidth (m)"));
-    modelOutlets->setHorizontalHeaderItem( 3, new QStandardItem("Channel \nDepth (m)"));
+   // modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet \nname"));
+   // modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet map \nnumber"));
+    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Channel \nwidth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Channel \nDepth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel \nBaseflow (m3/s)"));
     tableViewOutlets->setModel(modelOutlets);
+
+    fillOutletsTable();
 
 }
 
@@ -346,7 +349,8 @@ void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
     spin_refBD->setValue(1350);
-    E_DEMfill->setText(QString::number(10,'f',1));
+    //E_DEMfill->setText(QString::number(10,'f',1));
+    spin_DEMfill->setValue(10);
     E_catchmentSize->setText(QString::number(10000,'f',1));
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
@@ -409,29 +413,41 @@ void MainWindow::on_toolButton_OutletsTable_clicked()
 {
     QString tmp = BaseDirName+lineEdit_userOutlets->text();
     QStringList filters({"Text table (*.tbl)","Any files (*)"});
-    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 1);
+    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 2);
     if (!OutletstableName.isEmpty())
-        lineEdit_userOutlets->setText(OutletstableName);
+        lineEdit_outletsTable->setText(OutletstableName);
+
+    fillOutletsTable();
 }
 
 void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
 {
-    spin_chDepth->setEnabled(checked);
-    spin_chWidth->setEnabled(checked);
-    spin_chBaseflow->setEnabled(checked);
-    label_15->setEnabled(checked);
-    label_51->setEnabled(checked);
+//    spin_chDepth->setEnabled(checked);
+//    spin_chWidth->setEnabled(checked);
+//    spin_chBaseflow->setEnabled(checked);
+//    label_15->setEnabled(checked);
+//    label_51->setEnabled(checked);
+//    label_20->setEnabled(checked);
+
+   widgetSingleWS->setEnabled(checked);
+ //   widgetMultipleWS->setEnabled(!checked);
 }
 
 
 void MainWindow::on_radioButton_OutletMultiple_toggled(bool checked)
 {
-    lineEdit_outletsTable->setEnabled(checked);
-    lineEdit_userOutlets->setEnabled(checked);
-    label_13->setEnabled(checked);
-    toolButton_OutletsTable->setEnabled(checked);
-    toolButton_userOutlets->setEnabled(checked);
-    tableViewOutlets->setEnabled(checked);
+//    lineEdit_outletsTable->setEnabled(checked);
+//    lineEdit_userOutlets->setEnabled(checked);
+//    label_13->setEnabled(checked);
+//    label_21->setEnabled(checked);
+//    toolButton_OutletsTable->setEnabled(checked);
+//    toolButton_userOutlets->setEnabled(checked);
+//    tableViewOutlets->setEnabled(checked);
+//    toolButton_resetOutlets->setEnabled(checked);
+//    toolButton_saveOutlets->setEnabled(checked);
+ //   widgetSingleWS->setEnabled(!checked);
+    widgetMultipleWS->setEnabled(checked);
+
 }
 
 

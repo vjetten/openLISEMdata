@@ -152,7 +152,7 @@ private slots:
 
     void on_toolButton_help1_clicked();
 
-    void on_toolButton_loadLULCtable_clicked();
+    //void on_toolButton_loadLULCtable_clicked();
 
     void on_lineEdit_LULCTable_textChanged(const QString &arg1);
 
@@ -160,7 +160,7 @@ private slots:
 
     void on_toolButton_resetLULC_clicked();
 
-    void on_toolButton_SaveOutlets_clicked();
+    void on_toolButton_saveOutlets_clicked();
 
     void on_toolButton_resetOutlets_clicked();
 

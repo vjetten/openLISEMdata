@@ -33,7 +33,7 @@ void MainWindow::resetLULCTable()
 
 void MainWindow::fillLULCTable()
 {
-    //label_LULCname->setText(LULCtableName);
+    //label_LULCname->setText(LULCtableName);   
     QFile file(LULCtableName);
     if(file.open(QIODevice::ReadOnly)) {
 
@@ -59,14 +59,13 @@ void MainWindow::fillLULCTable()
 
         file.close();
     }
-
     loadLULCnames();
 }
 
-void MainWindow::on_toolButton_loadLULCtable_clicked()
-{
-    fillLULCTable();
-}
+//void MainWindow::on_toolButton_loadLULCtable_clicked()
+//{
+//    fillLULCTable();
+//}
 
 void MainWindow::on_lineEdit_LULCTable_textChanged(const QString &arg1)
 {
@@ -161,16 +160,18 @@ void MainWindow::loadLULCnames()
 
 }
 
-//====OUTLETS========================================================
-
 void MainWindow::on_toolButton_resetLULC_clicked()
 {
     resetLULCTable();
 }
 
+//====OUTLETS========================================================
+
+
 void MainWindow::fillOutletsTable()
 {
-    label_Outletnames->setText(OutletstableName);
+   // label_Outletnames->setText(OutletstableName);
+
     QFile file(OutletstableName);
     if(file.open(QIODevice::ReadOnly)) {
 
@@ -197,12 +198,11 @@ void MainWindow::fillOutletsTable()
         file.close();
     }
 
-   // loadLULCnames();
 }
 
 void MainWindow::resetOutletsTable()
 {
-    label_Outletnames->setText(OutletstableName);
+   // label_Outletnames->setText(OutletstableName);
     QFile file(OutletstableName);
 
     QStringList sl;
@@ -228,7 +228,7 @@ void MainWindow::resetOutletsTable()
 }
 
 
-void MainWindow::on_toolButton_SaveOutlets_clicked()
+void MainWindow::on_toolButton_saveOutlets_clicked()
 {
     QFile file(OutletstableName);
 
