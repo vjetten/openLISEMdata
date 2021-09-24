@@ -69,10 +69,10 @@ void MainWindow::fillLULCTable()
 
 void MainWindow::on_lineEdit_LULCTable_textChanged(const QString &arg1)
 {
-    QString text = arg1;
-    QFontMetrics fm = lineEdit_LULCTable->fontMetrics();
-    int width = fm.boundingRect(text).width();
-    lineEdit_LULCTable->resize(width, lineEdit_LULCTable->height());
+//    QString text = arg1;
+//    QFontMetrics fm = lineEdit_LULCTable->fontMetrics();
+//    int width = fm.boundingRect(text).width();
+//    lineEdit_LULCTable->resize(width, lineEdit_LULCTable->height());
 }
 
 void MainWindow::on_toolButton_saveLULC_clicked()

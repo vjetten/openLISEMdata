@@ -212,17 +212,18 @@ void MainWindow::on_toolButton_script_clicked()
         lineEdit_Script->setText(ScriptFileName);
 }
 
-void MainWindow::on_toolButton_LULC_clicked()
-{
-    QStringList filters({"GeoTiff maps(*.tif)","Any files (*)"});
-    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, 0);
-    if (!LULCDirName.isEmpty())
-        lineEdit_LULC->setText(LULCDirName);
-}
+//void MainWindow::on_toolButton_LULC_clicked()
+//{
+//    QStringList filters({"GeoTiff maps(*.tif)","Any files (*)"});
+//    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, 0);
+//    if (!LULCDirName.isEmpty())
+//        lineEdit_LULC->setText(LULCDirName);
+//}
 
 void MainWindow::on_toolButton_LULCTable_clicked()
 {
-    QString tmp = LULCDirName+lineEdit_LULCTable->text();
+    //QString tmp = LULCDirName+lineEdit_LULCTable->text();
+    QString tmp = lineEdit_LULCTable->text();
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
     LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 2);
     if (!LULCtableName.isEmpty())
@@ -234,9 +235,10 @@ void MainWindow::on_toolButton_LULCTable_clicked()
 
 void MainWindow::on_toolButton_LULCMap_clicked()
 {
-    QString tmp = LULCDirName+lineEdit_LULCMap->text();
+    //QString tmp = LULCDirName+lineEdit_LULCMap->text();
+    QString tmp = lineEdit_LULCMap->text();
     QStringList filters({"GeoTiff (*.tif)","Any files (*)"});
-    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 1);
+    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 2);
     if (!LULCmapName.isEmpty())
         lineEdit_LULCMap->setText(LULCmapName);
 }

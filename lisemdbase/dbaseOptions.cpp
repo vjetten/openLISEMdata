@@ -47,7 +47,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("BaseOutlets", BaseOutletsName);
     settings.setValue("BaseDams", BaseDamsName);
     settings.setValue("MapsDirectory", MapsDirName);
-    settings.setValue("LULCDirectory", LULCDirName);
+  //  settings.setValue("LULCDirectory", LULCDirName);
     settings.setValue("LULCmap", LULCmapName);
     settings.setValue("LULCtable", LULCtableName);
     settings.setValue("ESPGnumber", ESPGnumber);
@@ -101,7 +101,7 @@ void MainWindow::getIni(QString name)
     BaseOutletsName = settings.value("BaseOutlets").toString();
     BaseDamsName = settings.value("BaseDams").toString();
     MapsDirName = settings.value("MapsDirectory").toString();
-    LULCDirName = settings.value("LULCDirectory").toString();
+    //LULCDirName = settings.value("LULCDirectory").toString();
     LULCmapName = settings.value("LULCmap").toString();
     LULCtableName = settings.value("LULCtable").toString();
     ESPGnumber = settings.value("ESPGnumber").toString();
@@ -151,7 +151,7 @@ void MainWindow::readValuesfromUI()
     BaseOutletsName = lineEdit_userOutlets->text();
     BaseDamsName = lineEdit_Dams->text();
     MapsDirName = lineEdit_Maps->text();
-    LULCDirName = lineEdit_LULC->text();
+  //  LULCDirName = lineEdit_LULC->text();
     LULCmapName = lineEdit_LULCMap->text();
     LULCtableName = lineEdit_LULCTable->text();
     OutletstableName = lineEdit_outletsTable->text();
@@ -197,7 +197,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_baseChannel->setText(BaseChannelName);
     lineEdit_baseDEM->setText(BaseDEMName);
     lineEdit_Maps->setText(MapsDirName);
-    lineEdit_LULC->setText(LULCDirName);
+    //lineEdit_LULC->setText(LULCDirName);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
 

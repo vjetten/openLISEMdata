@@ -18,7 +18,7 @@ public:
     QString CondaBaseDirName;
     QString iniName;
     QString ScriptFileName;
-    QString LULCDirName;
+   // QString LULCDirName;
     QString BaseDirName;
     QString ScriptDirName;
     QString BaseDEMName;
@@ -93,7 +93,7 @@ private slots:
     void on_toolButton_base_clicked();
     void on_toolButton_maps_clicked();
     void on_toolButton_script_clicked();
-    void on_toolButton_LULC_clicked();
+ //   void on_toolButton_LULC_clicked();
 
     void runModel();
     void readFromStderr();
