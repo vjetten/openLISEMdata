@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-    tabWidget->setCurrentIndex(0);
+    tabWidgetOptions->setCurrentIndex(0);
     //tabWidget->removeTab(2);
 
     int ncol = 6;
