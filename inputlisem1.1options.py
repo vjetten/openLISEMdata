@@ -408,6 +408,7 @@ class GetSoilGridsLayer:
     "downbloading a SOILGRIDS layer from WCS service"
     def __init__(self, mask, ESPG="",s="", i=1, j = 1):
         self.mask = mask
+        print(mask)
         self.varname = s
         self.layer = i
         self.outlayer = j
@@ -428,7 +429,7 @@ class GetSoilGridsLayer:
         ESPG = 'urn:ogc:def:crs:EPSG::{0}'.format(self.ESPG)
 
         if self.debug == 1:
-            print("Mask ESPG and bounding box:"+ESPG,llx,lly,urx,ury,dx,dy, flush=True)
+            print("Mask ESPG and bounding box:"+ESPG,llx2,lly2,urx2,ury2,dx2,dy2, flush=True)
 
         if self.debug == 1:
             print("Open SOILGRIDS WCS", flush=True)
@@ -448,38 +449,31 @@ class GetSoilGridsLayer:
 
         if self.debug == 1:
             print("Downloading "+variable, flush=True)
-
         # get data as temp geotif and save to disk
-        #response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=dx,resy=dx,format='GEOTIFF_INT16')
-        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=200,resy=200,format='GEOTIFF_INT16')
+        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=dx,resy=dx,format='GEOTIFF_INT16')
+        #response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox200,resx=dx2,resy=dy2,format='GEOTIFF_INT16')
         with open(outputnametif, 'wb') as file:
              file.write(response.read())
-
-        # warp to some interpolation
-        src = gdal.Open(outputnametif) #, gdalconst.GA_ReadOnly)
-        src_proj = src.GetProjection()
-        src_geotrans = src.GetGeoTransform()       
-        nrRows1 = 134 #src_geotrans.RasterYSize
-        nrCols1 = 124 #src_geotrans.RasterXSize
         
-        dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols1, nrRows1, 1,
+        # warp to some interpolation
+        src = gdal.Open(outputnametif, gdalconst.GA_ReadOnly)
+        src_proj = src.GetProjection()
+        src_geotrans = src.GetGeoTransform()
+        dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols, nrRows, 1,
                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
         dst.SetGeoTransform( src_geotrans )
         dst.SetProjection( src_proj )
         gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Cubic)
         #gdalconst.GRA_Bilinear)
-        dst = None
-        src = None
-        
-        
-        
-        
+
         # brute force convert tif to map by calling pcrcalc !!!!
         # CMD = "pcrcalc.exe"
         # arg = outputnamemap+"="+outputnametif
         # arg = '{0}{1}.map={0}{1}.tif'.format(self.varname,str(self.outlayer))
         # subprocess.run([CMD,arg])
 
+        dst = None
+        src = None
 
 
 ### ---------- class PedoTranfer() ---------- ###
@@ -501,27 +495,32 @@ class PedoTransfer(StaticModel):
         DEM = DEM_
         xs = str(x)
         
-        Sname = "sand{0}.map".format(str(x))
+        Sname = "sand{0}.map".format(xs)
+        Siname = "silt{0}.map".format(xs)
+        Cname = "clay{0}.map".format(xs)
+        OCname = "soc{0}.map".format(xs)
+        Grvname = "cfvo{0}.map".format(xs)
+        bdname = "bdod{0}.map".format(xs)
 
-        S1 = readmap("sand{0}.map".format(xs))  # sand g/kg
-        Si1 = readmap("silt{0}.map".format(xs)) # silt g/kg
-        C1 = readmap("clay{0}.map".format(xs))  # clay g/kg
-        OC1 = readmap("soc{0}.map".format(xs))  # organic carbon in dg/kg
-        Grv = readmap("cfvo{0}.map".format(xs)) # coarse fragments cm3/dm3,
-        bd1 = readmap("bdod{0}.map".format(xs))   # bulk density in cg/m3
+        S1 = readmap(Sname)  # sand g/kg
+        Si1 = readmap(Siname) # silt g/kg
+        C1 = readmap(Cname)  # clay g/kg
+        OC1 = readmap(OCname)  # organic carbon in dg/kg
+        Grv = readmap(Grvname) # coarse fragments cm3/dm3,
+        bd1 = readmap(bdname)   # bulk density in cg/m3
 
         #output map name strings
-        om1 = "om{0}.map".format(xs)             # organic matter in %
-        WP1 = "wilting{0}.map".format(xs)      	# wilting point moisture content
-        FC1 = "fieldcap{0}.map".format(xs)     	# field capacity moisture content
-        PAW1 = "plantAVW{0}.map".format(xs)    	# plant available water content
+        omname = "om{0}.map".format(xs)             # organic matter in %
+        WPname = "wilting{0}.map".format(xs)      	# wilting point moisture content
+        FCname = "fieldcap{0}.map".format(xs)     	# field capacity moisture content
+        PAWname = "plantAVW{0}.map".format(xs)    	# plant available water content
         #K1 = "k{0}.map".format(xs)  		        #USLE erodibility
-        BD1 = "bulkdens{0}.map".format(xs)       # bulk density in kg/m3
-        Pore1 = poreName+"{0}.map".format(xs)   	#porosity (cm3/cm3)
-        Ksat1 = ksatName+"{0}.map".format(xs)      	#ksat in mm/h
-        initmoist1 = thetaiName+"{0}.map".format(xs)  # inital moisture (cm3/cm3)
-        psi1 = psiName+"{0}.map".format(xs)  		    # suction with init moisture in cm, used in LISEM
-        Densityfactor1 = "densfact{0}.map".format(xs)
+        BDname = "bulkdens{0}.map".format(xs)       # bulk density in kg/m3
+        Porename = poreName+"{0}.map".format(xs)   	#porosity (cm3/cm3)
+        Ksatname = ksatName+"{0}.map".format(xs)      	#ksat in mm/h
+        initmoistname = thetaiName+"{0}.map".format(xs)  # inital moisture (cm3/cm3)
+        psiname = psiName+"{0}.map".format(xs)  		    # suction with init moisture in cm, used in LISEM
+        Densityfactorname = "densfact{0}.map".format(xs)
 
         print("Creating infil params layer "+xs, flush=True)
 
@@ -541,6 +540,13 @@ class PedoTransfer(StaticModel):
         bd1n = nominal(bd1*1000)
         Grvn = nominal(Grv*1000)
 
+        Sa = ifthen(S > 1e-5,S)
+        Sia = ifthen(Si > 1e-5,Si)
+        Ca = ifthen(C > 1e-5,C)
+        OMa = ifthen(OM > 1e-5,OM)
+        bda = ifthen(bd1 > 1e-5,bd1)
+        Grva = ifthen(Grv > 1e-5,Grv)
+
         # quick and dirty filling up from the sides
         S = scalar(spreadzone(Sn,0,1))/1000.0
         Si = scalar(spreadzone(Sin,0,1))/1000.0
@@ -549,12 +555,31 @@ class PedoTransfer(StaticModel):
         bd1 = scalar(spreadzone(bd1n,0,1))/1000.0
         Grv= scalar(spreadzone(Grvn,0,1))/1000.0
         
-        Sa = ifthen(S > 1e-5,S)
-        ##Said = inversedistance(1,S,2,0,5)
-        #report(Said, Sname) 
+        #S = inversedistance(1,Sa,2,0,0)
+        #report(S, Sname) 
+      #  Snamet = "sand{0}.tif".format(xs)
+      #  src = gdal.Open(Sname)
+      #  options = gdal.WarpOptions(options=['tr'], xRes=200, yRes=200)
+      #  newfile = gdal.Warp('try.tif', src, options=options)
+      #  src = None
+      #  
+      #  array_out = newfile.GetRasterBand(1).ReadAsArray()
+      #  newmap = numpy2pcr(Scalar,array_out,-9999)
+      #  report(newmap,"try.map")
         
+        
+      # src_proj = newfile.GetProjection()
+      # src_geotrans = newfile.GetGeoTransform()
+      # dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols, nrRows, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+      # dst.SetGeoTransform( src_geotrans )
+      # dst.SetProjection( src_proj )
+      # gdal.ReprojectImage(newfile, dst, src_proj, src_proj, gdalconst.GRA_Cubic)
+      # newfile = None
+      # dst = None
 
-        report(OM, om1)
+             
+
+        report(OM, omname)
 
         densityveg = lookupscalar(LULCtable, 5, lun)
 
@@ -572,7 +597,7 @@ class PedoTransfer(StaticModel):
         Densityfactor = min(max(0.9, Densityfactor), 1.2)
 
         # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
-        report(Densityfactor,Densityfactor1)
+        report(Densityfactor,Densityfactorname)
 
         # wilting point stuff
         M1500 =-0.024*S+0.487*C+0.006*OM+0.005*S*OM-0.013*C*OM+0.068*S*C+0.031  #W18)
@@ -619,13 +644,13 @@ class PedoTransfer(StaticModel):
         else :
             initmoist = -fractionmoisture*WP + (1+fractionmoisture)*FC
 
-        report(POROSITY,Pore1)
-        report(Ksat,Ksat1)
-        report(BD,BD1)
-        report(WP,WP1)
-        report(FC,FC1)
-        report(PAW,PAW1)
-        report(initmoist,initmoist1)
+        report(POROSITY,Porename)
+        report(Ksat,Ksatname)
+        report(BD,BDname)
+        report(WP,WPname)
+        report(FC,FCname)
+        report(PAW,PAWname)
+        report(initmoist,initmoistname)
 
         # A = exp[ln(33) + B ln(T33)]
         # B = [ln(1500) - ln(33)] / [ln(T33) - ln(T1500)]
@@ -638,8 +663,8 @@ class PedoTransfer(StaticModel):
         Psi1 =10*exp(6.53-7.326*POROSITY+15.8*CC+3.809*PP+3.44*S*C-4.989*S*POROSITY+16*SS*PP+16*CC*PP-13.6*SS*C-34.8*CC*POROSITY-7.99*SS*POROSITY)
         Psi1 = Psi1 * max(0.1,1-fractionmoisture)
         # correct psi slightly for initmoisture, where psi1 is assumed to corrspond to FC
-        report(Psi1,psi1)
-        report(initmoist/POROSITY,"se1.map")
+        report(Psi1,psiname)
+        #report(initmoist/POROSITY,"se1.map")
         
         
         #SOILDEPTH
@@ -649,9 +674,8 @@ class PedoTransfer(StaticModel):
         rivfact = mask*0
         if  doProcessesChannels == 1:
             chanm = cover(rivers_, 0)*mask       
-            
-        distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
-        rivfact = -0.5*distriv/mapmaximum(distriv)
+            distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+            rivfact = -0.5*distriv/mapmaximum(distriv)
             # perpendicular distance to river, closer gives deeper soils          
        
         if x == 1 :
@@ -738,7 +762,7 @@ class ErosionMaps(StaticModel):
             
             #convert texture maps to 2D arrays to access cells, -9999 is MV
             cp = pcr2numpy(C, -9999)
-            ctemp = numpy2pcr(Scalar,cp,-9999)
+            #ctemp = numpy2pcr(Scalar,cp,-9999)
             sip = pcr2numpy(Si, -9999)
             sp = pcr2numpy(S, -9999)
             d50p = pcr2numpy(D50, -9999)
@@ -1042,7 +1066,7 @@ if __name__ == "__main__":
     #print(BaseDir+DEMbaseName)
     # get the gdal details of the mask, bounding box, rows and cols
     #print(BaseDir+DEMbaseName,flush=True)
-    maskgdal=gdal.Open(BaseDir+DEMbaseName) # get mask details
+    maskgdal = gdal.Open(BaseDir+DEMbaseName) # get mask details
     maskproj = maskgdal.GetProjection()
     maskgeotrans = maskgdal.GetGeoTransform()
     nrRows = maskgdal.RasterYSize
@@ -1053,7 +1077,33 @@ if __name__ == "__main__":
     ury = maskgdal.GetGeoTransform()[3]
     urx = llx + nrCols*dx
     lly = ury + dy*nrRows
-    maskbox = [llx,lly,urx,ury]
+    maskbox = [llx,lly,urx,ury]      
+    print(nrRows)
+    print(nrCols)
+    
+    options = gdal.WarpOptions(options=['tr'], xRes=200, yRes=200)
+    mask200 = gdal.Warp('mask200.tif', maskgdal, options=options) 
+    maskgdal = None    
+    mask200proj = mask200.GetProjection()
+    mask200trans = mask200.GetGeoTransform()
+    nrRows2 = mask200.RasterYSize
+    nrCols2 = mask200.RasterXSize
+    dx2 = mask200.GetGeoTransform()[1]
+    dy2 = mask200.GetGeoTransform()[5]
+    llx2 = mask200.GetGeoTransform()[0]
+    ury2 = mask200.GetGeoTransform()[3]
+    urx2 = llx2 + nrCols2*dx2
+    lly2 = ury2 + dy2*nrRows2
+    maskbox200 = [llx2,lly2,urx2,ury2] 
+    print(nrRows2)
+    print(nrCols2)
+    dst = gdal.GetDriverByName('PCRaster').Create('temp200.map', nrCols2, nrRows2, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+    dst.SetGeoTransform( mask200trans )
+    dst.SetProjection( mask200proj )
+    gdal.ReprojectImage(mask200, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
+    dst = None
+    mask200 = None
+    
 
     print('>>> Reading land use map and table', flush=True)
     LULCtable = lulcTable #lulcDir+
@@ -1105,10 +1155,12 @@ if __name__ == "__main__":
         print(">>> Downloading SOILGRIDS layers and creating infiltration maps", flush=True)
         #soigrid map names for texture, doil organic carbon, course fragments, bulk dens
         #print(optionSG1,optionSG2, flush=True)
+        mask200 = readmap('temp200.map')
         for x in range(0,6):
-            GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG1,1)
-       # for x in range(0,6):
-         #   GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG2,2)
+            GetSoilGridsLayer('temp200.map',ESPG,SG_names_[x],optionSG1,1)
+#            GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG1,1)
+      #  for x in range(0,6):
+          #  GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG2,2)
 
 
     if doProcessesInfil == 1:

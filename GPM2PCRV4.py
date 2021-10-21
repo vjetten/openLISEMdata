@@ -5,7 +5,7 @@ from pcraster.framework import *
 import time
 
 ##############################################################################
-# CWC project script for IMERG to PCRaster rainfall conversion
+# CWC project script for GPM IMERG to PCRaster rainfall conversion
 #
 # - read all global IMERG GPM GTiff files in a directory (espg 4326)
 # - read a reference PCRaster map for the target area bounding box and dx
@@ -17,27 +17,29 @@ import time
 # - a map with total rainfall is produced for reference
 # NOTE: ALL MAPS ARE DIVIDED BY 10 because GPM is stored in 0.1mm/h
 #
-#                                               auhtor: V.Jetten 20210708
+#                                               auhtor: V.Jetten 202107811
 ##############################################################################
 
-rainfilename = 'GPM monsoon 2017.txt'
+rainfilename = 'GPM kosi 2004.txt'
 # ioutput file name for openLISEM listing all maps
-
-# ioutput file name for openLISEM listing all maps
-inputdir = 'C:/data/India/GPM_Monsoon2017'
+inputdir = 'C:/data/India/GPM/GPM_Monsoon2004'
 # source folder with GPM global tiff
-outputdir = 'C:/data/India/Kosi/rain/GPM2017/'
+outputdir = 'C:/data/India/Kosi/rain/GPM2004/'
 #'C:/data/India/narmada/rainfall/gpm/july2014/'
-
-
-
 # output folder for lisem
-maskmapname = 'C:\data\India\Kosi\Maps_1.8\dem.map'
 
+if not os.path.exists(outputdir):
+    print('output dir does not exst, creating it!')
+    os.makedirs(outputdir)
+    # if you don't do this you get an error later
+
+
+maskmapname = 'C:\data\India\Kosi\Maps_1.8\dem.map'
+#'C:/CRCLisem/Narmada1/Base/dem0.map' #'C:/data/India/narmada/maps/dem.map'
 # reference map 'C:/CRCLisem/Narmada1/Base/dem0.map'
 ESPG = 32644
 # user defined espg number for reprojection
-option = 2
+option = -1
 # 0 =  nearest neighbour, 1 = bilinear interpolation while resampling, 2 =  cubic interpolation
 # if option = -1 the lisem rainfall textfile is regenerated and the conversion is skipped
 
@@ -124,6 +126,7 @@ for link in hdflinks:
         day_of_year = time.strptime(daystr, "%Y%m%d").tm_yday
         minstr = link[-19:]
         minstr = minstr[:4]
+        
         print(daystr, day_of_year,minstr)
         dddmmmm.append("{0}:{1}".format(str(day_of_year),minstr))
 
@@ -140,39 +143,31 @@ with open(raintxtname, 'w') as f:
     f.close()
 
 # read all maps in folder
-sum=0
+DEM = readmap(maskmapname)
+mask = (DEM*0) + scalar(1)
+sum= 0 * mask
 nr = 0
+sumr = 0
+
 totallinks = os.listdir(os.getcwd())
 hdflinks = []
 for link in totallinks:
     if link[-9:] == '30min.map':
-        print(' => '+link)
+        #print(' => '+link)
         with open(raintxtname, 'a') as f:
             f.write('{0}  {1}\n'.format(dddmmmm[nr],link))
-        nr+=1
+
 
         raina = readmap(link)
-        if (option > -1) :
-            rain = raina/10.0
+        #if (option > -1) :
+        rain = max(0,raina/10.0)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+        pp = pcr2numpy(rain, -9999)
+
         report(rain,link)
-        sum=sum+rain/
-        2
+        sum=sum+rain/2    # assumning the value is intensity in mm/h the rianfall is p/2
+
+        nr+=1
 
 f.close()
+
 report(sum,outputdir+'sumrainfall.map')
-
-#calculate total and REWRITE FILES: divide by 10 => gpm 30min has a factor 0.1 for mm/h
-
-# os.chdir(outputdir)
-# totallinks = os.listdir(os.getcwd())
-# hdflinks = []
-# for link in totallinks:
-#     if link[-3:] == 'map':
-#         print(' => '+link)
-
-#         rain = readmap(link)
-#         rain = rain/10.0
-#         report(rain,link)
-#         sum=sum+rain
-
-# report(sum,outputdir+'sumrainfall.map')
