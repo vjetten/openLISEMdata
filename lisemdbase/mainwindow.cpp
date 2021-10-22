@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     tabWidgetOptions->setCurrentIndex(0);
-    //tabWidget->removeTab(2);
+    tabWidgetOptions->removeTab(3);
 
     int ncol = 6;
     int nrow = 0;
@@ -66,9 +66,11 @@ MainWindow::MainWindow(QWidget *parent)
     model->setHorizontalHeaderItem( 3, new QStandardItem("Plant Cover\n (-)"));
     model->setHorizontalHeaderItem( 4, new QStandardItem("Density\n factor (0.9-1.2)"));
     model->setHorizontalHeaderItem( 5, new QStandardItem("Smax type\n (1-7)"));
+    model->setHorizontalHeaderItem( 6, new QStandardItem("Add. Cohesion\n (kPa)"));
     tableViewLULC->setModel(model);
 
     fillLULCTable();
+    copyLULCTable();
 
     ncol = 3;
     nrow = 0;
@@ -150,15 +152,16 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 {
     QFileDialog dialog;
     QString dirout = inputdir;
-    qDebug() << inputdir;
+    qDebug() <<"dir" << inputdir << QFileInfo(inputdir).absoluteDir();
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         dialog.setFileMode(QFileDialog::ExistingFile);
     } else {
+        // get a file
         filters.clear();
         dialog.setNameFilters(filters);
-        dialog.setDirectory(QDir(inputdir));
+        dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         dialog.setFileMode(QFileDialog::DirectoryOnly);
     }
 
@@ -175,9 +178,11 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
             dirout = QFileInfo(dirout).absoluteFilePath();
         qDebug() << dirout;
     } else {
-        dirout = dialog.selectedUrls().at(0).path();
-        dirout.remove(0,1);
-        if (dirout.lastIndexOf('/') != dirout.length())
+        QString S = dialog.selectedUrls().at(0).path();
+        S.remove(0,1);
+        if (!S.isEmpty())
+            dirout = S;
+        if (!dirout.endsWith('/') && !dirout.endsWith('\\'))
             dirout = dirout + "/";
     }
 
@@ -187,12 +192,39 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 //====================================================================================
 
 
+void MainWindow::on_toolButton_openIni_clicked()
+{
+    QStringList filters({"dbase ini file (*.ini)","Any files (*)"});
+    QString S = combo_iniName->currentText();
+    QString FileName = getFileorDir(S,"Select database ini file", filters, 2);
+    if (!FileName.isEmpty()) {
+        combo_iniName->insertItem(0,FileName);
+        combo_iniName->setCurrentIndex(0);
+        setIniStart();
+    }
+
+}
+
+void MainWindow::on_toolButton_OutletsTable_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userOutlets->text();
+    QStringList filters({"Text table (*.tbl)","Any files (*)"});
+    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 2);
+    if (!OutletstableName.isEmpty())
+        lineEdit_outletsTable->setText(OutletstableName);
+
+    fillOutletsTable();
+}
 void MainWindow::on_toolButton_base_clicked()
 {
     QStringList filters;
+    QString S = lineEdit_Base->text();
     BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, 0);
     if (!BaseDirName.isEmpty())
         lineEdit_Base->setText(BaseDirName);
+    else
+        lineEdit_Base->setText(S);
+
 }
 
 void MainWindow::on_toolButton_maps_clicked()
@@ -211,14 +243,6 @@ void MainWindow::on_toolButton_script_clicked()
     if (!ScriptFileName.isEmpty())
         lineEdit_Script->setText(ScriptFileName);
 }
-
-//void MainWindow::on_toolButton_LULC_clicked()
-//{
-//    QStringList filters({"GeoTiff maps(*.tif)","Any files (*)"});
-//    LULCDirName = getFileorDir(lineEdit_LULC->text(),"Select LULC folder", filters, 0);
-//    if (!LULCDirName.isEmpty())
-//        lineEdit_LULC->setText(LULCDirName);
-//}
 
 void MainWindow::on_toolButton_LULCTable_clicked()
 {
@@ -399,28 +423,6 @@ void MainWindow::on_spin_chDepth_valueChanged(double arg1)
 }
 
 
-void MainWindow::on_toolButton_openIni_clicked()
-{
-    QStringList filters({"dbase ini file (*.ini)","Any files (*)"});
-    QString FileName = getFileorDir(ScriptFileName,"Select dbase ini file", filters, 2);
-    if (!FileName.isEmpty()) {
-        combo_iniName->insertItem(0,FileName);
-        combo_iniName->setCurrentIndex(0);
-        setIniStart();
-    }
-
-}
-
-void MainWindow::on_toolButton_OutletsTable_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_userOutlets->text();
-    QStringList filters({"Text table (*.tbl)","Any files (*)"});
-    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 2);
-    if (!OutletstableName.isEmpty())
-        lineEdit_outletsTable->setText(OutletstableName);
-
-    fillOutletsTable();
-}
 
 void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
 {

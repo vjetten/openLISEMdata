@@ -5,35 +5,33 @@
 
 void MainWindow::resetLULCTable()
 {
-    //label_LULCname->setText(LULCtableName);
-    QFile file(LULCtableName);
-
-    QStringList sl;
-    if(file.open(QIODevice::ReadOnly)) {
-
-        QTextStream in(&file);
-
-        while(!in.atEnd()) {
-            QString line = in.readLine();
-            sl << line;
-        }
-        file.close();
-    }
-
-    sl.removeAt(0);
-
     for (int r = 0; r < model->rowCount(); r++){
-        QStringList fields = sl[r].split(QRegExp("\\s+"));
+        QStringList fields = LULCspare[r].split(QRegExp("\\s+"));
         for (int c = 1; c < model->columnCount()-1; c++){
             model->item(r,c)->setText(fields.at(c+1));
         }
     }
 }
 
+void MainWindow::copyLULCTable()
+{
+    QFile file(LULCtableName);
+    if(file.open(QIODevice::ReadOnly)) {
+
+        QTextStream in(&file);
+
+        LULCspare .clear();
+        while(!in.atEnd()) {
+            QString line = in.readLine().simplified();
+            LULCspare << line;
+        }
+
+        file.close();
+    }
+}
 
 void MainWindow::fillLULCTable()
 {
-    //label_LULCname->setText(LULCtableName);   
     QFile file(LULCtableName);
     if(file.open(QIODevice::ReadOnly)) {
 
@@ -62,19 +60,6 @@ void MainWindow::fillLULCTable()
     loadLULCnames();
 }
 
-//void MainWindow::on_toolButton_loadLULCtable_clicked()
-//{
-//    fillLULCTable();
-//}
-
-void MainWindow::on_lineEdit_LULCTable_textChanged(const QString &arg1)
-{
-//    QString text = arg1;
-//    QFontMetrics fm = lineEdit_LULCTable->fontMetrics();
-//    int width = fm.boundingRect(text).width();
-//    lineEdit_LULCTable->resize(width, lineEdit_LULCTable->height());
-}
-
 void MainWindow::on_toolButton_saveLULC_clicked()
 {
     QFile file(LULCtableName);
@@ -86,7 +71,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
         int n = model->rowCount();
         int m = model->columnCount();
 
-        QString sss = QString("0 1 2 3 4 5 6\n");
+        QString sss = QString("0 1 2 3 4 5 6 7\n");
         stream << sss;
 
         for (int i=0; i<n; ++i)

@@ -61,6 +61,8 @@ public:
     double chBaseflow;
     double refRootzone;
 
+    QStringList LULCspare;
+
     void setupModel();
     bool GetCondaAllEnvs(int cda);
     QProcess *Process;
@@ -81,6 +83,7 @@ public:
     void ShowHelp(int i);
     QStandardItemModel *model;
     void fillLULCTable();
+    void copyLULCTable();
     void loadLULCnames();
     void resetLULCTable();
     void fillOutletsTable();
@@ -154,7 +157,7 @@ private slots:
 
     //void on_toolButton_loadLULCtable_clicked();
 
-    void on_lineEdit_LULCTable_textChanged(const QString &arg1);
+    //void on_lineEdit_LULCTable_textChanged(const QString &arg1);
 
     void on_toolButton_saveLULC_clicked();
 

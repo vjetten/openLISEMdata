@@ -120,7 +120,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="iconSize">
        <size>
@@ -2823,7 +2823,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 1.9 - 2110.08)</string>
+       <string>openLISEM database generator (version 1.9 - 211022)</string>
       </property>
      </widget>
     </item>

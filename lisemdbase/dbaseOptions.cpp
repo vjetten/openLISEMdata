@@ -84,7 +84,6 @@ void MainWindow::setIni(QString sss)
     settings.setValue("chDepth", QString::number(chDepth, 'f', 1));
     settings.setValue("chBaseflow", QString::number(chBaseflow, 'f', 1));
 
-
     settings.sync();
 }
 
