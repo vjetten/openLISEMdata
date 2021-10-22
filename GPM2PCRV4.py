@@ -160,7 +160,7 @@ for link in totallinks:
 
         raina = readmap(link)
         #if (option > -1) :
-        rain = max(0,raina/10.0)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+        rain = max(0,2*raina/10.0)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
         pp = pcr2numpy(rain, -9999)
 
         report(rain,link)

@@ -562,6 +562,14 @@ class PedoTransfer(StaticModel):
         OMn = nominal(OM*1000)
         bd1n = nominal(bd1*1000)
         Grvn = nominal(Grv*1000)
+        
+
+        Sa = ifthen(S > 1e-5,S)
+        Sia = ifthen(Si > 1e-5,Si)
+        Ca = ifthen(C > 1e-5,C)
+        OMa = ifthen(OM > 1e-5,OM)
+        bda = ifthen(bd1 > 1e-5,bd1)
+        Grva = ifthen(Grv > 1e-5,Grv)
 
         # quick and dirty filling up from the sides
         S = scalar(spreadzone(Sn,0,1))/1000.0
@@ -569,7 +577,7 @@ class PedoTransfer(StaticModel):
         C = scalar(spreadzone(Cn,0,1))/1000.0
         OM = scalar(spreadzone(OMn,0,1))/1000.0
         bd1 = scalar(spreadzone(bd1n,0,1))/1000.0
-        Grv= scalar(spreadzone(Grvn,0,1))/1000.0
+        Grv= scalar(spreadzone(Grvn,0,1))/1000.0        
         
         Sa = ifthen(S > 1e-5,S)
         ##Said = inversedistance(1,S,2,0,5)
@@ -591,7 +599,7 @@ class PedoTransfer(StaticModel):
             Densityfactor2 =  lookupscalar(LULCtable, 5, unitmap) * mask
             Densityfactor *= Densityfactor2
 
-        Densityfactor = min(max(0.9, Densityfactor), 1.2)
+        Densityfactor = min(max(0.9, Densityfactor), 1.1)  # was 1.2 but that is too much
 
         # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
         report(Densityfactor,Densityfactor1)
@@ -715,9 +723,8 @@ class ErosionMaps(StaticModel):
         unitmap = lun #readmap(landuseName)
         Cover = readmap(coverName)
 
-        Coh = max(1.0, 4.316*ln(C+1.0) - 6.955)
+        Coh = ifthenelse(C < 1e-5, -1,max(1.0, 4.316*ln(C+1.0) - 6.955))
         # log fit using values below
-        Coh = ifthenelse((unitmap == unitBuild_) | (unitmap == unitWater_) , -1, Coh)
         #Coh = lookupscalar("claycoh.tbl",C)*mask
         # content of claycoh.tbl
         # [,20>   2
@@ -726,8 +733,6 @@ class ErosionMaps(StaticModel):
         # [40,55> 10
         # [55,60> 11
         # [60,100> 12
-        report(Coh, cohName)
-        report(Coh,aggrstabName)
 
         cropheight = lookupscalar(LULCtable, 3, unitmap) * mask #plant height in m
         report(cropheight,cropheightName)
@@ -735,7 +740,13 @@ class ErosionMaps(StaticModel):
         aggrstab = 6 * mask;  # aggregate stability
         report(aggrstab,asName)
 
-        cohplant = Cover * 5.0 * mask  # additional plant root strength
+        cohadd = lookupscalar(LULCtable, 7, unitmap) * mask #plant height in m
+        
+        Coh = ifthenelse(cohadd < 0, -1, Coh)    
+        report(Coh, cohName)
+        report(Coh,aggrstabName)
+
+        cohplant = Cover * ifthenelse(cohadd < 0,0,cohadd) * mask  # additional plant root strength
         report(cohplant,cohaddName)
         
         chancoh =  Coh*cover(rivers_, 0)*mask  
@@ -768,11 +779,11 @@ class ErosionMaps(StaticModel):
 
             # linear regression on 3 points: cum fractions C,C+si,C+si+sa, against LN of grainsize
             # then find grainsize for median 0.5 (50%) and 90% quantile
-            step = 1
+            #step = 1
             for row in range(1,nrRows) :
-                sss = "D50-D90 ["+"#"*step+"-"*(50-step-1)+"]"
+                #sss = "D50-D90 ["+"#"*step+"-"*(50-step-1)+"]"
                 if row % int(nrRows/50+0.5) == 0 :
-                    step += 1
+                    #step += 1
                     #print("\r" + sss, end="", flush=True)
                     update_progress(row/nrRows)
                 for col in range(1,nrCols) :

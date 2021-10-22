@@ -22,7 +22,7 @@ from pcraster.framework import *
 # operation system
 import subprocess  # call exe from wihin script
 import os          # operating system, change dir
-import sys         # read commandline arguments
+import time,sys         # read commandline arguments
 
 # linear regression for D50 and D90
 from scipy import stats
@@ -34,6 +34,28 @@ setglobaloption("lddfill")
 setglobaloption("matrixtable")
 
 
+# update_progress() : Displays or updates a console progress bar
+## Accepts a float between 0 and 1. Any int will be converted to a float.
+## A value under 0 represents a 'halt'.
+## A value at 1 or bigger represents 100%
+def update_progress(progress):
+    barLength = 10 # Modify this to change the length of the progress bar
+    status = ""
+    if isinstance(progress, int):
+        progress = float(progress)
+    if not isinstance(progress, float):
+        progress = 0
+        status = "error: progress var must be float\r\n"
+    if progress < 0:
+        progress = 0
+        status = "Halt...\r\n"
+    if progress >= 1:
+        progress = 1
+        status = "Done...\r\n"
+    block = int(round(barLength*progress))
+    text = "\rPercent: [{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
 ### ---------- class DEMderivatives() ---------- ###
 
@@ -772,10 +794,11 @@ class ErosionMaps(StaticModel):
             # then find grainsize for median 0.5 (50%) and 90% quantile
             step = 1
             for row in range(1,nrRows) :
-                sss = "D50-D90 ["+"#"*step+"-"*(50-step-1)+"]"
+                #sss = "D50-D90 ["+"#"*step+"-"*(50-step-1)+"]"
                 if row % int(nrRows/50+0.5) == 0 :
                     step += 1
-                    print("\r" + sss, end="", flush=True)
+                    #print("\r" + sss, end="", flush=True)
+                    update_progress(row/nrRows)
                 for col in range(1,nrCols) :
                     c = cp[row][col]#cellvalue(C, row, col)
                     si = sip[row][col]#cellvalue(Si, row, col)
