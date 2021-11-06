@@ -383,8 +383,6 @@ void MainWindow::on_toolButton_CheckAll_clicked()
     spin_chWidth->setValue(500.0);
     spin_chDepth->setValue(10.0);
     spin_chBaseflow->setValue(0.0);
-    chA = spin_chWidth->value();
-    chD = spin_chDepth->value();
     spin_Rootzone->setValue(0.6);
 
     bool checked = true;
@@ -411,52 +409,19 @@ void MainWindow::on_checkBox_userefBD_toggled(bool checked)
 }
 
 
-
-void MainWindow::on_spin_chWidth_valueChanged(double arg1)
-{
-    chA = arg1;
-}
-
-void MainWindow::on_spin_chDepth_valueChanged(double arg1)
-{
-    chD = arg1;
-}
-
-
-
 void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
 {
-//    spin_chDepth->setEnabled(checked);
-//    spin_chWidth->setEnabled(checked);
-//    spin_chBaseflow->setEnabled(checked);
-//    label_15->setEnabled(checked);
-//    label_51->setEnabled(checked);
-//    label_20->setEnabled(checked);
-
    widgetSingleWS->setEnabled(checked);
- //   widgetMultipleWS->setEnabled(!checked);
 }
-
 
 void MainWindow::on_radioButton_OutletMultiple_toggled(bool checked)
 {
-//    lineEdit_outletsTable->setEnabled(checked);
-//    lineEdit_userOutlets->setEnabled(checked);
-//    label_13->setEnabled(checked);
-//    label_21->setEnabled(checked);
-//    toolButton_OutletsTable->setEnabled(checked);
-//    toolButton_userOutlets->setEnabled(checked);
-//    tableViewOutlets->setEnabled(checked);
-//    toolButton_resetOutlets->setEnabled(checked);
-//    toolButton_saveOutlets->setEnabled(checked);
- //   widgetSingleWS->setEnabled(!checked);
     widgetMultipleWS->setEnabled(checked);
-
 }
-
 
 void MainWindow::on_checkBox_erosion_toggled(bool checked)
 {
     erosionoptions->setEnabled(checked);
 }
+
 

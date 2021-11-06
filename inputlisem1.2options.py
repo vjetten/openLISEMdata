@@ -86,8 +86,8 @@ class DEMderivatives(StaticModel):
         #DEM = readmap(BaseDir+DEMbaseName)*mask
         DEMc = DEM
         if doCorrectDEM > 0 :            
-            print(">>> Filling in DEM depressions, see demcorr.map",flush=True)
-            DEMc = lddcreatedem(DEM, celllength(),1e20,1e20,1e20)
+            print(">>> Filling in DEM depressions (see demcorr.map for filled in pixels)",flush=True)            
+            DEMc = lddcreatedem(DEM, celllength(),1e20,9*cellarea(),1e20)
             #pcrcalc --lddfill demc.map=lddcreatedem(dem0.map,10,1e20,cellarea(),1e20)
             DEMcorrect = DEMc - DEM
             DEMcorrect = ifthenelse(DEMcorrect < fillDEM,0,DEMcorrect)
@@ -222,13 +222,13 @@ class ChannelMaps(StaticModel):
         #chanwidth = 20000*(chanlen/3.67e10)**(1.0/2.64)   #Hydro1K allen and pavelsky page 399
         #chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
         chanwidth = (chanlen)**(chB)   #Hydro1K allen and pavelsky page 399
-        chanwidth *= chA/mapmaximum(chanwidth)
+        chanwidth *= chWidth/mapmaximum(chanwidth)
         report(chanwidth,chanwidthName)
         ##  culvert_fraction_width = 0.8;
         ##  report chanwidth = min(celllength()*0.95, if(culverts gt 0, chanwidth*culvert_fraction_width, chanwidth));
         ##  # channel width is 15m at outlet and beccoming less away form the coast to 3 m
         chandepth = cover(max(1.0,chanwidth**chC),0)*mask
-        chandepth *= chD/mapmaximum(chandepth)
+        chandepth *= chDepth/mapmaximum(chandepth)
         #chandepth = min(chandepth, 1.0/(sqrt(changrad)/chanman))
         report(chandepth,chandepthName)
 
@@ -410,9 +410,9 @@ class SurfaceMaps(StaticModel):
         report(compact,compactName)
         # compact fraction assumed zero
 
-        stone = mask*0
-        report(stone,stoneName)
-        # compact fraction assumed zero
+        # stone = mask*0
+        # report(stone,stoneName)
+        # # gravel fraction assumed zero
 
         hardsurf = readmap(hardsurfinName)*mask
         report(hardsurf ,hardsurfName)
@@ -426,6 +426,7 @@ class SurfaceMaps(StaticModel):
 
 ### ---------- class GetSoilGridsLayer ---------- ###
 
+#GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG1,1)
 class GetSoilGridsLayer:
     "downbloading a SOILGRIDS layer from WCS service"
     def __init__(self, mask, ESPG="",s="", i=1, j = 1):
@@ -433,7 +434,7 @@ class GetSoilGridsLayer:
         self.varname = s
         self.layer = i
         self.outlayer = j
-        self.debug = 1 #Debug_
+        self.debug = 0 #Debug_
         self.ESPG = ESPG
 
         if self.layer == 1: ID='_0-5cm_mean'
@@ -444,7 +445,7 @@ class GetSoilGridsLayer:
         if self.layer == 6: ID='_100-200cm_mean'
 
         #if self.debug == 1:
-        print("===> Processing layer "+str(self.outlayer)+": "+self.varname+ID, flush=True)
+        print("   => Downloading for soil layer "+str(self.outlayer)+": "+self.varname+ID, flush=True)
 
        # raster=gdal.Open(self.mask)
         ESPG = 'urn:ogc:def:crs:EPSG::{0}'.format(self.ESPG)
@@ -472,28 +473,28 @@ class GetSoilGridsLayer:
             print("Downloading "+variable, flush=True)
 
         # get data as temp geotif and save to disk
-        #response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=dx,resy=dx,format='GEOTIFF_INT16')
-        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=200,resy=200,format='GEOTIFF_INT16')
+        response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=dx,resy=dx,format='GEOTIFF_INT16')
+        #response = wcs.getCoverage(identifier=variable,crs=ESPG,bbox=maskbox,resx=200,resy=200,format='GEOTIFF_INT16')
         with open(outputnametif, 'wb') as file:
              file.write(response.read())
 
+        ## this is a separate function now
+
         # warp to some interpolation
-        src = gdal.Open(outputnametif) #, gdalconst.GA_ReadOnly)
-        src_proj = src.GetProjection()
-        src_geotrans = src.GetGeoTransform()       
-        nrRows1 = 134 #src_geotrans.RasterYSize
-        nrCols1 = 124 #src_geotrans.RasterXSize
+        #src = gdal.Open(outputnametif) #, gdalconst.GA_ReadOnly)
+        #src_proj = src.GetProjection()
+        #src_geotrans = src.GetGeoTransform()       
+        #nrRows1 = src_geotrans.RasterYSize
+        #nrCols1 = src_geotrans.RasterXSize
         
-        dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols1, nrRows1, 1,
-                                   gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
-        dst.SetGeoTransform( src_geotrans )
-        dst.SetProjection( src_proj )
-        gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Cubic)
-        #gdalconst.GRA_Bilinear)
-        dst = None
-        src = None
-        
-        
+        # dst = gdal.GetDriverByName('PCRaster').Create(outputnamemap, nrCols1, nrRows1, 1,
+        #                            gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        # dst.SetGeoTransform( src_geotrans )
+        # dst.SetProjection( src_proj )
+        # gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Cubic)
+        # #gdalconst.GRA_Bilinear)
+        # dst = None
+        # src = None
         
         
         # brute force convert tif to map by calling pcrcalc !!!!
@@ -502,6 +503,60 @@ class GetSoilGridsLayer:
         # arg = '{0}{1}.map={0}{1}.tif'.format(self.varname,str(self.outlayer))
         # subprocess.run([CMD,arg])
 
+### ---------- class PedoTranfer() ---------- ###
+
+
+class SoilGridsTransform(StaticModel):
+    def __init__(self, mask=0, mapnr=1, layer=1):
+        StaticModel.__init__(self)
+    def initial(self):
+        global DEM_
+        DEM = DEM_
+        mask = mask_
+        xs = str(layer_)
+        mapnr = mapnr_
+        name = ""
+        factor = 1.0
+
+        if mapnr == 0: name = "sand{0}".format(xs); factor = 0.001  # fraction sand
+        if mapnr == 1: name = "clay{0}".format(xs); factor = 0.001  # fraction silt
+        if mapnr == 2: name = "silt{0}".format(xs); factor = 0.001  # fraction clay
+        if mapnr == 3: name = "soc{0}".format(xs); factor = 0.0001  # fraction SOC
+        if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001   # fraction gravel
+        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # kg
+        
+        nametif = name+".tif"
+        namemap = name+"_.map"
+        namemap2 = name+".map"
+        
+        # open the tif
+        src = gdal.Open(nametif)
+        src_proj = src.GetProjection()
+        src_geotrans = src.GetGeoTransform()       
+        nrRows1 = src.RasterYSize
+        nrCols1 = src.RasterXSize
+        
+        # convert to pcraster map and svae to disk
+        dst = gdal.GetDriverByName('PCRaster').Create(namemap, nrCols1, nrRows1, 1,
+                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        dst.SetGeoTransform( src_geotrans )
+        dst.SetProjection( src_proj )
+        gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Bilinear)
+        dst = None        
+        src = None
+        
+        # open the map created above as PCRaster map
+        map_ = readmap(namemap)  
+        # give the missing areas the value nominal 1, the rest 0
+        mapmask = ifthenelse(map_ > 1e-5,0,nominal(1))
+        # isolate the pixels arounf the missing value, 1 cell thick
+        edge = ifthen(spread(mapmask,0,1) == celllength(), map_)
+        # interpolate into the missing areas with the edge cell values, ID weight 2
+        map1 = inversedistance(boolean(mapmask),edge,2,0,0)                
+        # combine the original and the ID map into one and save
+        map2 = cover(ifthen(map_ > 1e-5,map_),map1)*factor
+        report(map2,namemap2)
+        
 
 
 ### ---------- class PedoTranfer() ---------- ###
@@ -522,9 +577,7 @@ class PedoTransfer(StaticModel):
         global rivers_
         DEM = DEM_
         xs = str(x)
-        
-        Sname = "sand{0}.map".format(str(x))
-
+ 
         S1 = readmap("sand{0}.map".format(xs))  # sand g/kg
         Si1 = readmap("silt{0}.map".format(xs)) # silt g/kg
         C1 = readmap("clay{0}.map".format(xs))  # clay g/kg
@@ -545,52 +598,25 @@ class PedoTransfer(StaticModel):
         psi1 = psiName+"{0}.map".format(xs)  		    # suction with init moisture in cm, used in LISEM
         Densityfactor1 = "densfact{0}.map".format(xs)
 
-        print(">>> Creating infil params layer "+xs, flush=True)
+        print(">>> Creating infiltration parameters for layer "+xs, flush=True)
 
-        S = S1/1000  # from g/kg to fraction
-        C = C1/1000
-        Si = Si1/1000
-        OC = (OC1/10000)*100  # conversion OC from dg/kg to percentage
-        OM = OC*1.73  #/2.0   #conversion org carbon to org matter factor 2
-
-        #unitmap = readmap(landuseName)
-        
-        ## VJ 210530 concevt to nominal maps
-        Sn = nominal(S*1000)
-        Sin = nominal(Si*1000)
-        Cn = nominal(C*1000)
-        OMn = nominal(OM*1000)
-        bd1n = nominal(bd1*1000)
-        Grvn = nominal(Grv*1000)
-        
-
-        Sa = ifthen(S > 1e-5,S)
-        Sia = ifthen(Si > 1e-5,Si)
-        Ca = ifthen(C > 1e-5,C)
-        OMa = ifthen(OM > 1e-5,OM)
-        bda = ifthen(bd1 > 1e-5,bd1)
-        Grva = ifthen(Grv > 1e-5,Grv)
-
-        # quick and dirty filling up from the sides
-        S = scalar(spreadzone(Sn,0,1))/1000.0
-        Si = scalar(spreadzone(Sin,0,1))/1000.0
-        C = scalar(spreadzone(Cn,0,1))/1000.0
-        OM = scalar(spreadzone(OMn,0,1))/1000.0
-        bd1 = scalar(spreadzone(bd1n,0,1))/1000.0
-        Grv= scalar(spreadzone(Grvn,0,1))/1000.0        
-        
-        Sa = ifthen(S > 1e-5,S)
-        ##Said = inversedistance(1,S,2,0,5)
-        #report(Said, Sname) 
-        
-
+        S = S1 #/1000  # from g/kg to fraction
+        C = C1 #/1000
+        Si = Si1 #/1000
+        OC = OC1*100 #(OC1/10)*100  # conversion OC from dg/kg to percentage
+        OM = OC*1.73   #conversion org carbon to org matter factor 2
         report(OM, om1)
 
+        lun = readmap(landuseName)
         densityveg = lookupscalar(LULCtable, 5, lun)
 
-        bdsg = bd1*10            #bulkdensity cg/m3 to kg/m3
+        bdsg = bd1 #*10            #bulkdensity cg/m3 to kg/m3
         bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
-        Gravel = Grv/1000  # from cm3/dm3 (1000 cc in a liter)
+        #Gravel = Grv #/1000  # from cm3/dm3 (1000 cc in a liter)
+        Gravel = ifthenelse(Grv > 0, Grv * (1-standardBD/(Grv*2.65+(1-Grv)*standardBD)),0)
+        
+        # convert g/g to volumetric gravel content
+        
         Densityfactor = scalar(1.0)
         #Densityfactor = densityveg * scalar(0.95) #bdsg/standardBD*Dens #(1-0.1*cover)
         if useBulkdensity == 1:
@@ -603,6 +629,10 @@ class PedoTransfer(StaticModel):
 
         # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
         report(Densityfactor,Densityfactor1)
+
+        #Densityfactor *= standardBD/(Gravel*2.65+(1-Gravel)*standardBD)
+        #Gravel *= 0
+        #Gravel = Gravel * (1-StandardBG/(Gravel*2.65+(1-Gravel)*StandardBG))
 
         # wilting point stuff
         M1500 =-0.024*S+0.487*C+0.006*OM+0.005*S*OM-0.013*C*OM+0.068*S*C+0.031  #W18)
@@ -630,6 +660,9 @@ class PedoTransfer(StaticModel):
         PoreMcomp = POROSITY-M33comp  #AK18)
         LAMBDA = (ln(M33comp)-ln(M1500adj))/(ln(1500)-ln(33))  #AL18)
         GravelRedKsat =(1-Gravel)/(1-Gravel*(1-1.5*(Dens_comp/2.65)))  #AM18)
+        # NOTE: soilgrids gravel is a volume fraction while the PTF need a weight fraction
+        report(GravelRedKsat,'gravred.map')
+        
         #report(LAMBDA,'lambda.map')
         #report(PoreMcomp,'PoreMcomp.map')
         #report(M33comp,'M33comp.map')
@@ -656,6 +689,10 @@ class PedoTransfer(StaticModel):
         report(FC,FC1)
         report(PAW,PAW1)
         report(initmoist,initmoist1)
+        
+        stone = Gravel
+        report(stone,stoneName)
+        # gravel fraction assumed zero
 
         # A = exp[ln(33) + B ln(T33)]
         # B = [ln(1500) - ln(33)] / [ln(T33) - ln(T1500)]
@@ -675,10 +712,13 @@ class PedoTransfer(StaticModel):
         #SOILDEPTH
        # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
        # +0.5*(distsea/mapmaximum(distsea))**0.1
-        chanm = scalar(0)
         rivfact = mask*0
+        chanm = mask*0;
         if  doProcessesChannels == 1:
             chanm = cover(rivers_, 0)*mask       
+        else:
+            chanm = readmap(chanmaskName) 
+        
             
         distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
         rivfact = -0.5*distriv/mapmaximum(distriv)
@@ -687,11 +727,11 @@ class PedoTransfer(StaticModel):
         if x == 1 :
             soildepth1 = soildepth1depth*mask
             report(soildepth1,soildep1Name)
-        if x == 2 :                                      
+        if x == 2 :
             # steeper slopes giver undeep soils
             soild = mask*cover((1-min(1,slope(DEM)))+rivfact,0)
             #soild = mask*cover((1-min(1,slope(DEM)))+rivfact+100*profcurv(DEM),0) #
-            soildb = 2000*(soild)**1.5
+            soildb = min(soildepth2depth,soildepth2depth*(soild)**1.5)
             # m to mm for lisem, higher power emphasizes depth
             soildb = windowaverage(soildb,3*celllength())
             # smooth because soil depth does not follow dem exactly        
@@ -767,7 +807,7 @@ class ErosionMaps(StaticModel):
             # self.assert_(string.find(message, "Raster sand1.map: can not be opened. Get SOILGRIDS maps first") != -1)
 
 
-            print('>>> estimating d50 and d90 from regression texture of every cell (may take some time) ', flush=True)
+            print('>>> estimating d50 and d90 from log-linear regression for every cell', flush=True)
             
             #convert texture maps to 2D arrays to access cells, -9999 is MV
             cp = pcr2numpy(C, -9999)
@@ -779,30 +819,28 @@ class ErosionMaps(StaticModel):
 
             # linear regression on 3 points: cum fractions C,C+si,C+si+sa, against LN of grainsize
             # then find grainsize for median 0.5 (50%) and 90% quantile
-            #step = 1
             for row in range(1,nrRows) :
-                #sss = "D50-D90 ["+"#"*step+"-"*(50-step-1)+"]"
-                if row % int(nrRows/50+0.5) == 0 :
-                    #step += 1
-                    #print("\r" + sss, end="", flush=True)
+                if row % int(nrRows/50) == 0 :
                     update_progress(row/nrRows)
                 for col in range(1,nrCols) :
                     c = cp[row][col]#cellvalue(C, row, col)
                     si = sip[row][col]#cellvalue(Si, row, col)
                     s = sp[row][col]#cellvalue(S, row, col)
-                    x = [c,c+si,1.0]
+                    x = [c,c+si,c+si+s]
                     y = [0.693147181,3.912023005,6.214608098] # LN of average gransize clay (2), silt (50)  sand (500)
                     res = stats.linregress(x, y)
                     #print("a",res.intercept)
                     #print("a",res.slope)
                     # # linear regression between cumulative texture fraction and ln(grainsize)
-                    if res.slope > 1e-3 :
-                        d50p[row][col] = exp(0.5*res.slope+res.intercept) #exp((0.5-res.intercept)/res.slope)
-                        d90p[row][col] = exp(0.9*res.slope+res.intercept)#exp((0.9-res.intercept)/res.slope)
-                    else :
-                        d50p[row][col] = 0
-                        d90p[row][col] = 0
-                    #print(row,col,c,si,s,d50p[row][col],res.intercept,res.slope)
+                    d50p[row][col] = exp(0.5*res.slope+res.intercept) #exp((0.5-res.intercept)/res.slope)
+                    d90p[row][col] = exp(0.9*res.slope+res.intercept) #exp((0.9-res.intercept)/res.slope)
+                    # if res.slope > 1e-3 :
+                    #     d50p[row][col] = exp((0.5-res.intercept)/res.slope)
+                    #     d50p[row][col] = exp((0.9-res.intercept)/res.slope)
+                    # else :
+                    #     d50p[row][col] = 0
+                    #     d90p[row][col] = 0
+                    # print(row,col,c,si,s,d50p[row][col],res.intercept,res.slope)
 
             # convert 2D array to PCRaster and report
             D50 = numpy2pcr(Scalar,d50p,-9999)
@@ -822,7 +860,7 @@ class ErosionMaps(StaticModel):
 
 
 if __name__ == "__main__":
-    print(">>> Reading standard options",flush=True)
+    print(">>> Reading interface options",flush=True)
 
     #default values for interface options
     doProcessesDEM = 1
@@ -833,13 +871,14 @@ if __name__ == "__main__":
     doProcessesErosion = 1
     doProcessesDams = 1
     doChannelNoEros = 1
+    doProcessesSGInterpolation = 1
     optionD50 = 0
     optionSG1 = 2
     optionSG2 = 4
-    chA = 1.000
+    chWidth = 500.0
     chB = 0.459  #=1/2.18
     chC = 0.300
-    chD = 1.0
+    chDepth = 5.0
     chBaseflow = 0
     doCorrectDEM = 0
     doUserOutlets = 0  ## VJ 210523  added options user defined outlets that are forced in the DEM
@@ -849,6 +888,7 @@ if __name__ == "__main__":
     standardbulkdensity_ = 1350.0
     initmoisture_ = 0.0
     rootzone = 0.6
+    maxSoildepth = 5.0
     
     ### input maps ###
     MapsDir = "/Maps"
@@ -861,7 +901,7 @@ if __name__ == "__main__":
     masknamemap_ = "mask0.map"
     
     lulcTIF = "lulc.tif"
-    lulcTable = "lulc.tbl"
+    LULCtable = "lulc.tbl"
     fillDEM = 10  # use fill dem with lddcreatedem, if doCorrectDEM = 0 then this is not used
     catchmentsize_ = 10000
     ESPGnumber = "32644"
@@ -896,13 +936,14 @@ if __name__ == "__main__":
     MapsDir = myvars["MapsDirectory"]
     #lulcDir = myvars["LULCDirectory"]
     lulcTIF = myvars["LULCmap"]
-    lulcTable = myvars["LULCtable"]
+    LULCtable = myvars["LULCtable"]
     ESPGnumber = myvars["ESPGnumber"]
     doProcessesDEM = int(myvars["optionDEM"])
     doProcessesChannels = int(myvars["optionChannels"])
     doProcessesDams = int(myvars["optionIncludeDams"])
     doProcessesInfil = int(myvars["optionInfil"])
     doProcessesSG = int(myvars["optionSG"])
+    doProcessesSGInterpolation = int(myvars["optionSGInterpolation"])
     doProcessesLULC = int(myvars["optionLULC"])
     doProcessesErosion = int(myvars["optionErosion"])
     #doChannelNoEros = int(myvars["optionChannelNoEros"])
@@ -919,12 +960,13 @@ if __name__ == "__main__":
     initmoisture_ = float(myvars["initmoist"])  ## VJ 210523 was wrong initmoist_
     fillDEM = float(myvars["DEMfill"]) ### VJ 210522 was int
     CatchmentSize_ = float(myvars["CatchmentSize"]) ### VJ210713 was not included
-    chA = float(myvars["chA"]) 
+    chWidth = float(myvars["chWidth"])
+    chDepth = float(myvars["chDepth"])
     chB = float(myvars["chB"]) 
     chC = float(myvars["chC"]) 
-    chD = float(myvars["chD"]) 
     chBaseflow = float(myvars["chBaseflow"]) 
     rootzone = float(myvars["refRootzone"]) 
+    maxSoildepth = float(myvars["refMaxSoildepth"]) 
 
     # main options determine the suboptions:
     if doProcessesInfil == 0 :
@@ -1062,11 +1104,12 @@ if __name__ == "__main__":
 
     #maps that are needed in multiple classes
     soildepth1depth = rootzone*1000           # mm of first layer and minimal soildepth
+    soildepth2depth = maxSoildepth*1000           # mm of first layer and minimal soildepth
     Ldd_ = ldd(0*mask_)
-    Ksaturban_ = scalar(5)
-    Poreurban_ = scalar(0.45)
-    unitBuild_ = nominal(3)  # to adapt ksat pore urban areas
-    unitWater_ = nominal(9)  # to adapt ksat pore water
+    # Ksaturban_ = scalar(5)
+    # Poreurban_ = scalar(0.45)
+    # unitBuild_ = nominal(3)  # to adapt ksat pore urban areas
+    # unitWater_ = nominal(9)  # to adapt ksat pore water
     standardBD = scalar(standardbulkdensity_)
     
     Debug_ = False
@@ -1088,33 +1131,8 @@ if __name__ == "__main__":
     urx = llx + nrCols*dx
     lly = ury + dy*nrRows
     maskbox = [llx,lly,urx,ury]
-
-    print('>>> Reading land use map and table', flush=True)
-    LULCtable = lulcTable #lulcDir+
-    LULCmap = lulcTIF #lulcDir+
-    src = gdal.Open(LULCmap)
-    # get ESPG number
-    #ESPG = osr.SpatialReference(wkt=src.GetProjection()).GetAttrValue('AUTHORITY',1)
     ESPG = int(ESPGnumber)
-
-    #print(ESPG, flush=True)
-    #cutout and convert
-    dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
-                                gdalconst.GDT_Int32,["PCRASTER_VALUESCALE=VS_NOMINAL"])
-    dst.SetGeoTransform( maskgeotrans )
-    dst.SetProjection( maskproj )
-    gdal.ReprojectImage(src, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
-    dst = None
-    src = None
-
-    lun = readmap(landuseName)
-    # lun = nominal(lu)
-    lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units
-    #report(lun,landuseName)
-
-    mask_ = ifthen( boolean(mask_ == 1) & boolean(lun != 0),scalar(1))
-    report(ifthen(mask_ == 1, lun),landuseName)
-
+    
     if doProcessesDEM == 1 :
         print('>>> Create dem derivatives, slope, LDD', flush=True)
         staticModelDEM = StaticFramework(DEMderivatives())
@@ -1123,29 +1141,59 @@ if __name__ == "__main__":
     if doProcessesChannels == 1:
         print('>>> Create channel maps', flush=True)
         staticModelCH = StaticFramework(ChannelMaps())
-        staticModelCH.run()
-       
+        staticModelCH.run()       
 
     if doProcessesLULC == 1:
+        print('>>> Converting LULC tif map to PCRaster for the research area', flush=True)
+        LULCmap = lulcTIF 
+        src = gdal.Open(LULCmap)
+        #cutout and convert
+        dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
+                                    gdalconst.GDT_Int32,["PCRASTER_VALUESCALE=VS_NOMINAL"])
+        dst.SetGeoTransform( maskgeotrans )
+        dst.SetProjection( maskproj )
+        gdal.ReprojectImage(src, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
+        dst = None
+        src = None
+        
+        lun = readmap(landuseName)
+        lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units
+        #mask_ = ifthen( boolean(mask_ == 1) & boolean(lun != 0),scalar(1))
+        report(ifthen(mask_ == 1, lun),landuseName)
+
         print('>>> Create surface and land use related maps', flush=True)
         staticModelSURF = StaticFramework(SurfaceMaps())
         staticModelSURF.run()
-
 
     # soil and infiltration maps
     if doProcessesSG == 1:
          # soilgrid layer rootnames: S, Si, C, soil org carbon, coarse fragments, bulk dens
 
-        print(">>> Downloading SOILGRIDS layers and creating infiltration maps", flush=True)
+        print(">>> Downloading SOILGRIDS layers from web server ISRIC", flush=True)
         #soigrid map names for texture, doil organic carbon, course fragments, bulk dens
         #print(optionSG1,optionSG2, flush=True)
+        # SG_names_[] are server var names for the maps
         for x in range(0,6):
             GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG1,1)
-       # for x in range(0,6):
-         #   GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG2,2)
+        for x in range(0,6):
+            GetSoilGridsLayer(masknamemap_,ESPG,SG_names_[x],optionSG2,2)
 
+    # fill in missing vaklues and convert to fractions
+    if doProcessesSGInterpolation == 1:
+        print(">>> Inverse distance interpolation SOILGRIDS layers for missing values", flush=True)
+        for x in range(0,6):
+            layer_ = 1
+            mapnr_ = x
+            staticModel = StaticFramework(SoilGridsTransform())
+            staticModel.run()
+        for x in range(0,6):
+            layer_ = 2
+            mapnr_ = x
+            staticModel = StaticFramework(SoilGridsTransform())
+            staticModel.run()                       
 
     if doProcessesInfil == 1:
+        print(">>> Creating soil physical maps for infiltration", flush=True)
         staticModel = StaticFramework(PedoTransfer())
         layer_ = 1
         staticModel.run()

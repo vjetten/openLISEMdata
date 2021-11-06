@@ -41,6 +41,7 @@ public:
     int optionChannels;
     int optionLULC;
     int optionSG;
+    int optionSGInterpolation;
     int optionInfil;
     int optionErosion;
     int optionD50;
@@ -52,14 +53,13 @@ public:
     int optionPruneBranch;
     int optionIncludeDams;
     int optionChannelsNoEros;
-    double chA;
     double chB;
     double chC;
-    double chD;
     double chWidth;
     double chDepth;
     double chBaseflow;
     double refRootzone;
+    double refMaxSoildepth;
 
     QStringList LULCspare;
 
@@ -141,13 +141,7 @@ private slots:
 
     void on_checkBox_userefBD_toggled(bool checked);
 
-
-
     void on_toolButton_Dams_clicked();
-
-    void on_spin_chWidth_valueChanged(double arg1);
-
-    void on_spin_chDepth_valueChanged(double arg1);
 
     void on_toolButton_openIni_clicked();
 

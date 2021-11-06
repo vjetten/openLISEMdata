@@ -38,51 +38,58 @@ void MainWindow::setIni(QString sss)
 {
     QSettings settings(sss,QSettings::IniFormat);
     settings.clear();
+    settings.sync();
 
     settings.setValue("CondaDirectory", CondaBaseDirName);
     settings.setValue("Script", ScriptFileName);
     settings.setValue("BaseDirectory", BaseDirName);
+    settings.setValue("MapsDirectory", MapsDirName);
+    settings.setValue("ESPGnumber", ESPGnumber);
+
     settings.setValue("BaseDEM", BaseDEMName);
     settings.setValue("BaseChannel", BaseChannelName);
-    settings.setValue("BaseOutlets", BaseOutletsName);
-    settings.setValue("BaseDams", BaseDamsName);
-    settings.setValue("MapsDirectory", MapsDirName);
+
+    settings.setValue("DEM/optionCatchments", QString::number(optionCatchments));
+    settings.setValue("DEM/optionDEM", QString::number(optionDEM));
+    settings.setValue("DEM/CatchmentSize", QString::number(CatchmentSize, 'f', 2));
+    settings.setValue("DEM/optionFillDEM", QString::number(optionFillDEM));
+    settings.setValue("DEM/DEMfill", QString::number(DEMfill, 'f', 2));
+
+    settings.setValue("CHANNEL/optionChannels", QString::number(optionChannels));
+    settings.setValue("CHANNEL/optionPruneBranch", QString::number(optionPruneBranch));
+    settings.setValue("CHANNEL/optionIncludeDams", QString::number(optionIncludeDams));
+    settings.setValue("CHANNEL/BaseDams", BaseDamsName);
+    settings.setValue("CHANNEL/optionUserOutlets", QString::number(optionUserOutlets));  //0=1 outlet, >0 is multiple
+   // settings.setValue("CHANNEL/chA", QString::number(chWidth, 'f', 1));
+  //  settings.setValue("CHANNEL/chD", QString::number(chDepth, 'f', 1));
+    settings.setValue("CHANNEL/chWidth", QString::number(chWidth, 'f', 1));
+    settings.setValue("CHANNEL/chB", QString::number(chB, 'f', 3));
+    settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 1));
+    settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
+    settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 1));
+    settings.setValue("CHANNEL/BaseOutlets", BaseOutletsName);
+    settings.setValue("CHANNEL/Outletstable", OutletstableName);
+
+    settings.setValue("LULC/optionLULC", QString::number(optionLULC));
   //  settings.setValue("LULCDirectory", LULCDirName);
-    settings.setValue("LULCmap", LULCmapName);
-    settings.setValue("LULCtable", LULCtableName);
-    settings.setValue("ESPGnumber", ESPGnumber);
-    settings.setValue("Outletstable", OutletstableName);
+    settings.setValue("LULC/LULCmap", LULCmapName);
+    settings.setValue("LULC/LULCtable", LULCtableName);
 
-    settings.setValue("optionDEM", QString::number(optionDEM));
-    settings.setValue("optionChannels", QString::number(optionChannels));
-    settings.setValue("optionInfil", QString::number(optionInfil));
-    settings.setValue("optionErosion", QString::number(optionErosion));
-    settings.setValue("optionD50", QString::number(optionD50));
-    settings.setValue("optionSG", QString::number(optionSG));
-    settings.setValue("optionLULC", QString::number(optionLULC));
-    settings.setValue("optionUseBD", QString::number(optionUseBD));
-    settings.setValue("optionUseDensity", QString::number(optionUseDensity));
-    settings.setValue("optionFillDEM", QString::number(optionFillDEM));
-    settings.setValue("optionCatchments", QString::number(optionCatchments));
-    settings.setValue("optionUserOutlets", QString::number(optionUserOutlets));
-    settings.setValue("optionPruneBranch", QString::number(optionPruneBranch));
-    settings.setValue("optionIncludeDams", QString::number(optionIncludeDams));
-    settings.setValue("optionChannelsNoEros", QString::number(optionChannelsNoEros));
+    settings.setValue("SOIL/optionInfil", QString::number(optionInfil));
+    settings.setValue("SOIL/optionSG", QString::number(optionSG)); // do soilgrids
+    settings.setValue("SOIL/optionSG1", QString::number(SG1));
+    settings.setValue("SOIL/optionSG2", QString::number(SG2));
+    settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
+    settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
+    settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
+    settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
+    settings.setValue("SOIL/refRootzone", QString::number(refRootzone, 'f', 2));
+    settings.setValue("SOIL/refMaxSoildepth", QString::number(refMaxSoildepth, 'f', 2));
+    settings.setValue("SOIL/initmoist", QString::number(initmoist, 'f', 2));
 
-    settings.setValue("refBulkDens", QString::number(refBulkDens, 'f', 0));
-    settings.setValue("refRootzone", QString::number(refRootzone, 'f', 2));
-    settings.setValue("initmoist", QString::number(initmoist, 'f', 2));
-    settings.setValue("optionSG1", QString::number(SG1));
-    settings.setValue("optionSG2", QString::number(SG2));
-    settings.setValue("DEMfill", QString::number(DEMfill, 'f', 2));
-    settings.setValue("CatchmentSize", QString::number(CatchmentSize, 'f', 2));
-    settings.setValue("chA", QString::number(chWidth, 'f', 1));
-    settings.setValue("chB", QString::number(chB, 'f', 3));
-    settings.setValue("chC", QString::number(chC, 'f', 3));
-    settings.setValue("chD", QString::number(chDepth, 'f', 1));
-    settings.setValue("chWidth", QString::number(chWidth, 'f', 1));
-    settings.setValue("chDepth", QString::number(chDepth, 'f', 1));
-    settings.setValue("chBaseflow", QString::number(chBaseflow, 'f', 1));
+    settings.setValue("EROSION/optionErosion", QString::number(optionErosion));
+    settings.setValue("EROSION/optionD50", QString::number(optionD50));
+    settings.setValue("EROSION/optionChannelsNoEros", QString::number(optionChannelsNoEros));
 
     settings.sync();
 }
@@ -95,93 +102,102 @@ void MainWindow::getIni(QString name)
     CondaBaseDirName = settings.value("CondaDirectory").toString();
     ScriptFileName = settings.value("Script").toString();
     BaseDirName = settings.value("BaseDirectory").toString();
+    MapsDirName = settings.value("MapsDirectory").toString();
+    ESPGnumber = settings.value("ESPGnumber").toString();
+
     BaseDEMName = settings.value("BaseDEM").toString();
     BaseChannelName = settings.value("BaseChannel").toString();
-    BaseOutletsName = settings.value("BaseOutlets").toString();
-    BaseDamsName = settings.value("BaseDams").toString();
-    MapsDirName = settings.value("MapsDirectory").toString();
-    //LULCDirName = settings.value("LULCDirectory").toString();
-    LULCmapName = settings.value("LULCmap").toString();
-    LULCtableName = settings.value("LULCtable").toString();
-    ESPGnumber = settings.value("ESPGnumber").toString();
-    OutletstableName = settings.value("Outletstable").toString();
 
-    optionDEM = settings.value("optionDEM").toInt();
-    optionChannels = settings.value("optionChannels").toInt();
-    optionInfil = settings.value("optionInfil").toInt();
-    optionSG = settings.value("optionSG").toInt();
-    optionLULC = settings.value("optionLULC").toInt();
-    optionErosion = settings.value("optionErosion").toInt();
-    optionD50 = settings.value("optionD50").toInt();
-    optionUseBD = settings.value("optionUseBD").toInt();
-    optionUseDensity = settings.value("optionUseDensity").toInt();
-    optionFillDEM = settings.value("optionFillDEM").toInt();
-    optionCatchments = settings.value("optionCatchments").toInt();
-    optionUserOutlets = settings.value("optionUserOutlets").toInt();
-    optionPruneBranch = settings.value("optionPruneBranch").toInt();
-    optionIncludeDams = settings.value("optionIncludeDams").toInt();
-    optionChannelsNoEros = settings.value("optionChannelNoEros").toInt();
+    optionCatchments = settings.value("DEM/optionCatchments").toInt();
+    optionDEM = settings.value("DEM/optionDEM").toInt();
+    CatchmentSize = settings.value("DEM/CatchmentSize").toDouble();
+    optionFillDEM = settings.value("DEM/optionFillDEM").toInt();
+    DEMfill = settings.value("DEM/DEMfill").toDouble();
 
-    refBulkDens = settings.value("refBulkDens").toDouble();
-    refRootzone = settings.value("refRootzone").toDouble();
-    initmoist = settings.value("initmoist").toDouble();
-    SG1 = settings.value("optionSG1").toInt();
-    SG2 = settings.value("optionSG2").toInt();
-    DEMfill = settings.value("DEMfill").toDouble();
-    CatchmentSize = settings.value("CatchmentSize").toDouble();
-    chA = settings.value("chA").toDouble();
-    chB = settings.value("chB").toDouble();
-    chC = settings.value("chC").toDouble();
-    chD = settings.value("chD").toDouble();
-    chWidth = settings.value("chWidth").toDouble();
-    chDepth = settings.value("chDepth").toDouble();
-    chBaseflow = settings.value("chBaseflow").toDouble();
+    optionChannels = settings.value("CHANNEL/optionChannels").toInt();
+    optionPruneBranch = settings.value("CHANNEL/optionPruneBranch").toInt();
+    optionIncludeDams = settings.value("CHANNEL/optionIncludeDams").toInt();
+    BaseDamsName = settings.value("CHANNEL/BaseDams").toString();
+    optionUserOutlets = settings.value("CHANNEL/optionUserOutlets").toInt();
+   // chA = settings.value("CHANNEL/chA").toDouble();
+   // chD = settings.value("CHANNEL/chD").toDouble();
+    chWidth = settings.value("CHANNEL/chWidth").toDouble();
+    chB = settings.value("CHANNEL/chB").toDouble();
+    chDepth = settings.value("CHANNEL/chDepth").toDouble();
+    chC = settings.value("CHANNEL/chC").toDouble();
+    chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
+    BaseOutletsName = settings.value("CHANNEL/BaseOutlets").toString();
+    OutletstableName = settings.value("CHANNEL/Outletstable").toString();
+
+    optionLULC = settings.value("LULC/optionLULC").toInt();
+    LULCmapName = settings.value("LULC/LULCmap").toString();
+    LULCtableName = settings.value("LULC/LULCtable").toString();
+
+    optionInfil = settings.value("SOIL/optionInfil").toInt();
+    optionSG = settings.value("SOIL/optionSG").toInt();
+    SG1 = settings.value("SOIL/optionSG1").toInt();
+    SG2 = settings.value("SOIL/optionSG2").toInt();
+    optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
+    optionUseBD = settings.value("SOIL/optionUseBD").toInt();
+    optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
+    refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
+    refRootzone = settings.value("SOIL/refRootzone").toDouble();
+    refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
+    initmoist = settings.value("SOIL/initmoist").toDouble();
+
+    optionErosion = settings.value("EROSION/optionErosion").toInt();
+    optionD50 = settings.value("EROSION/optionD50").toInt();
+    optionChannelsNoEros = settings.value("EROSION/optionChannelNoEros").toInt();
 
 }
 
 void MainWindow::readValuesfromUI()
 {
     CondaBaseDirName = combo_envs->currentText();
-    SG1 = comboBox_SGlayer1->currentIndex();
-    SG2 = comboBox_SGlayer2->currentIndex();
+    ScriptFileName= lineEdit_Script->text();
     BaseDirName = lineEdit_Base->text();
+    MapsDirName = lineEdit_Maps->text();
     BaseDEMName = lineEdit_baseDEM->text();
     BaseChannelName = lineEdit_baseChannel->text();
-    BaseOutletsName = lineEdit_userOutlets->text();
-    BaseDamsName = lineEdit_Dams->text();
-    MapsDirName = lineEdit_Maps->text();
-  //  LULCDirName = lineEdit_LULC->text();
-    LULCmapName = lineEdit_LULCMap->text();
-    LULCtableName = lineEdit_LULCTable->text();
-    OutletstableName = lineEdit_outletsTable->text();
     ESPGnumber = E_ESPGnumber->text();
-    ScriptFileName= lineEdit_Script->text();
-    initmoist = spin_initmoist->value();
-    refBulkDens = spin_refBD->value();
-    refRootzone = spin_Rootzone->value();
-    DEMfill = spin_DEMfill->value();
-    CatchmentSize = E_catchmentSize->text().toDouble();
-    //chA = spin_chA->value();
-    chB = spin_chB->value();
-    chC = spin_chC->value();
-    chWidth = spin_chWidth->value();
-    chDepth = spin_chDepth->value();
-    chBaseflow = spin_chBaseflow->value();
 
-    optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
-    optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
-    optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
-    optionChannels = checkBox_Channels->isChecked() ? 1 : 0;
-    optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
-    optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
-    optionInfil = checkBox_Infil->isChecked() ? 1 : 0;
-    optionErosion = checkBox_erosion->isChecked() ? 1 : 0;
-    optionD50 = checkBox_D50->isChecked() ? 1 : 0;
-    optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
+    optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
+    CatchmentSize = E_catchmentSize->text().toDouble();
+    optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
+    DEMfill = spin_DEMfill->value();
+
+    optionChannels = checkBox_Channels->isChecked() ? 1 : 0;
     optionPruneBranch = 1; //checkBox_pruneBranch->isChecked() ? 1 : 0;
     optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
+    BaseDamsName = lineEdit_Dams->text();
     optionUserOutlets = radioButton_OutletMultiple->isChecked() ? 1 : 0;
+    chWidth = spin_chWidth->value();
+    chB = spin_chB->value();
+    chDepth = spin_chDepth->value();
+    chC = spin_chC->value();
+    chBaseflow = spin_chBaseflow->value();
+    BaseOutletsName = lineEdit_userOutlets->text();
+    OutletstableName = lineEdit_outletsTable->text();
+
+    optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
+    LULCmapName = lineEdit_LULCMap->text();
+    LULCtableName = lineEdit_LULCTable->text();
+
+    optionInfil = checkBox_Infil->isChecked() ? 1 : 0;
+    optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
+    SG1 = comboBox_SGlayer1->currentIndex();
+    SG2 = comboBox_SGlayer2->currentIndex();
+    optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
+    optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
+    optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
+    refBulkDens = spin_refBD->value();
+    refRootzone = spin_Rootzone->value();
+    refMaxSoildepth = spin_MaxSoildepth->value();
+    initmoist = spin_initmoist->value();
+
+    optionErosion = checkBox_erosion->isChecked() ? 1 : 0;
+    optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
 
 }
@@ -217,6 +233,7 @@ void MainWindow::writeValuestoUI()
     spin_chDepth->setValue(chDepth);
     spin_chBaseflow->setValue(chBaseflow);
     spin_Rootzone->setValue(refRootzone);
+    spin_MaxSoildepth->setValue(refMaxSoildepth);
 
     checkBox_DEM->setChecked(optionDEM > 0);
     checkBox_Channels->setChecked(optionChannels > 0);
@@ -234,6 +251,7 @@ void MainWindow::writeValuestoUI()
     radioButton_OutletSIngle->setChecked(optionUserOutlets == 0);
     //checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
     checkBox_createDams->setChecked(optionIncludeDams > 0);
+    checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
 
     if (optionUserOutlets == 0) {
         on_radioButton_OutletMultiple_toggled(false);
@@ -244,4 +262,6 @@ void MainWindow::writeValuestoUI()
     }
 
 }
+
+
 

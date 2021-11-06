@@ -38,7 +38,7 @@ void MainWindow::runModel()
     pythonCommandArguments << ScriptFileName;
     //pythonCommandArguments << ScriptDirName+"/lisemdbaseoptions.cfg";
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
-    qDebug() << pythonCommandArguments;
+    //qDebug() << pythonCommandArguments;
     Process->start (condaenv+"/python", pythonCommandArguments);
     Process->setReadChannel(QProcess::StandardOutput);
 }
