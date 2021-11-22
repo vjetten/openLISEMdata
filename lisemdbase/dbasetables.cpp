@@ -224,7 +224,7 @@ void MainWindow::on_toolButton_saveOutlets_clicked()
         int n = modelOutlets->rowCount();
         int m = modelOutlets->columnCount();
 
-        QString sss = QString("0 1 2\n");
+        QString sss = QString("0 1 2 3\n");
         stream << sss;
 
         for (int i=0; i<n; ++i)

@@ -289,7 +289,7 @@ void MainWindow::on_toolButton_userOutlets_clicked()
 {
     QString tmp = BaseDirName+lineEdit_userOutlets->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseOutletsName = getFileorDir(tmp,"Select outlet map", filters, 1);
+    BaseOutletsName = getFileorDir(tmp,"Select outlet map", filters, 2);
     if (!BaseOutletsName.isEmpty())
         lineEdit_userOutlets->setText(BaseOutletsName);
 }
@@ -322,6 +322,7 @@ void MainWindow::on_checkBox_Infil_toggled(bool checked)
 {
     infiloptions->setEnabled(checked);
     SGoptions->setEnabled(checked);
+    checkBox_SGInterpolation->setEnabled(checked);
     checkBox_Soilgrids->setEnabled(checked);
 }
 

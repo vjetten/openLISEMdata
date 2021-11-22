@@ -20,11 +20,11 @@ import time
 #                                               auhtor: V.Jetten 202107811
 ##############################################################################
 
-rainfilename = 'GPM kosi 2004.txt'
+rainfilename = 'GPM belheri2004.txt'
 # ioutput file name for openLISEM listing all maps
 inputdir = 'C:/data/India/GPM/GPM_Monsoon2004'
 # source folder with GPM global tiff
-outputdir = 'C:/data/India/Kosi/rain/GPM2004/'
+outputdir = 'C:/data/India/2_Belheri Basin_2US basins/rain/2014/'
 #'C:/data/India/narmada/rainfall/gpm/july2014/'
 # output folder for lisem
 
@@ -34,12 +34,12 @@ if not os.path.exists(outputdir):
     # if you don't do this you get an error later
 
 
-maskmapname = 'C:\data\India\Kosi\Maps_1.8\dem.map'
+maskmapname = 'C:/data/India/2_Belheri Basin_2US basins/Base\dem0.map'
 #'C:/CRCLisem/Narmada1/Base/dem0.map' #'C:/data/India/narmada/maps/dem.map'
 # reference map 'C:/CRCLisem/Narmada1/Base/dem0.map'
 ESPG = 32644
 # user defined espg number for reprojection
-option = -1
+option = 1
 # 0 =  nearest neighbour, 1 = bilinear interpolation while resampling, 2 =  cubic interpolation
 # if option = -1 the lisem rainfall textfile is regenerated and the conversion is skipped
 

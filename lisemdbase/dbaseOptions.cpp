@@ -205,53 +205,54 @@ void MainWindow::readValuesfromUI()
 void MainWindow::writeValuestoUI()
 {
     combo_envs->setCurrentText(CondaBaseDirName);
-    comboBox_SGlayer1->setCurrentIndex(SG1);
-    comboBox_SGlayer2->setCurrentIndex(SG2);
-
+    lineEdit_Script->setText(ScriptFileName);
     lineEdit_Base->setText(BaseDirName );
-    lineEdit_baseChannel->setText(BaseChannelName);
-    lineEdit_baseDEM->setText(BaseDEMName);
     lineEdit_Maps->setText(MapsDirName);
-    //lineEdit_LULC->setText(LULCDirName);
+    lineEdit_baseDEM->setText(BaseDEMName);
+    lineEdit_baseChannel->setText(BaseChannelName);
+    E_ESPGnumber->setText(ESPGnumber);
+
+    checkBox_Catchments->setChecked(optionCatchments > 0);
+    checkBox_DEM->setChecked(optionDEM > 0);
+    E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
+    checkBox_correctDEM->setChecked(optionFillDEM > 0);
+    spin_DEMfill->setValue(DEMfill);
+
+    checkBox_Channels->setChecked(optionChannels > 0);
+    //checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
+    checkBox_createDams->setChecked(optionIncludeDams > 0);
+    lineEdit_Dams->setText(BaseDamsName);
+    radioButton_OutletSIngle->setChecked(optionUserOutlets == 0);
+    radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
+    spin_chWidth->setValue(chWidth);
+    spin_chB->setValue(chB);
+    spin_chDepth->setValue(chDepth);
+    spin_chC->setValue(chC);
+    spin_chBaseflow->setValue(chBaseflow);
+    lineEdit_userOutlets->setText(BaseOutletsName);
+    lineEdit_outletsTable->setText(OutletstableName);
+
+    checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
 
-    lineEdit_outletsTable->setText(OutletstableName);
-
-    lineEdit_Script->setText(ScriptFileName);
-    E_ESPGnumber->setText(ESPGnumber);
-
-    spin_initmoist->setValue(initmoist);
-    spin_refBD->setValue(refBulkDens);
-    //E_DEMfill->setText(QString::number(DEMfill,'f',1));
-    spin_DEMfill->setValue(DEMfill);
-    E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
-    //spin_chA->setValue(chA);
-    spin_chB->setValue(chB);
-    spin_chC->setValue(chC);
-    spin_chWidth->setValue(chWidth);
-    spin_chDepth->setValue(chDepth);
-    spin_chBaseflow->setValue(chBaseflow);
-    spin_Rootzone->setValue(refRootzone);
-    spin_MaxSoildepth->setValue(refMaxSoildepth);
-
-    checkBox_DEM->setChecked(optionDEM > 0);
-    checkBox_Channels->setChecked(optionChannels > 0);
-    checkBox_LULC->setChecked(optionLULC > 0);
-    checkBox_Soilgrids->setChecked(optionSG > 0);
     checkBox_Infil->setChecked(optionInfil > 0);
-    checkBox_erosion->setChecked(optionErosion > 0);
-    checkBox_D50->setChecked(optionD50 > 0);
+    checkBox_Soilgrids->setChecked(optionSG > 0);
+    comboBox_SGlayer1->setCurrentIndex(SG1);
+    comboBox_SGlayer2->setCurrentIndex(SG2);
+    checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
-    checkBox_correctDEM->setChecked(optionFillDEM > 0);
-    checkBox_Catchments->setChecked(optionCatchments > 0);
+    spin_refBD->setValue(refBulkDens);
+    spin_Rootzone->setValue(refRootzone);
+    spin_MaxSoildepth->setValue(refMaxSoildepth);
+    spin_initmoist->setValue(initmoist);
+
+
+
+    checkBox_erosion->setChecked(optionErosion > 0);
+    checkBox_D50->setChecked(optionD50 > 0);
     checkBox_ChannelsNoErosion->setChecked(optionChannelsNoEros > 0);
-    radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
-    radioButton_OutletSIngle->setChecked(optionUserOutlets == 0);
-    //checkBox_pruneBranch->setChecked(optionPruneBranch > 0);
-    checkBox_createDams->setChecked(optionIncludeDams > 0);
-    checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
 
     if (optionUserOutlets == 0) {
         on_radioButton_OutletMultiple_toggled(false);
@@ -259,8 +260,7 @@ void MainWindow::writeValuestoUI()
     } else {
         on_radioButton_OutletMultiple_toggled(true);
         on_radioButton_OutletSIngle_toggled(false);
-    }
-
+    }    
 }
 
 
