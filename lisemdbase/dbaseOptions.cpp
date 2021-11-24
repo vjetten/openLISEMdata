@@ -74,6 +74,7 @@ void MainWindow::setIni(QString sss)
   //  settings.setValue("LULCDirectory", LULCDirName);
     settings.setValue("LULC/LULCmap", LULCmapName);
     settings.setValue("LULC/LULCtable", LULCtableName);
+    settings.setValue("LULC/LULCNames", LULCNames);
 
     settings.setValue("SOIL/optionInfil", QString::number(optionInfil));
     settings.setValue("SOIL/optionSG", QString::number(optionSG)); // do soilgrids
@@ -132,6 +133,7 @@ void MainWindow::getIni(QString name)
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
     LULCtableName = settings.value("LULC/LULCtable").toString();
+    LULCNames = settings.value("LULC/LULCNames").toString();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
     optionSG = settings.value("SOIL/optionSG").toInt();
@@ -183,6 +185,7 @@ void MainWindow::readValuesfromUI()
     optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
     LULCtableName = lineEdit_LULCTable->text();
+    LULCNames = lineEdit_LULCNames->text();
 
     optionInfil = checkBox_Infil->isChecked() ? 1 : 0;
     optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
@@ -235,6 +238,7 @@ void MainWindow::writeValuestoUI()
     checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
+    lineEdit_LULCNames->setText(LULCNames);
 
     checkBox_Infil->setChecked(optionInfil > 0);
     checkBox_Soilgrids->setChecked(optionSG > 0);

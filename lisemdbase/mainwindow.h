@@ -29,6 +29,7 @@ public:
     QString MapsDirName;
     QString LULCmapName;
     QString LULCtableName;
+    QString LULCNames;
     QString ESPGnumber;
     bool CondaInstall;
     int SG1;
@@ -168,6 +169,8 @@ private slots:
     void on_radioButton_OutletMultiple_toggled(bool checked);
 
     void on_checkBox_erosion_toggled(bool checked);
+
+    void on_toolButton_LULCNames_clicked();
 
 private:
     Ui::MainWindow *ui;

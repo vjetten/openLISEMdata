@@ -20,7 +20,7 @@ void MainWindow::copyLULCTable()
 
         QTextStream in(&file);
 
-        LULCspare .clear();
+        LULCspare.clear();
         while(!in.atEnd()) {
             QString line = in.readLine().simplified();
             LULCspare << line;
@@ -33,6 +33,7 @@ void MainWindow::copyLULCTable()
 void MainWindow::fillLULCTable()
 {
     QFile file(LULCtableName);
+
     if(file.open(QIODevice::ReadOnly)) {
 
         QTextStream in(&file);
@@ -40,6 +41,7 @@ void MainWindow::fillLULCTable()
         int r = 0;
         while(!in.atEnd()) {
             QString line = in.readLine().simplified();
+            qDebug() << line;
             if (r > 0) {
                 QStringList fields = line.split(QRegExp("\\s+"));
 
@@ -97,7 +99,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
 
 void MainWindow::loadLULCnames()
 {
-    QString name = QString(qApp->applicationDirPath()+"/lulcnames.ini");
+    QString name = LULCNames;//QString(qApp->applicationDirPath()+"/lulcnames.ini");
 
     QFile file(name);
     QStringList sl;
@@ -110,16 +112,16 @@ void MainWindow::loadLULCnames()
             sl << line;
         }
         file.close();
-    }
 
-    for (int i = 0; i < model->rowCount(); i++) {
-        QString S = "";
-        int m = model->verticalHeaderItem(i)->text().toInt();
-        for (int j=0; j < sl.count(); j++) {
-            if (sl[j].split("-").at(0).toInt() == m)
-                S = sl[j];
+        for (int i = 0; i < model->rowCount(); i++) {
+            QString S = "";
+            int m = model->verticalHeaderItem(i)->text().toInt();
+            for (int j=0; j < sl.count(); j++) {
+                if (sl[j].split("-").at(0).toInt() == m)
+                    S = sl[j];
+            }
+            model->verticalHeaderItem(i)->setText(S);
         }
-        model->verticalHeaderItem(i)->setText(S);
     }
 
     //assumes

@@ -20,11 +20,11 @@ import time
 #                                               auhtor: V.Jetten 202107811
 ##############################################################################
 
-rainfilename = 'GPM belheri2004.txt'
+rainfilename = 'GPM kuttiadi2018.txt'
 # ioutput file name for openLISEM listing all maps
-inputdir = 'C:/data/India/GPM/GPM_Monsoon2004'
+inputdir = 'C:/data/India/GPM/GPM_Monsoon2018'
 # source folder with GPM global tiff
-outputdir = 'C:/data/India/2_Belheri Basin_2US basins/rain/2014/'
+outputdir = 'C:/data/India/Kuttiadi/rain/2018/'
 #'C:/data/India/narmada/rainfall/gpm/july2014/'
 # output folder for lisem
 

@@ -323,7 +323,7 @@ class DamsinRivers(StaticModel):
         chanwidth=ifthenelse(buf != 0, 0.05*chanwidth, chanwidth)*chmask
         chandepth=ifthenelse(buf != 0, 0.1,chandepth)*chmask
         changrad=ifthenelse(buf != 0, 0.001,changrad)*chmask
-        chanman=ifthenelse(buf != 0, 0.2,chanman)*chmask
+        chanman=ifthenelse(buf != 0, 0.02,chanman)*chmask
         chancoh=ifthenelse(buf != 0, 100,chancoh)*chmask
         chanksat=ifthenelse(buf != 0, 100,chanksat)*chmask
 
@@ -339,7 +339,7 @@ class DamsinRivers(StaticModel):
         ksat1=readmap(ksatName+"1.map")
 
         grad=ifthenelse(buf != 0,0.001,grad)
-        n=ifthenelse(buf != 0,0.01,n)
+        n=ifthenelse(buf != 0,0.005,n)
         ksat1=ifthenelse(buf != 0,0,ksat1)
         
         report(grad,gradName)
@@ -357,6 +357,8 @@ class SurfaceMaps(StaticModel):
         global lun
         mask = mask_
         unitmap = lun #readmap(landuseName)
+        
+         # needed for erosion actually
 
         if Debug_ :
             print('create RR, n etc', flush=True)
@@ -514,12 +516,12 @@ class SoilGridsTransform(StaticModel):
         name = ""
         factor = 1.0
 
-        if mapnr == 0: name = "sand{0}".format(xs); factor = 0.001  # fraction sand
-        if mapnr == 1: name = "clay{0}".format(xs); factor = 0.001  # fraction silt
-        if mapnr == 2: name = "silt{0}".format(xs); factor = 0.001  # fraction clay
-        if mapnr == 3: name = "soc{0}".format(xs); factor = 0.0001  # fraction SOC
-        if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001   # fraction gravel
-        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # kg
+        if mapnr == 0: name = "sand{0}".format(xs); factor = 0.001  # fraction sand, server gives g/kg
+        if mapnr == 1: name = "clay{0}".format(xs); factor = 0.001  # fraction silt, server gives g/kg
+        if mapnr == 2: name = "silt{0}".format(xs); factor = 0.001  # fraction clay, server gives g/kg
+        if mapnr == 3: name = "soc{0}".format(xs);  factor = 0.0001 # fraction SOC, server give dg/kg
+        if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001  # fraction gravel, server gives cm3/dm3
+        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # bulk density kg/m3, server gives cg/cm3 
         
         nametif = name+".tif"
         namemap = name+"_.map"
@@ -596,22 +598,20 @@ class PedoTransfer(StaticModel):
 
         print(">>> Creating infiltration parameters for layer "+xs, flush=True)
 
-        S = S1 #/1000  # from g/kg to fraction
-        C = C1 #/1000
-        Si = Si1 #/1000
-        OC = OC1*100 #(OC1/10)*100  # conversion OC from dg/kg to percentage
+        S = S1 
+        C = C1 
+        Si = Si1 
+        OC = OC1*100  # conversion OC from fraction to percentage
         OM = OC*1.73   #conversion org carbon to org matter factor 2
         report(OM, om1)
 
         lun = readmap(landuseName)
         densityveg = lookupscalar(LULCtable, 5, lun)
 
-        bdsg = bd1 #*10            #bulkdensity cg/m3 to kg/m3
+        bdsg = bd1            
         bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
-        #Gravel = Grv #/1000  # from cm3/dm3 (1000 cc in a liter)
-        Gravel = ifthenelse(Grv > 0, Grv * (1-standardBD/(Grv*2.65+(1-Grv)*standardBD)),0)
-        
-        # convert g/g to volumetric gravel content
+        #Gravel = Grv 
+        Gravel = mask*ifthenelse(Grv > 0, Grv * (1-standardBD/(Grv*2650+(1-Grv)*standardBD)),0)
         
         Densityfactor = scalar(1.0)
         #Densityfactor = densityveg * scalar(0.95) #bdsg/standardBD*Dens #(1-0.1*cover)
@@ -686,9 +686,7 @@ class PedoTransfer(StaticModel):
         report(PAW,PAW1)
         report(initmoist,initmoist1)
         
-        stone = Gravel
-        report(stone,stoneName)
-        # gravel fraction assumed zero
+        report(Gravel*mask,stoneName)
 
         # A = exp[ln(33) + B ln(T33)]
         # B = [ln(1500) - ln(33)] / [ln(T33) - ln(T1500)]
@@ -759,7 +757,8 @@ class ErosionMaps(StaticModel):
         unitmap = lun #readmap(landuseName)
         Cover = readmap(coverName)
 
-        Coh = ifthenelse(C < 1e-5, -1,max(1.0, 4.316*ln(C+1.0) - 6.955))
+        #Coh = ifthenelse(C < 1e-5, -1,max(1.0, 4.316*ln(C+1.0) - 6.955))
+        Coh = ifthenelse(C < 1e-5, -1,max(1.0, 7.018*ln(C) + 13.312))
         # log fit using values below
         #Coh = lookupscalar("claycoh.tbl",C)*mask
         # content of claycoh.tbl
@@ -775,14 +774,14 @@ class ErosionMaps(StaticModel):
 
         aggrstab = 6 * mask;  # aggregate stability
         report(aggrstab,asName)
-
+        
         cohadd = lookupscalar(LULCtable, 7, unitmap) * mask #plant height in m
         
         Coh = ifthenelse(cohadd < 0, -1, Coh)    
         report(Coh, cohName)
         report(Coh,aggrstabName)
 
-        cohplant = Cover * ifthenelse(cohadd < 0,0,cohadd) * mask  # additional plant root strength
+        cohplant = cohadd #Cover * ifthenelse(cohadd < 0,0,cohadd) * mask  # additional plant root strength
         report(cohplant,cohaddName)
         
         chancoh =  Coh*cover(rivers_, 0)*mask  
@@ -1000,7 +999,7 @@ if __name__ == "__main__":
     DEMName= MapsDir+'dem.map'             # adjusted dem
     IDName= MapsDir+'id.map'               # raingauge zones, def set to 1
     IDETName= MapsDir+'idet.map'           # meteo station zones, def set to 1
-    buffersName= MapsDir+'buffer.map'      # changes in m to the dem (+ or -)
+    buffersName= MapsDir+'buffers.map'      # changes in m to the dem (+ or -)
     LddName= MapsDir+'ldd.map'             # Local Drain Direction for surface runoff
     gradName= MapsDir+'grad.map'           # slope, sine! (0-1)
     outletName= MapsDir+'outlet.map'       # location outlets and checkpoints
@@ -1149,6 +1148,7 @@ if __name__ == "__main__":
         print('>>> Converting LULC tif map to PCRaster for the research area', flush=True)
         LULCmap = lulcTIF 
         src = gdal.Open(LULCmap)
+        print(landuseName)
         #cutout and convert
         dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
                                     gdalconst.GDT_Int32,["PCRASTER_VALUESCALE=VS_NOMINAL"])
@@ -1158,11 +1158,11 @@ if __name__ == "__main__":
         dst = None
         src = None
         
+        #basic maps
         lun = readmap(landuseName)
-        lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units
-        report(lun,landunitName)
-        #mask_ = ifthen( boolean(mask_ == 1) & boolean(lun != 0),scalar(1))
+        lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units 
         report(ifthen(mask_ == 1, lun),landuseName)
+        report(ifthen(mask_ == 1, lun), landunitName)
 
         print('>>> Create surface and land use related maps', flush=True)
         staticModelSURF = StaticFramework(SurfaceMaps())
