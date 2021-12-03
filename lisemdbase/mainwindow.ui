@@ -2723,7 +2723,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 2.0 - 211104)</string>
+       <string>openLISEM database generator (version 2.1 - 211202)</string>
       </property>
      </widget>
     </item>

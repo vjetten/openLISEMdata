@@ -43,7 +43,9 @@ void MainWindow::fillLULCTable()
             QString line = in.readLine().simplified();
             qDebug() << line;
             if (r > 0) {
-                QStringList fields = line.split(QRegExp("\\s+"));
+                QStringList fields = line.split(QRegExp("="));
+                QStringList names = fields.at(0).split(QRegExp("\\s+"));
+                qDebug() << names;
 
                 for (int i = 0; i < fields.count(); i++){
                     if (i == 0)
@@ -59,7 +61,7 @@ void MainWindow::fillLULCTable()
 
         file.close();
     }
-    loadLULCnames();
+   // loadLULCnames();
 }
 
 void MainWindow::on_toolButton_saveLULC_clicked()
@@ -90,6 +92,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
                // qDebug() << model->item(i,j)->text();
             }
             QString sss = lll.join(' ')+"\n";
+           // qDebug() << sss;
             stream << sss;
         }
 
