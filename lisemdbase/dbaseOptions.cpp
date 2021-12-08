@@ -21,17 +21,6 @@ void MainWindow::getIniStart()
     }
     skeys.removeDuplicates();
     combo_iniName->addItems(skeys);
-
-//    qDebug() << keys;
-//    keys.removeDuplicates();
-//    qDebug() << keys;
-//    combo_iniName->clear();
-//    for (int i = 0; i < keys.size(); i++) {
-//        QString s = settings.value(QString(i)).toString();
-//        if (!s.isEmpty())
-//            combo_iniName->addItem(s);
-//        //settings.setValue(QString(i),combo_iniName->itemText(i));
-//    }
 }
 
 void MainWindow::setIni(QString sss)
@@ -60,8 +49,6 @@ void MainWindow::setIni(QString sss)
     settings.setValue("CHANNEL/optionIncludeDams", QString::number(optionIncludeDams));
     settings.setValue("CHANNEL/BaseDams", BaseDamsName);
     settings.setValue("CHANNEL/optionUserOutlets", QString::number(optionUserOutlets));  //0=1 outlet, >0 is multiple
-   // settings.setValue("CHANNEL/chA", QString::number(chWidth, 'f', 1));
-  //  settings.setValue("CHANNEL/chD", QString::number(chDepth, 'f', 1));
     settings.setValue("CHANNEL/chWidth", QString::number(chWidth, 'f', 1));
     settings.setValue("CHANNEL/chB", QString::number(chB, 'f', 3));
     settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 1));
@@ -71,10 +58,9 @@ void MainWindow::setIni(QString sss)
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
-  //  settings.setValue("LULCDirectory", LULCDirName);
     settings.setValue("LULC/LULCmap", LULCmapName);
     settings.setValue("LULC/LULCtable", LULCtableName);
-    settings.setValue("LULC/LULCNames", LULCNames);
+    settings.setValue("LULC/LULCNNtable", LULCNNtableName);
 
     settings.setValue("SOIL/optionInfil", QString::number(optionInfil));
     settings.setValue("SOIL/optionSG", QString::number(optionSG)); // do soilgrids
@@ -120,8 +106,6 @@ void MainWindow::getIni(QString name)
     optionIncludeDams = settings.value("CHANNEL/optionIncludeDams").toInt();
     BaseDamsName = settings.value("CHANNEL/BaseDams").toString();
     optionUserOutlets = settings.value("CHANNEL/optionUserOutlets").toInt();
-   // chA = settings.value("CHANNEL/chA").toDouble();
-   // chD = settings.value("CHANNEL/chD").toDouble();
     chWidth = settings.value("CHANNEL/chWidth").toDouble();
     chB = settings.value("CHANNEL/chB").toDouble();
     chDepth = settings.value("CHANNEL/chDepth").toDouble();
@@ -133,7 +117,7 @@ void MainWindow::getIni(QString name)
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
     LULCtableName = settings.value("LULC/LULCtable").toString();
-    LULCNames = settings.value("LULC/LULCNames").toString();
+    LULCNNtableName = settings.value("LULC/LULCNNtable").toString();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
     optionSG = settings.value("SOIL/optionSG").toInt();
@@ -185,7 +169,7 @@ void MainWindow::readValuesfromUI()
     optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
     LULCtableName = lineEdit_LULCTable->text();
-    LULCNames = lineEdit_LULCNames->text();
+    //LULCNames = lineEdit_LULCNames->text();
 
     optionInfil = checkBox_Infil->isChecked() ? 1 : 0;
     optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
@@ -238,7 +222,7 @@ void MainWindow::writeValuestoUI()
     checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
-    lineEdit_LULCNames->setText(LULCNames);
+    //lineEdit_LULCNames->setText(LULCNames);
 
     checkBox_Infil->setChecked(optionInfil > 0);
     checkBox_Soilgrids->setChecked(optionSG > 0);

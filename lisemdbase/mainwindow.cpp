@@ -27,21 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
     combo_iniName->setDuplicatesEnabled(false);
 
     getIniStart();
-    /*
-    QDirIterator it(qApp->applicationDirPath(), QStringList() << "*.ini", QDir::NoFilter);
-    while (it.hasNext()) {
-        QFile f(it.next());
-        combo_iniName->addItem(f.fileName());
-    }
 
-
-    if (combo_iniName->currentText().isEmpty())
-        combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
-    */
     QString s = combo_iniName->currentText();
     if (QFileInfo(s).exists())
     {
-        //lineEdit_iniName->setText(s);
         getIni(s);
         ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
         writeValuestoUI();
@@ -56,35 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(3);
-
-    LULCNames= QString(qApp->applicationDirPath()+"/lulcnames.ini");
-//    int ncol = 6;
-//    int nrow = 0;
-//    model = new QStandardItemModel( nrow, ncol, this );
-//    model->setHorizontalHeaderItem( 0, new QStandardItem("Random \nRoughness (cm)"));
-//    model->setHorizontalHeaderItem( 1, new QStandardItem("Manning's n\n (-)"));
-//    model->setHorizontalHeaderItem( 2, new QStandardItem("Plant Height\n (m)"));
-//    model->setHorizontalHeaderItem( 3, new QStandardItem("Plant Cover\n (-)"));
-//    model->setHorizontalHeaderItem( 4, new QStandardItem("Density\n factor (0.9-1.2)"));
-//    model->setHorizontalHeaderItem( 5, new QStandardItem("Smax type\n (1-7)"));
-//    model->setHorizontalHeaderItem( 6, new QStandardItem("Add. Cohesion\n (kPa)"));
-//    tableViewLULC->setModel(model);
-
-//    fillLULCTable();
-//    copyLULCTable();
-
- //   ncol = 3;
-//    nrow = 0;
- //   modelOutlets = new QStandardItemModel( nrow, ncol, this );
-//   // modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet \nname"));
-//   // modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet map \nnumber"));
-//    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Channel \nwidth (m)"));
-//    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Channel \nDepth (m)"));
-//    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel \nBaseflow (m3/s)"));
-//    tableViewOutlets->setModel(modelOutlets);
-
-//    fillOutletsTable();
-
 }
 
 MainWindow::~MainWindow()
@@ -247,34 +207,23 @@ void MainWindow::on_toolButton_script_clicked()
 
 void MainWindow::on_toolButton_LULCTable_clicked()
 {
-    //QString tmp = LULCDirName+lineEdit_LULCTable->text();
     QString tmp = lineEdit_LULCTable->text();
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
     LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 2);
     if (!LULCtableName.isEmpty())
         lineEdit_LULCTable->setText(LULCtableName);
 
-    if (!LULCtableName.isEmpty())
-        fillLULCTable();
-}
-
-void MainWindow::on_toolButton_LULCNames_clicked()
-{
-    QString tmp = lineEdit_LULCNames->text();
-    QStringList filters({"Table (*.ini)","Any files (*)"});
-    LULCNames = getFileorDir(tmp,"Select LULC table with names", filters, 2);
-    if (!LULCNames.isEmpty())
-        lineEdit_LULCNames->setText(LULCNames);
-
-    if (!LULCNames.isEmpty())
-        loadLULCnames();
+    if (!LULCtableName.isEmpty()) {
+        fillLULCTable();        
+        copyLULCTable();
+    }
 }
 
 void MainWindow::on_toolButton_LULCMap_clicked()
 {
     //QString tmp = LULCDirName+lineEdit_LULCMap->text();
     QString tmp = lineEdit_LULCMap->text();
-    QStringList filters({"GeoTiff (*.tif)","Any files (*)"});
+    QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
     LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 2);
     if (!LULCmapName.isEmpty())
         lineEdit_LULCMap->setText(LULCmapName);
@@ -372,23 +321,25 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     writeValuestoUI();
     readValuesfromUI();
 
-    if (LULCNames.isEmpty()) {
-        LULCNames = QString(qApp->applicationDirPath()+"/lulcnames.ini");
-        lineEdit_LULCNames->setText(LULCNames);
-    }
+//    if (LULCNames.isEmpty()) {
+//        LULCNames = QString(qApp->applicationDirPath()+"/lulcnames.ini");
+//        lineEdit_LULCNames->setText(LULCNames);
+//    }
 
     int ncol = 6;
     int nrow = 0;
+    int i = 0;
     model = new QStandardItemModel( nrow, ncol, this );
-    model->setHorizontalHeaderItem( 0, new QStandardItem("Random \nRoughness (cm)"));
-    model->setHorizontalHeaderItem( 1, new QStandardItem("Manning's n\n (-)"));
-    model->setHorizontalHeaderItem( 2, new QStandardItem("Plant Height\n (m)"));
-    model->setHorizontalHeaderItem( 3, new QStandardItem("Plant Cover\n (-)"));
-    model->setHorizontalHeaderItem( 4, new QStandardItem("Density\n factor (0.9-1.2)"));
-    model->setHorizontalHeaderItem( 5, new QStandardItem("Smax type\n (1-7)"));
-    model->setHorizontalHeaderItem( 6, new QStandardItem("Add. Cohesion\n (kPa)"));
+   // model->setHorizontalHeaderItem( i++, new QStandardItem("LULC type"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("#"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Random \nRoughness (cm)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Manning's n\n (-)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Plant Height\n (m)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Plant Cover\n (-)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Density\n factor (0.9-1.2)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Smax type\n (1-7)"));
+    model->setHorizontalHeaderItem( i, new QStandardItem("Add. Cohesion\n (kPa)"));
     tableViewLULC->setModel(model);
-   // loadLULCnames();
 
     fillLULCTable();
     copyLULCTable();
@@ -468,8 +419,5 @@ void MainWindow::on_checkBox_erosion_toggled(bool checked)
 {
     erosionoptions->setEnabled(checked);
 }
-
-
-
 
 

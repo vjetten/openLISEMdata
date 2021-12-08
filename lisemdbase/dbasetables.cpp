@@ -5,10 +5,12 @@
 
 void MainWindow::resetLULCTable()
 {
-    for (int r = 0; r < model->rowCount(); r++){
-        QStringList fields = LULCspare[r].split(QRegExp("\\s+"));
-        for (int c = 1; c < model->columnCount()-1; c++){
-            model->item(r,c)->setText(fields.at(c+1));
+    for (int r = 1; r < model->rowCount()+1; r++){
+        QStringList names = LULCspare[r].split(QRegExp("="));
+        QString s = names.at(1).simplified();
+        QStringList fields = s.split(QRegExp("\\s+"));
+        for (int c = 1; c < model->columnCount(); c++){
+            model->item(r-1,c)->setText(fields.at(c));
         }
     }
 }
@@ -24,6 +26,7 @@ void MainWindow::copyLULCTable()
         while(!in.atEnd()) {
             QString line = in.readLine().simplified();
             LULCspare << line;
+          //  qDebug() << line;
         }
 
         file.close();
@@ -32,6 +35,10 @@ void MainWindow::copyLULCTable()
 
 void MainWindow::fillLULCTable()
 {
+    //LULCNNtableName = QFileInfo(LULCtableName).absolutePath() + "/NN" + QFileInfo(LULCtableName).fileName();
+    LULCNNtableName = QFileInfo(lineEdit_Base->text()).absolutePath() + "/NN" + QFileInfo(LULCtableName).fileName();
+   // qDebug() << "hoi"<<LULCNNtableName;
+
     QFile file(LULCtableName);
 
     if(file.open(QIODevice::ReadOnly)) {
@@ -41,19 +48,21 @@ void MainWindow::fillLULCTable()
         int r = 0;
         while(!in.atEnd()) {
             QString line = in.readLine().simplified();
-            qDebug() << line;
-            if (r > 0) {
-                QStringList fields = line.split(QRegExp("="));
-                QStringList names = fields.at(0).split(QRegExp("\\s+"));
-                qDebug() << names;
 
+            if (!line.contains("=")) {
+                //warning old format here
+                return;
+            }
+
+            if (r > 0) {
+                QStringList names = line.split(QRegExp("="));
+                QString s = names.at(1).simplified();
+                QStringList fields = s.split(QRegExp("\\s+"));
+
+                model->setVerticalHeaderItem(r-1,new QStandardItem(names.at(0).simplified()));
                 for (int i = 0; i < fields.count(); i++){
-                    if (i == 0)
-                        model->setVerticalHeaderItem(r-1,new QStandardItem(fields.at(0)));
-                    else {
-                        QStandardItem *Input = new QStandardItem(fields.at(i));
-                        model->setItem(r-1,i-1,Input);
-                    }
+                    QStandardItem *Input = new QStandardItem(fields.at(i));
+                    model->setItem(r-1,i,Input);
                 }
             }
             r++;
@@ -61,7 +70,6 @@ void MainWindow::fillLULCTable()
 
         file.close();
     }
-   // loadLULCnames();
 }
 
 void MainWindow::on_toolButton_saveLULC_clicked()
@@ -75,7 +83,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
         int n = model->rowCount();
         int m = model->columnCount();
 
-        QString sss = QString("0 1 2 3 4 5 6 7\n");
+        QString sss = QString("LULC =   0   1   2   3   4   5   6   7\n");
         stream << sss;
 
         for (int i=0; i<n; ++i)
@@ -84,14 +92,15 @@ void MainWindow::on_toolButton_saveLULC_clicked()
                 continue;
 
             QStringList lll;
-            lll << model->verticalHeaderItem(i)->text().split("-").at(0);
+            lll << model->verticalHeaderItem(i)->text();//.split("-").at(0);
+            lll << "=";
 
             for (int j=0; j<m; j++)
             {
                 lll << model->item(i,j)->text();
                // qDebug() << model->item(i,j)->text();
             }
-            QString sss = lll.join(' ')+"\n";
+            QString sss = lll.join("\t")+"\n";
            // qDebug() << sss;
             stream << sss;
         }
@@ -100,60 +109,37 @@ void MainWindow::on_toolButton_saveLULC_clicked()
     }
 }
 
-void MainWindow::loadLULCnames()
-{
-    QString name = LULCNames;//QString(qApp->applicationDirPath()+"/lulcnames.ini");
-
-    QFile file(name);
-    QStringList sl;
-    if(file.open(QIODevice::ReadOnly)) {
-
-        QTextStream in(&file);
-
-        while(!in.atEnd()) {
-            QString line = in.readLine();
-            sl << line;
-        }
-        file.close();
-
-        for (int i = 0; i < model->rowCount(); i++) {
-            QString S = "";
-            int m = model->verticalHeaderItem(i)->text().toInt();
-            for (int j=0; j < sl.count(); j++) {
-                if (sl[j].split("-").at(0).toInt() == m)
-                    S = sl[j];
-            }
-            model->verticalHeaderItem(i)->setText(S);
-        }
-    }
-
-    //assumes
-//            1- Deciduous Broadleaf Forest
-//            2- Cropland
-//            3- Built-up Land
-//            4- Mixed Forest
-//            5- Shrubland
-//            6- Barren Land
-//            7- Fallow Land
-//            8- Wasteland
-//            9- Water Bodies
-//            10- Plantations
-//            11- Aquaculture
-//            12- Mangrove Forest
-//            13- Salt Pan
-//            14- Grassland
-//            15- Evergreen Broadleaf Forest
-//            16- Deciduous Needleleaf Forest
-//            17- Permanent Wetlands
-//            18- Snow & Ice
-//            19- Evergreen Needleleaf Forest
-
-}
-
 void MainWindow::on_toolButton_resetLULC_clicked()
 {
     resetLULCTable();
 }
+
+void MainWindow::createNNLULCTable()
+{
+    QFile file(LULCNNtableName);
+
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream stream(&file);
+        int n = model->rowCount();
+        int m = model->columnCount();
+
+        QString sss = QString("0   1   2   3   4   5   6   7\n");
+        stream << sss;
+
+        for (int i=0; i<n; ++i) {
+            QStringList lll;
+            for (int j=0; j<m; j++) {
+                lll << model->item(i,j)->text();
+            }
+            QString sss = lll.join("\t")+"\n";
+            stream << sss;
+        }
+        file.close();
+    }
+}
+
+
 
 //====OUTLETS========================================================
 

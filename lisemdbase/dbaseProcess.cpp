@@ -12,6 +12,9 @@ void MainWindow::setupModel()
 
 void MainWindow::runModel()
 {
+    text_out->clear();
+
+    createNNLULCTable();
 
     // add the env path names, copied from Spyder. Maybe overkill but it works
     QString condaenv = combo_envs->currentText();
@@ -36,9 +39,7 @@ void MainWindow::runModel()
     setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg");
     QStringList pythonCommandArguments;
     pythonCommandArguments << ScriptFileName;
-    //pythonCommandArguments << ScriptDirName+"/lisemdbaseoptions.cfg";
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
-    //qDebug() << pythonCommandArguments;
     Process->start (condaenv+"/python", pythonCommandArguments);
     Process->setReadChannel(QProcess::StandardOutput);
 }

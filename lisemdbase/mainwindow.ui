@@ -1244,7 +1244,35 @@
           <property name="verticalSpacing">
            <number>0</number>
           </property>
-          <item row="2" column="6">
+          <item row="2" column="4">
+           <widget class="QToolButton" name="toolButton_saveLULC">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources/lisemdbase.qrc">
+              <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" rowspan="2" colspan="2">
+           <widget class="QLineEdit" name="lineEdit_LULCMap">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="5">
            <widget class="QToolButton" name="toolButton_resetLULC">
             <property name="text">
              <string>...</string>
@@ -1252,6 +1280,30 @@
             <property name="icon">
              <iconset resource="resources/lisemdbase.qrc">
               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QToolButton" name="toolButton_LULCTable">
+            <property name="font">
+             <font>
+              <pointsize>7</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>open an LULC table (text  file, see help)</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="resources/lisemdbase.qrc">
+              <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonIconOnly</enum>
             </property>
            </widget>
           </item>
@@ -1277,34 +1329,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" rowspan="2" colspan="3">
-           <widget class="QLineEdit" name="lineEdit_LULCMap">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QToolButton" name="toolButton_LULCMap">
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="resources/lisemdbase.qrc">
-              <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0" rowspan="2">
            <widget class="QLabel" name="label_11">
             <property name="sizePolicy">
@@ -1321,38 +1345,14 @@
              </font>
             </property>
             <property name="text">
-             <string>LULC map (tif)</string>
+             <string>LULC map (tif, map)</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item row="2" column="4">
-           <widget class="QToolButton" name="toolButton_LULCTable">
-            <property name="font">
-             <font>
-              <pointsize>7</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>open an LULC table (text  file, see help)</string>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="resources/lisemdbase.qrc">
-              <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonIconOnly</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="3">
+          <item row="2" column="1" colspan="2">
            <widget class="QLineEdit" name="lineEdit_LULCTable">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -1368,29 +1368,8 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="5">
-           <widget class="QToolButton" name="toolButton_saveLULC">
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="resources/lisemdbase.qrc">
-              <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_29">
-            <property name="text">
-             <string>LULC names</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="3">
-           <widget class="QLineEdit" name="lineEdit_LULCNames"/>
-          </item>
-          <item row="3" column="4">
-           <widget class="QToolButton" name="toolButton_LULCNames">
+          <item row="1" column="3">
+           <widget class="QToolButton" name="toolButton_LULCMap">
             <property name="text">
              <string>...</string>
             </property>
@@ -2723,7 +2702,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 2.1 - 211202)</string>
+       <string>openLISEM database generator (version 2.2 - 211206)</string>
       </property>
      </widget>
     </item>

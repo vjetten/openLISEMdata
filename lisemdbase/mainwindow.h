@@ -29,6 +29,8 @@ public:
     QString MapsDirName;
     QString LULCmapName;
     QString LULCtableName;
+    QString LULCNNtableName;
+
     QString LULCNames;
     QString ESPGnumber;
     bool CondaInstall;
@@ -85,10 +87,11 @@ public:
     QStandardItemModel *model;
     void fillLULCTable();
     void copyLULCTable();
-    void loadLULCnames();
     void resetLULCTable();
+    void createNNLULCTable();
     void fillOutletsTable();
     void resetOutletsTable();
+
 
     QStandardItemModel *modelOutlets;
 
@@ -169,8 +172,6 @@ private slots:
     void on_radioButton_OutletMultiple_toggled(bool checked);
 
     void on_checkBox_erosion_toggled(bool checked);
-
-    void on_toolButton_LULCNames_clicked();
 
 private:
     Ui::MainWindow *ui;
