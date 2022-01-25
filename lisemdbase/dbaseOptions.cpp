@@ -23,7 +23,7 @@ void MainWindow::getIniStart()
     combo_iniName->addItems(skeys);
 }
 
-void MainWindow::setIni(QString sss)
+void MainWindow::setIni(QString sss, bool yes)
 {
     QSettings settings(sss,QSettings::IniFormat);
     settings.clear();
@@ -37,10 +37,11 @@ void MainWindow::setIni(QString sss)
 
     settings.setValue("BaseDEM", BaseDEMName);
     settings.setValue("BaseChannel", BaseChannelName);
+    settings.setValue("BaseOutlets", BaseOutletsName);
 
     settings.setValue("DEM/optionCatchments", QString::number(optionCatchments));
     settings.setValue("DEM/optionDEM", QString::number(optionDEM));
-    settings.setValue("DEM/CatchmentSize", QString::number(CatchmentSize, 'f', 2));
+//    settings.setValue("DEM/CatchmentSize", QString::number(CatchmentSize, 'f', 2));
     settings.setValue("DEM/optionFillDEM", QString::number(optionFillDEM));
     settings.setValue("DEM/DEMfill", QString::number(DEMfill, 'f', 2));
 
@@ -54,19 +55,22 @@ void MainWindow::setIni(QString sss)
     settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 1));
     settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
     settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 1));
-    settings.setValue("CHANNEL/BaseOutlets", BaseOutletsName);
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
+    settings.setValue("CHANNEL/Watersheds", WatershedsName);
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
     settings.setValue("LULC/LULCmap", LULCmapName);
-    settings.setValue("LULC/LULCtable", LULCtableName);
+    if (yes)
     settings.setValue("LULC/LULCNNtable", LULCNNtableName);
+    else
+    settings.setValue("LULC/LULCtable", LULCtableName);
 
     settings.setValue("SOIL/optionInfil", QString::number(optionInfil));
     settings.setValue("SOIL/optionSG", QString::number(optionSG)); // do soilgrids
     settings.setValue("SOIL/optionSG1", QString::number(SG1));
     settings.setValue("SOIL/optionSG2", QString::number(SG2));
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
+    settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
@@ -77,6 +81,11 @@ void MainWindow::setIni(QString sss)
     settings.setValue("EROSION/optionErosion", QString::number(optionErosion));
     settings.setValue("EROSION/optionD50", QString::number(optionD50));
     settings.setValue("EROSION/optionChannelsNoEros", QString::number(optionChannelsNoEros));
+
+    settings.setValue("RAINFALL/RainScript", RainScriptFileName);
+    settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
+    settings.setValue("RAINFALL/RainDirectory", RainDirName);
+
 
     settings.sync();
 }
@@ -94,10 +103,11 @@ void MainWindow::getIni(QString name)
 
     BaseDEMName = settings.value("BaseDEM").toString();
     BaseChannelName = settings.value("BaseChannel").toString();
+    BaseOutletsName = settings.value("BaseOutlets").toString();
 
     optionCatchments = settings.value("DEM/optionCatchments").toInt();
     optionDEM = settings.value("DEM/optionDEM").toInt();
-    CatchmentSize = settings.value("DEM/CatchmentSize").toDouble();
+    //CatchmentSize = settings.value("DEM/CatchmentSize").toDouble();
     optionFillDEM = settings.value("DEM/optionFillDEM").toInt();
     DEMfill = settings.value("DEM/DEMfill").toDouble();
 
@@ -111,19 +121,20 @@ void MainWindow::getIni(QString name)
     chDepth = settings.value("CHANNEL/chDepth").toDouble();
     chC = settings.value("CHANNEL/chC").toDouble();
     chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
-    BaseOutletsName = settings.value("CHANNEL/BaseOutlets").toString();
     OutletstableName = settings.value("CHANNEL/Outletstable").toString();
+    WatershedsName = settings.value("CHANNEL/Watersheds").toString();
 
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
     LULCtableName = settings.value("LULC/LULCtable").toString();
-    LULCNNtableName = settings.value("LULC/LULCNNtable").toString();
+  //  LULCNNtableName = settings.value("LULC/LULCNNtable").toString();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
     optionSG = settings.value("SOIL/optionSG").toInt();
     SG1 = settings.value("SOIL/optionSG1").toInt();
     SG2 = settings.value("SOIL/optionSG2").toInt();
     optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
+    optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = settings.value("SOIL/optionUseBD").toInt();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
@@ -133,8 +144,11 @@ void MainWindow::getIni(QString name)
 
     optionErosion = settings.value("EROSION/optionErosion").toInt();
     optionD50 = settings.value("EROSION/optionD50").toInt();
-    optionChannelsNoEros = settings.value("EROSION/optionChannelNoEros").toInt();
+    optionChannelsNoEros = settings.value("EROSION/optionChannelsNoEros").toInt();
 
+    RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
+    RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
+    RainDirName = settings.value("RAINFALL/RainDirectory").toString();
 }
 
 void MainWindow::readValuesfromUI()
@@ -143,13 +157,15 @@ void MainWindow::readValuesfromUI()
     ScriptFileName= lineEdit_Script->text();
     BaseDirName = lineEdit_Base->text();
     MapsDirName = lineEdit_Maps->text();
+    ESPGnumber = E_ESPGnumber->text();
+
     BaseDEMName = lineEdit_baseDEM->text();
     BaseChannelName = lineEdit_baseChannel->text();
-    ESPGnumber = E_ESPGnumber->text();
+    BaseOutletsName = lineEdit_userOutlets->text();
 
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
-    CatchmentSize = E_catchmentSize->text().toDouble();
+    //CatchmentSize = E_catchmentSize->text().toDouble();
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     DEMfill = spin_DEMfill->value();
 
@@ -163,8 +179,8 @@ void MainWindow::readValuesfromUI()
     chDepth = spin_chDepth->value();
     chC = spin_chC->value();
     chBaseflow = spin_chBaseflow->value();
-    BaseOutletsName = lineEdit_userOutlets->text();
     OutletstableName = lineEdit_outletsTable->text();
+    WatershedsName = lineEdit_userWatersheds->text();
 
     optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
@@ -176,6 +192,7 @@ void MainWindow::readValuesfromUI()
     SG1 = comboBox_SGlayer1->currentIndex();
     SG2 = comboBox_SGlayer2->currentIndex();
     optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
+    optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
@@ -195,13 +212,15 @@ void MainWindow::writeValuestoUI()
     lineEdit_Script->setText(ScriptFileName);
     lineEdit_Base->setText(BaseDirName );
     lineEdit_Maps->setText(MapsDirName);
+    E_ESPGnumber->setText(ESPGnumber);
+
     lineEdit_baseDEM->setText(BaseDEMName);
     lineEdit_baseChannel->setText(BaseChannelName);
-    E_ESPGnumber->setText(ESPGnumber);
+    lineEdit_userOutlets->setText(BaseOutletsName);
 
     checkBox_Catchments->setChecked(optionCatchments > 0);
     checkBox_DEM->setChecked(optionDEM > 0);
-    E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
+    //E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     spin_DEMfill->setValue(DEMfill);
 
@@ -216,8 +235,8 @@ void MainWindow::writeValuestoUI()
     spin_chDepth->setValue(chDepth);
     spin_chC->setValue(chC);
     spin_chBaseflow->setValue(chBaseflow);
-    lineEdit_userOutlets->setText(BaseOutletsName);
     lineEdit_outletsTable->setText(OutletstableName);
+    lineEdit_userWatersheds->setText(WatershedsName);
 
     checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
@@ -229,14 +248,13 @@ void MainWindow::writeValuestoUI()
     comboBox_SGlayer1->setCurrentIndex(SG1);
     comboBox_SGlayer2->setCurrentIndex(SG2);
     checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
+    checkBox_noGravel->setChecked(optionNoGravel > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
     spin_Rootzone->setValue(refRootzone);
     spin_MaxSoildepth->setValue(refMaxSoildepth);
     spin_initmoist->setValue(initmoist);
-
-
 
     checkBox_erosion->setChecked(optionErosion > 0);
     checkBox_D50->setChecked(optionD50 > 0);

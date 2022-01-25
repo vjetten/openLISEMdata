@@ -6,9 +6,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
-    //CondaInstall = GetCondaEnvs();
-    //CondaInstall = GetMiniCondaEnvs();
-
     CondaInstall = GetCondaAllEnvs(0);
     CondaInstall = GetCondaAllEnvs(1);
     CondaInstall = GetCondaAllEnvs(2);
@@ -32,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (QFileInfo(s).exists())
     {
         getIni(s);
-        ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
+    //    ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
         writeValuestoUI();
         readValuesfromUI();
     }
@@ -44,12 +41,42 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     tabWidgetOptions->setCurrentIndex(0);
+    tabWidgetOptions->removeTab(4);
     tabWidgetOptions->removeTab(3);
+
+    findDPIscale();
 }
 
 MainWindow::~MainWindow()
 {
     setIniStart();
+}
+
+
+void MainWindow::findDPIscale()
+{
+    QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
+    int _H = rect.height();
+
+    if (_H > 800) {
+        genfontsize = 0;//12;
+    }
+    if (_H > 1080-5) {
+        genfontsize = 1;// 14;
+    }
+    if (_H > 1440) {
+        genfontsize = 3;//12;
+    }
+
+    const QWidgetList allWidgets = QApplication::allWidgets();
+    for (QWidget *widget : allWidgets) {
+        QFont font = widget->font();
+        //qDebug() << font;
+        int ps = 8 + genfontsize;
+        font.setPointSize(ps);
+        widget->setFont(font);
+        widget->update();
+    }
 }
 
 bool MainWindow::GetCondaAllEnvs(int cda)
@@ -72,10 +99,8 @@ bool MainWindow::GetCondaAllEnvs(int cda)
         CondaBaseDirName = QString("c:/ProgramData/Anaconda3/envs");
     }
     if (QFileInfo(CondaBaseDirName).dir().exists()) {
-    //    qDebug() << CondaBaseDirName;
         QDir const source(CondaBaseDirName);
         QStringList const folders = source.entryList(QDir::NoDot | QDir::NoDotDot | QDir::Dirs);
-  //      qDebug() << folders;
         for (int i = 0; i < folders.size(); i++) {
             QString str = CondaBaseDirName+"/"+folders.at(i)+"/python.exe";
             QString str1 = CondaBaseDirName+"/"+folders.at(i)+"/Library/bin/pcrcalc.exe";
@@ -251,7 +276,7 @@ void MainWindow::on_toolButton_userOutlets_clicked()
 {
     QString tmp = BaseDirName+lineEdit_userOutlets->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseOutletsName = getFileorDir(tmp,"Select outlet map", filters, 2);
+    BaseOutletsName = getFileorDir(tmp,"Select outlet(s) map", filters, 1);
     if (!BaseOutletsName.isEmpty())
         lineEdit_userOutlets->setText(BaseOutletsName);
 }
@@ -264,6 +289,17 @@ void MainWindow::on_toolButton_Dams_clicked()
     if (!BaseDamsName.isEmpty())
         lineEdit_Dams->setText(BaseDamsName);
 }
+
+
+void MainWindow::on_toolButton_userWatersheds_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userWatersheds->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    WatershedsName = getFileorDir(tmp,"Select watershed map", filters, 2);
+    if (!WatershedsName.isEmpty())
+        lineEdit_userWatersheds->setText(WatershedsName);
+}
+
 
 void MainWindow::on_toolButton_clear_clicked()
 {
@@ -305,7 +341,7 @@ void MainWindow::on_toolButton_SaveIni_clicked()
         combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
     QString sss = combo_iniName->currentText();
     qDebug() << sss;
-    setIni(combo_iniName->currentText());
+    setIni(combo_iniName->currentText(), false);
 }
 
 void MainWindow::on_toolButton_stop_clicked()
@@ -341,6 +377,7 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     model->setHorizontalHeaderItem( i, new QStandardItem("Add. Cohesion\n (kPa)"));
     tableViewLULC->setModel(model);
 
+    LULCNNtableName.clear();
     fillLULCTable();
     copyLULCTable();
 
@@ -362,7 +399,7 @@ void MainWindow::on_toolButton_saveas_clicked()
                                "*.ini");
     if (!fileName.isEmpty()) {
         readValuesfromUI();
-        setIni(fileName);
+        setIni(fileName, false);
         combo_iniName->addItem(fileName);
     }
 }
@@ -420,4 +457,39 @@ void MainWindow::on_checkBox_erosion_toggled(bool checked)
     erosionoptions->setEnabled(checked);
 }
 
+
+void MainWindow::on_checkBox_createRainfall_clicked(bool checked)
+{
+    widget_raindata->setEnabled(checked);
+}
+
+
+void MainWindow::on_toolButton_GPMpy_clicked()
+{
+    QStringList filters({"Python (*.py)","Any files (*)"});
+    RainScriptFileName = getFileorDir(RainScriptFileName,"Select python script", filters, 2);
+    if (!RainScriptFileName.isEmpty())
+        lineEdit_GPMpy->setText(RainScriptFileName);
+}
+
+
+void MainWindow::on_toolButton_GPMin_clicked()
+{
+    QStringList filters;
+    QString S = lineEdit_Base->text();
+    RainBaseDirName = getFileorDir(lineEdit_GPMdir->text(),"Select GPM Rain folder", filters, 0);
+    if (!RainBaseDirName.isEmpty())
+        lineEdit_GPMdir->setText(RainBaseDirName);
+    else
+        lineEdit_GPMdir->setText(S);
+}
+
+
+void MainWindow::on_toolButton_GPMout_clicked()
+{
+    QStringList filters;
+    RainDirName = getFileorDir(lineEdit_Maps->text(),"Select Rain folder", filters, 0);
+    if (!RainDirName.isEmpty())
+        lineEdit_Maps->setText(RainDirName);
+}
 

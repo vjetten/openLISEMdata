@@ -25,11 +25,16 @@ public:
     QString BaseChannelName;
     QString BaseOutletsName;
     QString OutletstableName;
+    QString WatershedsName;
     QString BaseDamsName;
     QString MapsDirName;
     QString LULCmapName;
     QString LULCtableName;
     QString LULCNNtableName;
+
+    QString RainScriptFileName;
+    QString RainBaseDirName;
+    QString RainDirName;
 
     QString LULCNames;
     QString ESPGnumber;
@@ -45,6 +50,7 @@ public:
     int optionLULC;
     int optionSG;
     int optionSGInterpolation;
+    int optionNoGravel;
     int optionInfil;
     int optionErosion;
     int optionD50;
@@ -64,10 +70,13 @@ public:
     double refRootzone;
     double refMaxSoildepth;
 
+    int genfontsize;
+
     QStringList LULCspare;
 
     void setupModel();
     bool GetCondaAllEnvs(int cda);
+    void findDPIscale();
     QProcess *Process;
 
     int layer1;
@@ -77,7 +86,7 @@ public:
 
     void setIniStart();
     void getIniStart();
-    void setIni(QString sss);
+    void setIni(QString sss, bool yes);
     void getIni(QString name);
     void readValuesfromUI();
     void writeValuestoUI();
@@ -172,6 +181,16 @@ private slots:
     void on_radioButton_OutletMultiple_toggled(bool checked);
 
     void on_checkBox_erosion_toggled(bool checked);
+
+    void on_toolButton_userWatersheds_clicked();
+
+    void on_checkBox_createRainfall_clicked(bool checked);
+
+    void on_toolButton_GPMpy_clicked();
+
+    void on_toolButton_GPMin_clicked();
+
+    void on_toolButton_GPMout_clicked();
 
 private:
     Ui::MainWindow *ui;
