@@ -35,6 +35,10 @@ public:
     QString RainScriptFileName;
     QString RainBaseDirName;
     QString RainDirName;
+    QString RainFilename;
+    double conversionmm;
+    double timeintervalGPM;
+    double interpolationGPM;
 
     QString LULCNames;
     QString ESPGnumber;

@@ -56,7 +56,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
     settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 1));
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
-    settings.setValue("CHANNEL/Watersheds", WatershedsName);
+    //settings.setValue("CHANNEL/Watersheds", WatershedsName);
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
     settings.setValue("LULC/LULCmap", LULCmapName);
@@ -85,6 +85,10 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainScript", RainScriptFileName);
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
+    settings.setValue("RAINFALL/RainFilename", RainFilename);
+    settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
+    settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
+    settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
 
 
     settings.sync();
@@ -122,7 +126,7 @@ void MainWindow::getIni(QString name)
     chC = settings.value("CHANNEL/chC").toDouble();
     chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
     OutletstableName = settings.value("CHANNEL/Outletstable").toString();
-    WatershedsName = settings.value("CHANNEL/Watersheds").toString();
+    //WatershedsName = settings.value("CHANNEL/Watersheds").toString();
 
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
@@ -149,6 +153,11 @@ void MainWindow::getIni(QString name)
     RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
+    RainFilename = settings.value("RAINFALL/RainFilename").toString();
+    conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
+    timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
+    interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
+
 }
 
 void MainWindow::readValuesfromUI()
@@ -161,7 +170,7 @@ void MainWindow::readValuesfromUI()
 
     BaseDEMName = lineEdit_baseDEM->text();
     BaseChannelName = lineEdit_baseChannel->text();
-    BaseOutletsName = lineEdit_userOutlets->text();
+    BaseOutletsName = lineEdit_userOutlets->text();    
 
     optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
@@ -180,7 +189,7 @@ void MainWindow::readValuesfromUI()
     chC = spin_chC->value();
     chBaseflow = spin_chBaseflow->value();
     OutletstableName = lineEdit_outletsTable->text();
-    WatershedsName = lineEdit_userWatersheds->text();
+    //WatershedsName = lineEdit_userWatersheds->text();
 
     optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
@@ -204,6 +213,13 @@ void MainWindow::readValuesfromUI()
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
 
+    RainScriptFileName= lineEdit_GPMpy->text();
+    RainBaseDirName = lineEdit_GPMdir->text();
+    RainDirName = lineEdit_RainfallDir->text();
+    RainFilename = lineEdit_RainFilename->text();
+    conversionmm = spin_conversionmm->value();
+    timeintervalGPM = spin_timeinterval->value();
+    interpolationGPM = spin_interpolation->value();
 }
 
 void MainWindow::writeValuestoUI()
@@ -236,7 +252,7 @@ void MainWindow::writeValuestoUI()
     spin_chC->setValue(chC);
     spin_chBaseflow->setValue(chBaseflow);
     lineEdit_outletsTable->setText(OutletstableName);
-    lineEdit_userWatersheds->setText(WatershedsName);
+    //lineEdit_userWatersheds->setText(WatershedsName);
 
     checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
@@ -267,6 +283,16 @@ void MainWindow::writeValuestoUI()
         on_radioButton_OutletMultiple_toggled(true);
         on_radioButton_OutletSIngle_toggled(false);
     }    
+
+    lineEdit_GPMpy->setText(RainScriptFileName);
+    lineEdit_GPMdir->setText(RainBaseDirName);
+    lineEdit_RainfallDir->setText(RainDirName);
+    lineEdit_RainFilename->setText(RainFilename);
+    spin_conversionmm->setValue(conversionmm);
+    spin_timeinterval->setValue(timeintervalGPM);
+    spin_interpolation->setValue(interpolationGPM);
+
+
 }
 
 

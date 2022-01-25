@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(4);
-    tabWidgetOptions->removeTab(3);
+  //  tabWidgetOptions->removeTab(3);
 
     findDPIscale();
 }
@@ -476,12 +476,9 @@ void MainWindow::on_toolButton_GPMpy_clicked()
 void MainWindow::on_toolButton_GPMin_clicked()
 {
     QStringList filters;
-    QString S = lineEdit_Base->text();
     RainBaseDirName = getFileorDir(lineEdit_GPMdir->text(),"Select GPM Rain folder", filters, 0);
     if (!RainBaseDirName.isEmpty())
         lineEdit_GPMdir->setText(RainBaseDirName);
-    else
-        lineEdit_GPMdir->setText(S);
 }
 
 
@@ -490,6 +487,6 @@ void MainWindow::on_toolButton_GPMout_clicked()
     QStringList filters;
     RainDirName = getFileorDir(lineEdit_Maps->text(),"Select Rain folder", filters, 0);
     if (!RainDirName.isEmpty())
-        lineEdit_Maps->setText(RainDirName);
+        lineEdit_RainfallDir->setText(RainDirName);
 }
 

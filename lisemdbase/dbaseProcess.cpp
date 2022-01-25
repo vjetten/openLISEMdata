@@ -46,6 +46,9 @@ void MainWindow::runModel()
         pythonCommandArguments << RainScriptFileName;
 
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
+
+    qDebug() << pythonCommandArguments;
+
     Process->start (condaenv+"/python", pythonCommandArguments);
     Process->setReadChannel(QProcess::StandardOutput);
 }
@@ -66,13 +69,8 @@ void MainWindow::readFromOutput()
 
     bufprev=text_out->toPlainText();
 
-    if (buffer.contains("D50-D90")){
-//        QStringList S = bufprev.split("\r\n");
-//        if (S.last().contains("D50"))
-//            S.removeLast();
-//        S << buffer;
-//        bufprev = S.join("\r\n");
-        bufprev.remove(bufprev.indexOf("D50")-1,100);
+    if (buffer.contains("Processing")){
+        bufprev.remove(bufprev.indexOf("Processing")-1,100);
         bufprev+=buffer;
     } else {
         bufprev+=buffer;
