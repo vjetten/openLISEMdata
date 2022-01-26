@@ -17,7 +17,8 @@ void MainWindow::getIniStart()
     QStringList skeys;
     for (int i = 0; i < keys.size(); i++) {
         QString s = settings.value(QString(i)).toString();
-        skeys << s;
+        if (QFileInfo(s).exists())
+            skeys << s;
     }
     skeys.removeDuplicates();
     combo_iniName->addItems(skeys);

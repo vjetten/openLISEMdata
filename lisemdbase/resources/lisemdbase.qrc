@@ -46,6 +46,7 @@
         <file>2X/eros1bw.png</file>
         <file>2X/soil5.png</file>
         <file>2X/water.png</file>
+        <file>help3.html</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

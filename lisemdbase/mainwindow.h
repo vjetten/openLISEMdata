@@ -196,6 +196,8 @@ private slots:
 
     void on_toolButton_GPMout_clicked();
 
+    void on_toolButton_help3_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

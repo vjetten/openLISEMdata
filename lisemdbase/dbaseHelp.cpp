@@ -1,5 +1,11 @@
 #include "mainwindow.h"
 
+
+void MainWindow::on_toolButton_help3_clicked()
+{
+    ShowHelp(3);
+}
+
 void MainWindow::on_toolButton_help2_clicked()
 {
     ShowHelp(2);

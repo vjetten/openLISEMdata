@@ -400,7 +400,8 @@ void MainWindow::on_toolButton_saveas_clicked()
     if (!fileName.isEmpty()) {
         readValuesfromUI();
         setIni(fileName, false);
-        combo_iniName->addItem(fileName);
+        combo_iniName->insertItem(0, fileName);
+        combo_iniName->setCurrentIndex(0);
     }
 }
 
@@ -489,4 +490,5 @@ void MainWindow::on_toolButton_GPMout_clicked()
     if (!RainDirName.isEmpty())
         lineEdit_RainfallDir->setText(RainDirName);
 }
+
 
