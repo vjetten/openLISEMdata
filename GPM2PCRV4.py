@@ -20,13 +20,23 @@ import time
 #                                               auhtor: V.Jetten 202107811
 ##############################################################################
 
-rainfilename = 'GPM kuttiadi2018.txt'
+# use unix style path delimiters: / instead of \
+# pathnames end with /
+
+rainfilename = 'GPM mog 2014.txt'
 # ioutput file name for openLISEM listing all maps
-inputdir = 'C:/data/India/GPM/GPM_Monsoon2018'
+inputdir = 'C:/data/GPM/GPM_Monsoon2014/'
 # source folder with GPM global tiff
-outputdir = 'C:/data/India/Kuttiadi/rain/2018/'
-#'C:/data/India/narmada/rainfall/gpm/july2014/'
+#outputdir = 'C:/CRCLisem/Narmada1/Rain/GPM/monsoon2014/'
+#outputdir = 'C:/data/India/Kosi/rain/GPM2017/'
+outputdir = 'C:/data/India/Mohgoan/rain/GPM2014/' 
+#'C:/data/India/Fulertal_to_upstream/rain/GPM2017/'
 # output folder for lisem
+#maskmapname = 'C:/data/India/Kosi/base/chanmask.map'
+maskmapname = 'C:/data/India/Mohgoan/Maps_DB1.9/dem.map' 
+#'C:/data/India/Fulertal_to_upstream/New Input/F_dem.map' 
+#'C:/CRCLisem/Narmada1/Base/dem0.map' #'C:/data/India/narmada/maps/dem.map'
+# reference map 'C:/CRCLisem/Narmada1/Base/dem0.map'
 
 if not os.path.exists(outputdir):
     print('output dir does not exst, creating it!')
@@ -34,15 +44,12 @@ if not os.path.exists(outputdir):
     # if you don't do this you get an error later
 
 
-maskmapname = 'C:/data/India/2_Belheri Basin_2US basins/Base\dem0.map'
-#'C:/CRCLisem/Narmada1/Base/dem0.map' #'C:/data/India/narmada/maps/dem.map'
-# reference map 'C:/CRCLisem/Narmada1/Base/dem0.map'
 ESPG = 32644
 # user defined espg number for reprojection
 option = 1
 # 0 =  nearest neighbour, 1 = bilinear interpolation while resampling, 2 =  cubic interpolation
 # if option = -1 the lisem rainfall textfile is regenerated and the conversion is skipped
-
+#.chdir('C:/data/India/Kosi/base/')
 # set clone for pcraster operations
 setclone(maskmapname)
 
@@ -161,7 +168,7 @@ for link in totallinks:
         raina = readmap(link)
         #if (option > -1) :
         rain = max(0,2*raina/10.0)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
-        pp = pcr2numpy(rain, -9999)
+        #pp = pcr2numpy(rain, -9999)
 
         report(rain,link)
         sum=sum+rain/2    # assumning the value is intensity in mm/h the rianfall is p/2
@@ -171,3 +178,36 @@ for link in totallinks:
 f.close()
 
 report(sum,outputdir+'sumrainfall.map')
+
+
+
+print("making area average rainfall graph file")
+os.chdir(outputdir)
+raintxtname = 'rainfilenam
+with open(raintxtname, 'w') as f:
+    f.write('# GPM data \n')
+    f.write('2\n')
+    f.write('time (ddd:mmmm)\n')
+    f.write('Pavg P (mm/h)\n')
+    f.close()
+    
+totallinks = os.listdir(os.getcwd())
+hdflinks = []
+for link in totallinks:
+    if link[-9:] == '30min.map':
+        #print(' => '+link)
+        with open(raintxtname, 'a') as f:
+            f.write('{0}  {1}\n'.format(dddmmmm[nr],link))
+
+
+        raina = readmap(link)
+        #if (option > -1) :
+        rainavg = maptotal(max(0,2*raina/10.0*mask))/maptotal(mask);   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+        #pp = pcr2numpy(rain, -9999)
+
+        #report(rain,link)
+        #sum=sum+rain/2    # assumning the value is intensity in mm/h the rianfall is p/2
+
+        nr+=1
+
+f.close()

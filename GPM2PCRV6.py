@@ -58,13 +58,14 @@ rainfilename = myvars["RainFilename"]
 conversionmm = float(myvars["conversionmm"])
 timeinterval = float(myvars["timeinterval"])
 option = float(myvars["interpolation"])
+ESPG = myvars["ESPGnumber"]
 
 
 maskmapname = BaseDir+maskmapname
 print(">>> Map used for reprojection: "+maskmapname, flush=True)
 
 if not os.path.exists(outputdir):
-    print('>>> Output dir does not exst, creating it!', flush=True)
+    print('>>> Creating output dir: '+outputdir, flush=True)
     os.makedirs(outputdir)
     # if you don't do this you get an error later
 
@@ -134,7 +135,7 @@ if (option > -1) :
             dst.SetProjection( maskproj )
 
             prj2 = osr.SpatialReference()
-            prj2.ImportFromEPSG(ESPG)
+            prj2.ImportFromEPSG(int(ESPG))
             wkt2 = prj2.ExportToWkt()
             dst.SetProjection(wkt2)
 

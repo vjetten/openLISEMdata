@@ -37,7 +37,7 @@ void MainWindow::runModel()
 
     readValuesfromUI();
     setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg", true);
-    qDebug() << QDir::tempPath()+"/lisemdbaseoptions.cfg";
+
     QStringList pythonCommandArguments;
 
     if (tabWidgetOptions->currentIndex() < 3)
@@ -47,7 +47,7 @@ void MainWindow::runModel()
 
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
 
-    qDebug() << pythonCommandArguments;
+    //qDebug() << pythonCommandArguments;
 
     Process->start (condaenv+"/python", pythonCommandArguments);
     Process->setReadChannel(QProcess::StandardOutput);

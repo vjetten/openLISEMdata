@@ -64,7 +64,7 @@ class DEMderivatives(StaticModel):
         global mainout_
         global rivers_
         global Ldd_
-        global watersheds_
+        #global watersheds_
         global doCorrectDEM
         global fillDEM
 
@@ -98,11 +98,11 @@ class DEMderivatives(StaticModel):
        
         chanm = cover(rivers_, 0)*mask
         mainout = ifthenelse(mainout_ > 0, scalar(1), 0)  
-        wsarea = areaarea(nominal(watersheds_))          
+        #wsarea = areaarea(nominal(watersheds_))          
         #watersheds_ is mask if not multiple watersheds
         #mainout_ can be sero, then endpoint must be used
 
-        Ldd = lddcreate (DEMc-chanm*10-mainout*100, size, wsarea, size, size)
+        Ldd = lddcreate (DEMc-chanm*10-mainout*100, 100, size, size, size)
         report(Ldd, LddName)
         Ldd_ = Ldd
 
@@ -147,14 +147,14 @@ class ChannelMaps(StaticModel):
 
         chanmask = ifthen(rivers_ > 0, scalar(1))*mask
         # create missing value outside channel
-        wsarea = areaarea(nominal(watersheds_))
+        #wsarea = areaarea(nominal(watersheds_))
 
-        lddchan = lddcreate((DEM-mainout*100)*chanmask,1e20,wsarea,1e20,1e20)
+        lddchan = lddcreate((DEM-mainout*100)*chanmask,100,1e20,1e20,1e20)
         cm = chanmask
         if doPruneBranch == 1:
             # delete isolated branches of 1 cell
             cm = ifthen(accuflux(lddchan,1) > 1,chanmask)*mask
-            lddchan = lddcreate((DEM-mainout*100)*cm,1e20,wsarea,1e20,1e20)
+            lddchan = lddcreate((DEM-mainout*100)*cm,100,1e20,1e20,1e20)
             cm = cover(cm, 0)*mask
             chanmask = cm
 
@@ -180,7 +180,7 @@ class ChannelMaps(StaticModel):
         outlet = mainout_
         report(outlet,outletName)
         report(outpoint,outpointName)
-        # report(ws,wsName)
+
         # report(chWidthmap,"chw.map")
         # report(chDepthmap,"chd.map")
         # report(chBaseflowmap,"chbf.map")
@@ -257,18 +257,18 @@ class DamsinRivers(StaticModel):
         DAMS_ = readmap(BaseDir+damsbaseName)
         buf = DAMS_
 
-        wsarea = areaarea(nominal(watersheds))
+        #wsarea = areaarea(nominal(watersheds))
         # prune 1 cell
         chanmask = ifthen(rivers_ > 0, scalar(1))*mask
         cm = chanmask
         mainout = ifthenelse(mainout_ > 0,scalar(1),0)
         # create missing value outside channel       
         
-        lddch = lddcreate(DEM*chanmask-mainout*10,1e20,wsarea,1e20,1e20);
+        lddch = lddcreate(DEM*chanmask-mainout*100,100,1e20,1e20,1e20);
         #outlet = scalar(pit(lddch));
         ups = accuflux(lddch,1);
         chanmask = ifthen(ups > 1,chanmask)
-        lddch = lddcreate(DEM*chanmask-mainout*10,1e20,wsarea,1e20,1e20);
+        lddch = lddcreate(DEM*chanmask-mainout*100,100,1e20,1e20,1e20);
 
         # spread into the dam
         zone = spread(nominal(buf >= 0),0,1);
@@ -276,12 +276,12 @@ class DamsinRivers(StaticModel):
         chanmask = ifthen(cm == 1,scalar(1));
 
         #ldd now interrupted in dam
-        lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,1e20,wsarea,1e20,1e20);
+        lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,100,1e20,1e20,1e20);
 
         # throw out isolated branches in dam itself
         ups = accuflux(lddch,1);
         a = ifthen(areaarea(clump(ups > 0)) > 4*cellarea(),scalar(1));
-        lddch = lddcreate((DEM+buf*10-mainout*100)*a,1e20,wsarea,1e20,1e20);
+        lddch = lddcreate((DEM+buf*10-mainout*100)*a,100,1e20,1e20,1e20);
 
         #create a 0.5 m wall around the dam with an inflow and outflow opening
         zone = spread(nominal(buf < 0),0,1);
@@ -292,10 +292,10 @@ class DamsinRivers(StaticModel):
         #shorten outflowing branch by 2
         ups = accuflux(lddch,1);
         chanmask = ifthen(ups > 1,chanmask);
-        lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,1e20,wsarea,1e20,1e20);
+        lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,100,1e20,1e20,1e20);
      #  ups = accuflux(lddch,1);
      #  chanmask = ifthen(ups > 1,chanmask);
-     #  lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,1e20,1e20,1e20,1e20);
+     #  lddch = lddcreate((DEM+buf*10-mainout*100)*chanmask,100,1e20,1e20,1e20);
 
         demold = DEM;
 
@@ -331,15 +331,15 @@ class DamsinRivers(StaticModel):
 
         grad=readmap(gradName)
         n=readmap(mannName)
-        ksat1=readmap(ksatName+"1.map")
+        #ksat1=readmap(ksatName+"1.map")
 
         grad=ifthenelse(buf != 0,0.001,grad)
         n=ifthenelse(buf != 0,0.005,n)
-        ksat1=ifthenelse(buf != 0,0,ksat1)
+        #ksat1=ifthenelse(buf != 0,0,ksat1)
         
         report(grad,gradName)
         report(n,mannName)
-        report(ksat1,ksatName+"1.map")
+        #report(ksat1,ksatName+"1.map")
 
 
 ### ---------- class SurfaceMaps() ---------- ###
@@ -488,10 +488,19 @@ class SoilGridsTransform(StaticModel):
         if mapnr == 3: name = "soc{0}".format(xs);  factor = 0.0001 # fraction SOC, server give dg/kg
         if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001  # fraction gravel, server gives cm3/dm3
        # if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # bulk density kg/m3, server gives cg/cm3 
-        #print(name)
+        #print(mapnr,name)
         nametif = name+".tif"
         namemap = name+"_.map"
         namemap2 = name+".map"
+        nt = name+"_.tif"
+        
+        # driver = gdal.GetDriverByName('GTiff')
+        # src_ds = gdal.Open( nametif )
+        # dst_ds = driver.CreateCopy( nt, src_ds, 0 )
+        # dst_ds = None        
+        # src_ds = None
+        # gdal.Unlink(nametif)
+        
         
         # open the tif
         src = gdal.Open(nametif)
@@ -499,18 +508,25 @@ class SoilGridsTransform(StaticModel):
         src_geotrans = src.GetGeoTransform()       
         nrRows1 = src.RasterYSize
         nrCols1 = src.RasterXSize
+        #print(nrRows1,nrCols1)
+        #print(src_geotrans)
+        #print(src_proj)
         
-        # convert to pcraster map and svae to disk
-        dst = gdal.GetDriverByName('PCRaster').Create(namemap, nrCols1, nrRows1, 1,
-                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
-        dst.SetGeoTransform( src_geotrans )
+        # convert to pcraster map and save to disk
+        driverp = gdal.GetDriverByName('PCRaster')
+        #print(driverp)
+        #dst = gdal.GetDriverByName('PCRaster').Create(namemap, nrCols1, nrRows1, 1,
+        #                            gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        dst = driverp.Create(namemap, nrCols1, nrRows1, 1, gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        dst.SetGeoTransform( src_geotrans ) 
         dst.SetProjection( src_proj )
         gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Bilinear)
-        dst = None        
-        src = None
         
+        src = None
+        dst = None
+                
         # open the map created above as PCRaster map
-        map_ = readmap(namemap)  
+        map_ = readmap(namemap)
         # give the missing areas the value nominal 1, the rest 0
         mapmask = ifthenelse(map_ > 1e-5,0,nominal(1))
         # isolate the pixels arounf the missing value, 1 cell thick
@@ -522,7 +538,6 @@ class SoilGridsTransform(StaticModel):
         report(map2,namemap2)
         
 
-
 ### ---------- class PedoTranfer() ---------- ###
 
 class PedoTransfer(StaticModel):
@@ -530,7 +545,7 @@ class PedoTransfer(StaticModel):
     # from SOILGRID.ORG GTiff maps for texture, org matter, gravel and bulkdensity
     # Using Saxton And Rawls 2006 pedotransferfunctions
     # https://hrsl.ba.ars.usda.gov/SPAW/Index.htm
-    def __init__(self,mask=0,layer=1,moisture=0,sBD=1350.0):
+    def __init__(self,mask=0,layer=1,moisture=0):
         StaticModel.__init__(self)
     def initial(self):
         standardBD = scalar(standardbulkdensity_)  # standard bulk dens assumed by saxton and rawls. High! 1350 would be better
@@ -780,14 +795,6 @@ class ErosionMaps(StaticModel):
         D90 = scalar(0)              
 
         if optionD50 == 1 :
-
-            # try:
-            #  S = readmap('sand1.map')
-            # except RuntimeError, exception:
-            # message = str(exception)
-            # self.assert_(string.find(message, "Raster sand1.map: can not be opened. Get SOILGRIDS maps first") != -1)
-
-
             print('>>> estimating d50 and d90 from log-linear regression for every cell', flush=True)
             
             #convert texture maps to 2D arrays to access cells, -9999 is MV

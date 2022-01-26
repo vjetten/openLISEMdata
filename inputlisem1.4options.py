@@ -48,7 +48,7 @@ def update_progress(progress):
     if progress < 0:
         progress = 0
         status = "Halt...\r\n"
-    if progress >= 1:
+    if progress >= 0.99:
         progress = 1
         status = "Done...\r\n"
     block = int(round(barLength*progress))
@@ -772,7 +772,9 @@ class ErosionMaps(StaticModel):
         cropheight = lookupscalar(LULCtable, 3, unitmap) * mask #plant height in m
         report(cropheight,cropheightName)
 
-        aggrstab = 6 * mask;  # aggregate stability
+        aggrstab = (S+0.15*C)/1.3 #from table A9.1 page 27 eurosem manual 2nd column erod (= kfactor multiply directly with splash energy)
+        # detachability in g/J in lisem this is directly multiplied to the KE
+        #aggrstab = 6 * mask;  # aggregate stability
         report(aggrstab,asName)
         
         cohadd = lookupscalar(LULCtable, 7, unitmap) * mask #plant height in m
