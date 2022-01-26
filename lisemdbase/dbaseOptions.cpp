@@ -57,7 +57,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
     settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 1));
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
-    //settings.setValue("CHANNEL/Watersheds", WatershedsName);
+    settings.setValue("CHANNEL/Watersheds", WatershedsName);
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
     settings.setValue("LULC/LULCmap", LULCmapName);
@@ -127,7 +127,7 @@ void MainWindow::getIni(QString name)
     chC = settings.value("CHANNEL/chC").toDouble();
     chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
     OutletstableName = settings.value("CHANNEL/Outletstable").toString();
-    //WatershedsName = settings.value("CHANNEL/Watersheds").toString();
+    WatershedsName = settings.value("CHANNEL/Watersheds").toString();
 
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
@@ -190,7 +190,7 @@ void MainWindow::readValuesfromUI()
     chC = spin_chC->value();
     chBaseflow = spin_chBaseflow->value();
     OutletstableName = lineEdit_outletsTable->text();
-    //WatershedsName = lineEdit_userWatersheds->text();
+    WatershedsName = lineEdit_userWatersheds->text();
 
     optionLULC = checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
@@ -253,7 +253,7 @@ void MainWindow::writeValuestoUI()
     spin_chC->setValue(chC);
     spin_chBaseflow->setValue(chBaseflow);
     lineEdit_outletsTable->setText(OutletstableName);
-    //lineEdit_userWatersheds->setText(WatershedsName);
+    lineEdit_userWatersheds->setText(WatershedsName);
 
     checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);

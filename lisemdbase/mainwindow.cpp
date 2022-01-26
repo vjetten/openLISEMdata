@@ -42,9 +42,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(4);
-  //  tabWidgetOptions->removeTab(3);
+
+    QFont codeFont("Consolas", 9, QFont::Normal);
+    tableViewLULC->setFont(codeFont);
+    tableViewOutlets->setFont(codeFont);
+    text_out->setFont(codeFont);
 
     findDPIscale();
+
 }
 
 MainWindow::~MainWindow()
@@ -490,5 +495,7 @@ void MainWindow::on_toolButton_GPMout_clicked()
     if (!RainDirName.isEmpty())
         lineEdit_RainfallDir->setText(RainDirName);
 }
+
+
 
 

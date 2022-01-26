@@ -482,36 +482,36 @@ class SoilGridsTransform(StaticModel):
         nt = name+"_.tif"
         
         # open the tif and create PCRaster copy
+     #   src = gdal.Open(nametif)
+     #   driverp = gdal.GetDriverByName('PCRaster')
+     #   driverp.CreateCopy(namemap, src, 0, options=["PCRASTER_VALUESCALE=VS_SCALAR"])
+     #   src = None
+        
         # src = gdal.Open(nametif)
-        # driverp = gdal.GetDriverByName('PCRaster')
-        # driverp.CreateCopy(namemap, src, 0, options=["PCRASTER_VALUESCALE=VS_SCALAR"])
+        # src_proj = src.GetProjection()
+        # src_geotrans = src.GetGeoTransform()       
+        # nrRows1 = src.RasterYSize
+        # nrCols1 = src.RasterXSize
+        # # print(nrRows1,nrCols1)
+        # # print(src_geotrans)
+        # # print(src_proj)
+        
+        # # convert to pcraster map and save to disk
+        # dst = gdal.GetDriverByName('PCRaster').Create(namemap, nrCols1, nrRows1, 1,
+        #                             gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        # dst.SetGeoTransform( src_geotrans ) 
+        # dst.SetProjection( src_proj )
+        # gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Bilinear)
+        
         # src = None
+        # dst = None
         
-        src = gdal.Open(nametif)
-        src_proj = src.GetProjection()
-        src_geotrans = src.GetGeoTransform()       
-        nrRows1 = src.RasterYSize
-        nrCols1 = src.RasterXSize
-        # print(nrRows1,nrCols1)
-        # print(src_geotrans)
-        # print(src_proj)
-        
-        # convert to pcraster map and save to disk
-        dst = gdal.GetDriverByName('PCRaster').Create(namemap, nrCols1, nrRows1, 1,
-                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
-        dst.SetGeoTransform( src_geotrans ) 
-        dst.SetProjection( src_proj )
-        gdal.ReprojectImage(src, dst, src_proj, src_proj, gdalconst.GRA_Bilinear)
-        
-        src = None
-        dst = None
-        
-        # open the map created above as PCRaster map
-        map_ = scalar(readmap(namemap))
+        # open the tiff directly !!!
+        map_ = scalar(readmap(nametif))
         # give the missing areas the value nominal 1, the rest 0
         mapmask = ifthenelse(map_ > 1e-5,0,nominal(1))
         # isolate the pixels arounf the missing value, 1 cell thick
-        edge = ifthen(spread(mapmask,0,1) == 2*celllength(), map_)
+        edge = ifthen(spread(mapmask,0,1) == 3*celllength(), map_)
         # interpolate into the missing areas with the edge cell values, ID weight 2
         map1 = inversedistance(boolean(mapmask),edge,2,0,0)                
         # combine the original and the ID map into one and save

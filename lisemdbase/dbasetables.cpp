@@ -36,7 +36,7 @@ void MainWindow::copyLULCTable()
 void MainWindow::fillLULCTable()
 {
     LULCNNtableName = QFileInfo(lineEdit_Base->text()).absolutePath() + "/NN" + QFileInfo(LULCtableName).fileName();
-    qDebug() << "new table"<<LULCNNtableName << LULCtableName;
+    //qDebug() << "new table"<<LULCNNtableName << LULCtableName;
 
     QFile file(LULCtableName);
 

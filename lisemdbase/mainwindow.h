@@ -202,6 +202,7 @@ private slots:
 
     void on_toolButton_help5_clicked();
 
+
 private:
     Ui::MainWindow *ui;
 };
