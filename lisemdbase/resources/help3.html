@@ -1,0 +1,79 @@
+<p><strong>Land use / land cover related parameters</strong></p>
+<p>You have to specify a landuse map (can be PCRaster or Geotiff). The map can belarger than the area, the base dem is used to generate the landuse map for LISEM.</p>
+<p>Also a text file is needed that is a table with a specific format:</p>
+<table width="470">
+<tbody>
+<tr>
+<td style="width: 83.5167px;"><code>LULC</code></td>
+<td style="width: 9.65px;"><code>=</code></td>
+<td style="width: 34.5167px;"><code>0</code></td>
+<td style="width: 41.3667px;"><code>1</code></td>
+<td style="width: 44.8px;"><code>2</code></td>
+<td style="width: 41.3667px;"><code>3</code></td>
+<td style="width: 41.3667px;"><code>4</code></td>
+<td style="width: 41.3667px;"><code>5</code></td>
+<td style="width: 34.5167px;"><code>6</code></td>
+<td style="width: 37.9333px;"><code>7</code></td>
+</tr>
+<tr>
+<td style="width: 83.5167px;"><code>Built-up</code></td>
+<td style="width: 9.65px;"><code>=</code></td>
+<td style="width: 34.5167px;"><code>1</code></td>
+<td style="width: 41.3667px;"><code>0.5</code></td>
+<td style="width: 44.8px;"><code>0.1</code></td>
+<td style="width: 41.3667px;"><code>8</code></td>
+<td style="width: 41.3667px;"><code>0.1</code></td>
+<td style="width: 41.3667px;"><code>1.1</code></td>
+<td style="width: 34.5167px;"><code>0</code></td>
+<td style="width: 37.9333px;"><code>-1</code></td>
+</tr>
+<tr>
+<td style="width: 83.5167px;"><code>crop</code></td>
+<td style="width: 9.65px;"><code>=</code></td>
+<td style="width: 34.5167px;"><code>2</code></td>
+<td style="width: 41.3667px;"><code>1</code></td>
+<td style="width: 44.8px;"><code>0.04</code></td>
+<td style="width: 41.3667px;"><code>1.5</code></td>
+<td style="width: 41.3667px;"><code>0.7</code></td>
+<td style="width: 41.3667px;"><code>1</code></td>
+<td style="width: 34.5167px;"><code>1</code></td>
+<td style="width: 37.9333px;"><code>4</code></td>
+</tr>
+<tr>
+<td style="width: 83.5167px;"><code>Forest</code></td>
+<td style="width: 9.65px;">&nbsp;</td>
+<td style="width: 34.5167px;"><code>8</code></td>
+<td style="width: 41.3667px;"><code>2</code></td>
+<td style="width: 44.8px;"><code>0.1</code></td>
+<td style="width: 41.3667px;"><code>12</code></td>
+<td style="width: 41.3667px;"><code>0.9</code></td>
+<td style="width: 41.3667px;"><code>0.9</code></td>
+<td style="width: 34.5167px;"><code>6</code></td>
+<td style="width: 37.9333px;"><code>6</code></td>
+</tr>
+<tr>
+<td style="width: 83.5167px;"><code>etc.</code></td>
+<td style="width: 9.65px;">&nbsp;</td>
+<td style="width: 34.5167px;">&nbsp;</td>
+<td style="width: 41.3667px;">&nbsp;</td>
+<td style="width: 44.8px;">&nbsp;</td>
+<td style="width: 41.3667px;">&nbsp;</td>
+<td style="width: 41.3667px;">&nbsp;</td>
+<td style="width: 41.3667px;">&nbsp;</td>
+<td style="width: 34.5167px;">&nbsp;</td>
+<td style="width: 37.9333px;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>A header row with LUCL = and column numbers 0..7, followed by a row for eahc LULC class in the map. Each LULC class has a name, an '=' sign, the class number from the map (an integer) and 7 columns with values for the parameters described below.</p>
+<p><strong>NOTE: each class in the LULC map needs to be represented in the table. if it is not (e.g. in the mpa there isd a class '4' but there is no row with class number 4 in the table), missing values will be generated for those pixels, for all variables below. This is a common mistake!</strong></p>
+<p>the landuse map andn table can be in their own folder. A copy is generated and stored in the base folder.</p>
+<p>The parnerters with column numbers are:</p>
+<p><em>1-Random Roughness (cm)</em>: the standard deviation of microroughness of a surface in cm. This variable is used to calculate micro-storage of water on the soil before it is subject to runoff. The water trapped in microroughness storage infiltrates and evaporates. It is not more than a few mm. Ranges form 0.01 (smooth) to ~5 cm (very rough, for instance plough furrows)</p>
+<p><em>Manning&rsquo;s n (-)</em>: flow resistance values, ranging from 0.001 (very smooth) to ~0.3 (very rough)</p>
+<p><em>Plant height (m)</em>: only used in erosion. Plant height is used to calculate the kinetic energy of water draining from the canopy after interception.</p>
+<p><em>Plant Cover (-)</em>: static canopy cover fraction. Note that the Leaf Area Index is generated from this value with: <code>LAI = ln(1-cover)/-0.4</code></p>
+<p><em>Density Factor (-)</em>: a factor between 0.9 and 1.1 that is the relative density of the soil, used in the pedotransfer functions (see soil section). This is a way to include the influence of soil structure by land use/cover in the soil physical parameters. A value of 1.0 means no influence and the bulk density based on the texture and organic matter. A value of 0.9 is a very loose structure which gives higher Ksat and higher porosity (for instance forest), a value of 1.1 implies severe compaction and decrease of Ksat and porosity (for instance built-up area). </p>
+<p><em>Smax type (1-8)</em>: the equation used for calculation of the canopy storage from the LAI (the LAI is an input map derived from the canopy cover). The equation number refers to the LISEM interface, interception section.</p>
+<p><em>Additional Cohesion (kPa)</em>: the additional soil cohesion as a result of plant roots. Literature suggests 4-6 kPa for crop types. For trees this is related to tensile strength of finer roots and can be more than 6 kPa. The root cohesion is added to the soil cohesion in kPa (based on texture), multiplied by the plant cover.</p>
+<p><strong>NOTE: a negative value in this column causes LISEM not to do any soil erosion for this category, for instance for built-up areas, parking lots etc. Transport an deposition will take place but splash and flow detachment are not considered.</strong></p>

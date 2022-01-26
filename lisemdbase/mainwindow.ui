@@ -223,7 +223,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <property name="iconSize">
        <size>
@@ -441,7 +441,6 @@
                    </property>
                    <property name="font">
                     <font>
-                     <family>Consolas</family>
                      <pointsize>9</pointsize>
                      <bold>false</bold>
                     </font>
@@ -1585,7 +1584,6 @@
           </property>
           <property name="font">
            <font>
-            <family>Consolas</family>
             <pointsize>9</pointsize>
            </font>
           </property>
