@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
-
+resize(QDesktopWidget().availableGeometry(this).size() * 0.8);
 //    CondaInstall = GetCondaAllEnvs(0);
 //    CondaInstall = GetCondaAllEnvs(1);
 //    CondaInstall = GetCondaAllEnvs(2);
@@ -555,5 +555,9 @@ void MainWindow::on_toolButton_GPMout_clicked()
 }
 
 
-
+void MainWindow::on_checkBox_createDams_clicked(bool checked)
+{
+    lineEdit_Dams->setEnabled(checked);
+    toolButton_Dams->setEnabled(checked);
+}
 

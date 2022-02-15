@@ -205,6 +205,7 @@ private slots:
 
     void on_toolButton_help5_clicked();
 
+    void on_checkBox_createDams_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;
