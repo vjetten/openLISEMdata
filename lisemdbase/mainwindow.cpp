@@ -6,10 +6,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
-    CondaInstall = GetCondaAllEnvs(0);
-    CondaInstall = GetCondaAllEnvs(1);
-    CondaInstall = GetCondaAllEnvs(2);
-    CondaInstall = GetCondaAllEnvs(3);
+//    CondaInstall = GetCondaAllEnvs(0);
+//    CondaInstall = GetCondaAllEnvs(1);
+//    CondaInstall = GetCondaAllEnvs(2);
+//    CondaInstall = GetCondaAllEnvs(3);
+    CondaInstall = GetCondaEnvs();
 
     QStringList sss;
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
@@ -38,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
         if (combo_envs->itemText(i) == CondaBaseDirName)
             combo_envs->setCurrentIndex(i);
     }
-
 
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(4);
@@ -84,18 +84,76 @@ void MainWindow::findDPIscale()
     }
 }
 
+
+bool MainWindow::GetCondaEnvs()
+{
+    QStringList folders;
+    QString name = qgetenv("USERPROFILE");
+    combo_envs->clear();
+
+    name.replace("\\","/");
+    name = name+"/.conda/environments.txt";
+
+    if (QFileInfo(name).exists()) {
+        QFile fin(name);
+
+        if (fin.open(QIODevice::ReadOnly | QIODevice::Text)){
+            while (!fin.atEnd())
+            {
+                QString S = fin.readLine();
+                if (S.contains("envs")) {
+                    S.remove(QChar('\n'));
+                    S.replace("\\","/");
+                    S = S + "/";
+                    folders << S;
+                }
+            }
+        }
+        fin.close();
+    } else {
+        WarningMsg("No conda environment found.");
+        return false;
+    }
+
+    for (int i = 0; i < folders.size(); i++) {
+        QString str = folders.at(i)+"python.exe";
+        QString str1 = folders.at(i)+"Library/bin/pcrcalc.exe";
+        QString str2 = folders.at(i)+"Library/bin/gdalinfo.exe";
+        bool pythonfound = QFileInfo(str).exists();
+        bool pcrasterfound = QFileInfo(str1).exists();
+        bool gdalfound = QFileInfo(str2).exists();
+
+        if (pythonfound && pcrasterfound && gdalfound)
+            combo_envs->addItem(folders.at(i));
+        else {
+            QString error = "";
+            if (!pythonfound) error = QString("Python not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+            else
+                if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                else
+                    if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+            //WarningMsg(error);
+        }
+    }
+    if (combo_envs->count() > 0)
+        CondaBaseDirName = combo_envs->currentText();
+    else
+        WarningMsg("No valid conda installation found.");
+
+    return(combo_envs->count() > 0);
+}
+
+// does not woirk for non english PCs
 bool MainWindow::GetCondaAllEnvs(int cda)
 {
     bool install = false;
-    QString name = qgetenv("USER");
-    if (name.isEmpty())
-        name = qgetenv("USERNAME");
+    QString name = qgetenv("USERPROFILE");
 
     if (cda == 0) {
-        CondaBaseDirName = QString("c:/Users/" +name + "/Miniconda3/envs");
+        CondaBaseDirName = name + "/Miniconda3/envs";
     }
     if (cda == 1) {
-        CondaBaseDirName = QString("c:/Users/" +name + "/Anaconda3/envs");
+        CondaBaseDirName = name + "/Anaconda3/envs";
     }
     if (cda == 2) {
         CondaBaseDirName = QString("c:/ProgramData/Miniconda3/envs");

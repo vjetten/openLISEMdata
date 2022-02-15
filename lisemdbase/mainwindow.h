@@ -7,6 +7,8 @@
 
 #include "ui_mainwindow.h"
 
+#define WarningMsg(s) QMessageBox::warning(this,"NutShell WARNING",QString(s),QMessageBox::Yes)
+
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
     Q_OBJECT
@@ -80,6 +82,7 @@ public:
 
     void setupModel();
     bool GetCondaAllEnvs(int cda);
+    bool GetCondaEnvs();
     void findDPIscale();
     QProcess *Process;
 

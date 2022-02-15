@@ -287,7 +287,6 @@
                    </property>
                    <property name="font">
                     <font>
-                     <family>Consolas</family>
                      <pointsize>9</pointsize>
                      <bold>false</bold>
                     </font>
@@ -1462,7 +1461,6 @@
           </property>
           <property name="font">
            <font>
-            <family>Consolas</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -3120,7 +3118,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 2.6 - 220126)</string>
+       <string>openLISEM database generator (version 2.7 - 220209)</string>
       </property>
      </widget>
     </item>
@@ -3512,7 +3510,6 @@
       </property>
       <property name="font">
        <font>
-        <family>Consolas</family>
         <pointsize>9</pointsize>
        </font>
       </property>

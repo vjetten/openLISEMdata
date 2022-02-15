@@ -143,7 +143,7 @@ if (option > -1) :
             
             count += 1            
             #if count % int(totalcount/50) == 0 :
-            update_progress(count/totalcount)
+            update_progress(count/totalcount*2)
 
             #del dst, Flush
             dst = None
