@@ -35,6 +35,7 @@ public:
     QString LULCNNtableName;
 
     QString RainScriptFileName;
+    QString RainRefName;
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
@@ -206,6 +207,8 @@ private slots:
     void on_toolButton_help5_clicked();
 
     void on_checkBox_createDams_clicked(bool checked);
+
+    void on_toolButton_GPMrefmap_clicked();
 
 private:
     Ui::MainWindow *ui;

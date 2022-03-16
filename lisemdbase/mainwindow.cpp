@@ -5,7 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
-resize(QDesktopWidget().availableGeometry(this).size() * 0.8);
+//resize(QDesktopWidget().availableGeometry(this).size() * 0.8);
+
+    setMinimumSize(1226, 800);
+
 //    CondaInstall = GetCondaAllEnvs(0);
 //    CondaInstall = GetCondaAllEnvs(1);
 //    CondaInstall = GetCondaAllEnvs(2);
@@ -474,7 +477,6 @@ void MainWindow::on_toolButton_CheckAll_clicked()
     spin_refBD->setValue(1350);
     //E_DEMfill->setText(QString::number(10,'f',1));
     spin_DEMfill->setValue(10);
-    E_catchmentSize->setText(QString::number(10000,'f',1));
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
     spin_chWidth->setValue(500.0);
@@ -559,5 +561,15 @@ void MainWindow::on_checkBox_createDams_clicked(bool checked)
 {
     lineEdit_Dams->setEnabled(checked);
     toolButton_Dams->setEnabled(checked);
+}
+
+
+void MainWindow::on_toolButton_GPMrefmap_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_GPMrefmap->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    RainRefName = getFileorDir(tmp,"Select reference map for resmapling", filters, 1);
+    if (!RainRefName.isEmpty())
+        lineEdit_GPMrefmap->setText(RainRefName);
 }
 

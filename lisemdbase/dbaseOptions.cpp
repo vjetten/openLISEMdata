@@ -83,7 +83,8 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("EROSION/optionD50", QString::number(optionD50));
     settings.setValue("EROSION/optionChannelsNoEros", QString::number(optionChannelsNoEros));
 
-    settings.setValue("RAINFALL/RainScript", RainScriptFileName);
+    settings.setValue("RAINFALL/RainScript", RainScriptFileName);    
+    settings.setValue("RAINFALL/RainRefName", RainRefName);
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
@@ -152,6 +153,7 @@ void MainWindow::getIni(QString name)
     optionChannelsNoEros = settings.value("EROSION/optionChannelsNoEros").toInt();
 
     RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
+    RainRefName = settings.value("RAINFALL/RainRefName").toString();
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
@@ -173,9 +175,7 @@ void MainWindow::readValuesfromUI()
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();    
 
-    optionCatchments = checkBox_Catchments->isChecked() ? 1 : 0;
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
-    //CatchmentSize = E_catchmentSize->text().toDouble();
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     DEMfill = spin_DEMfill->value();
 
@@ -215,6 +215,7 @@ void MainWindow::readValuesfromUI()
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
 
     RainScriptFileName= lineEdit_GPMpy->text();
+    RainRefName = lineEdit_GPMrefmap->text();
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
     RainFilename = lineEdit_RainFilename->text();
@@ -235,9 +236,6 @@ void MainWindow::writeValuestoUI()
     lineEdit_baseChannel->setText(BaseChannelName);
     lineEdit_userOutlets->setText(BaseOutletsName);
 
-    checkBox_Catchments->setChecked(optionCatchments > 0);
-    checkBox_DEM->setChecked(optionDEM > 0);
-    //E_catchmentSize->setText(QString::number(CatchmentSize,'f',1));
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     spin_DEMfill->setValue(DEMfill);
 
@@ -286,6 +284,7 @@ void MainWindow::writeValuestoUI()
     }    
 
     lineEdit_GPMpy->setText(RainScriptFileName);
+    lineEdit_GPMrefmap->setText(RainRefName);
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilename->setText(RainFilename);
