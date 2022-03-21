@@ -1113,21 +1113,22 @@ if __name__ == "__main__":
     maskbox = [llx,lly,urx,ury]
     ESPG = int(ESPGnumber)
     
-    print('>>> creating PCRaster land use map for area: '+landuseName, flush=True)
-    LULCmap = lulcTIF 
-    src = gdal.Open(LULCmap)
-    #cutout and convert
-    dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
-                                gdalconst.GDT_Int32,["PCRASTER_VALUESCALE=VS_NOMINAL"])
-    dst.SetGeoTransform( maskgeotrans )
-    dst.SetProjection( maskproj )
-    gdal.ReprojectImage(src, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
-    dst = None
-    src = None
-    lun = readmap(landuseName)
-    lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units 
-    report(ifthen(mask_ == 1, lun),landuseName)
-    report(ifthen(mask_ == 1, lun),landunitName)
+    if doProcessesLULC == 1:
+        print('>>> creating PCRaster land use map for area: '+landuseName, flush=True)
+        LULCmap = lulcTIF 
+        src = gdal.Open(LULCmap)
+        #cutout and convert
+        dst = gdal.GetDriverByName('PCRaster').Create(landuseName, nrCols, nrRows, 1,
+                                    gdalconst.GDT_Int32,["PCRASTER_VALUESCALE=VS_NOMINAL"])
+        dst.SetGeoTransform( maskgeotrans )
+        dst.SetProjection( maskproj )
+        gdal.ReprojectImage(src, dst, maskproj, maskproj, gdalconst.GRA_NearestNeighbour)
+        dst = None
+        src = None
+        lun = readmap(landuseName)
+        lun = spreadzone(lun,0,1) # fill in gaps in lu map with surroundng units 
+        report(ifthen(mask_ == 1, lun),landuseName)
+        report(ifthen(mask_ == 1, lun),landunitName)
     
     if doProcessesDEM == 1 :
         if doCatchment == 0 :
