@@ -43,6 +43,8 @@ public:
     double conversionmm;
     double timeintervalGPM;
     double interpolationGPM;
+    double dailyA;
+    double dailyB;
 
     QString LULCNames;
     QString ESPGnumber;
@@ -112,7 +114,7 @@ public:
     void fillOutletsTable();
     void resetOutletsTable();
 
-    void convertDailyPrecipitation();
+    bool convertDailyPrecipitation();
 
 
     QStandardItemModel *modelOutlets;
@@ -162,10 +164,6 @@ private slots:
     void on_toolButton_saveas_clicked();
 
     void on_toolButton_CheckAll_clicked();
-
-    void on_checkBox_useLUdensity_toggled(bool checked);
-
-    void on_checkBox_userefBD_toggled(bool checked);
 
     void on_toolButton_Dams_clicked();
 
@@ -217,7 +215,17 @@ private slots:
 
     void on_toolButton_dailyRain_clicked();
 
-    void on_toolButton_convertDailyRain_clicked();
+    void on_pushButton_generateGPMRain_clicked();
+
+    void on_pushButton_gennerateSyntheticRain_clicked();
+
+    void on_tabWidgetOptions_currentChanged(int index);
+
+    void on_toolButton_stopGPM_clicked();
+
+    void on_toolButton_resetsoil_clicked();
+
+    void on_toolButton_resetRain_clicked();
 
 private:
     Ui::MainWindow *ui;

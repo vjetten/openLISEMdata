@@ -7,18 +7,16 @@ MainWindow::MainWindow(QWidget *parent)
     setupUi(this);
 //resize(QDesktopWidget().availableGeometry(this).size() * 0.8);
 
-    setMinimumSize(1226, 800);
+    setMinimumSize(1280, 800);
 
-//    CondaInstall = GetCondaAllEnvs(0);
-//    CondaInstall = GetCondaAllEnvs(1);
-//    CondaInstall = GetCondaAllEnvs(2);
-//    CondaInstall = GetCondaAllEnvs(3);
     CondaInstall = GetCondaEnvs();
 
     QStringList sss;
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
+    dailyA = 0.6162;
+    dailyB = 0.8909;
 
     label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 
@@ -33,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (QFileInfo(s).exists())
     {
         getIni(s);
-    //    ScriptDirName = QFileInfo(ScriptFileName).absolutePath();
+
         writeValuestoUI();
         readValuesfromUI();
     }
@@ -424,6 +422,11 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     writeValuestoUI();
     readValuesfromUI();
 
+    Process->kill();
+    text_out->appendPlainText("User interrupt");
+
+    text_out->clear();
+
 //    if (LULCNames.isEmpty()) {
 //        LULCNames = QString(qApp->applicationDirPath()+"/lulcnames.ini");
 //        lineEdit_LULCNames->setText(LULCNames);
@@ -472,6 +475,34 @@ void MainWindow::on_toolButton_saveas_clicked()
     }
 }
 
+void MainWindow::on_toolButton_resetRain_clicked()
+{
+    spin_conversionmm->setValue(10);
+    spin_timeinterval->setValue(30);
+    spin_interpolation->setValue(1);
+    spin_dailyA->setValue(0.6261);
+    spin_dailyB->setValue(0.8909);
+}
+
+void MainWindow::on_toolButton_resetsoil_clicked()
+{
+    spin_Rootzone->setValue(0.6);
+    spin_MaxSoildepth->setValue(5.0);
+    spin_refBD->setValue(1350);
+    spin_refBD2->setValue(1350);
+    spin_initmoist->setValue(0);
+
+    checkBox_SGInterpolation->setChecked(false);
+    checkBox_noGravel->setChecked(true);
+    checkBox_Soilgrids->setChecked(false);
+    checkBox_userefBD->setChecked(true);
+    checkBox_userefBD2->setChecked(true);
+    checkBox_useLUdensity->setChecked(true);
+    checkBox_erosion->setChecked(true);
+    checkBox_D50->setChecked(true);
+    checkBox_ChannelsNoErosion->setChecked(true);
+}
+
 void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
@@ -483,31 +514,17 @@ void MainWindow::on_toolButton_CheckAll_clicked()
     spin_chWidth->setValue(500.0);
     spin_chDepth->setValue(10.0);
     spin_chBaseflow->setValue(0.0);
-    spin_Rootzone->setValue(0.6);
+
 
     bool checked = true;
     checkBox_DEM->setChecked(checked);
     checkBox_Channels->setChecked(checked);
     checkBox_LULC->setChecked(checked);
     checkBox_Infil->setChecked(checked);
-    checkBox_Soilgrids->setChecked(checked);
-    checkBox_userefBD->setChecked(checked);
-    checkBox_useLUdensity->setChecked(!checked);
     checkBox_erosion->setChecked(checked);
-    checkBox_D50->setChecked(checked);
+//    checkBox_D50->setChecked(checked);
+//    checkBox_ChannelsNoErosion->setChecked(checked);
 }
-
-
-void MainWindow::on_checkBox_useLUdensity_toggled(bool checked)
-{
- //   checkBox_userefBD->setChecked(!checked);
-}
-
-void MainWindow::on_checkBox_userefBD_toggled(bool checked)
-{
-   // checkBox_useLUdensity->setChecked(!checked);
-}
-
 
 void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
 {
@@ -527,7 +544,8 @@ void MainWindow::on_checkBox_erosion_toggled(bool checked)
 
 void MainWindow::on_checkBox_createRainfall_clicked(bool checked)
 {
-    widget_raindata->setEnabled(checked);
+    groupBox_raindata->setEnabled(checked);
+    groupBox_dailyraindata->setEnabled(checked);
 }
 
 
@@ -587,10 +605,14 @@ void MainWindow::on_toolButton_dailyRain_clicked()
 }
 
 
-void MainWindow::convertDailyPrecipitation()
+bool MainWindow::convertDailyPrecipitation()
 {
     QFile filein(RainDailyFilename);
+    if (RainDailyFilename.isEmpty() || !QFileInfo(RainDailyFilename).exists())
+        return false;
+
     filein.open(QIODevice::ReadOnly | QIODevice::Text);
+
 
     QStringList sl;
     while (!filein.atEnd()) {
@@ -614,12 +636,12 @@ void MainWindow::convertDailyPrecipitation()
     eout << "time (ddd:mmmm)\n";
     eout << "P (mm/h)\n";
     //parsing
-    for (int i = 0; i < sl.count(); i++) {
+    for (int i = 4; i < sl.count(); i++) {
         QStringList line = sl.at(i).split(QRegExp("\\s+"));
         int day = line.at(0).toInt();
         double P = line.at(1).toDouble();
 
-        double I1 = 0.6261*qPow(P,0.8908);
+        double I1 = dailyA*qPow(P,dailyB);
         double I2 = I1/2;
         double I0 = I2;
         double I3 = I2/2;
@@ -629,7 +651,7 @@ void MainWindow::convertDailyPrecipitation()
         double sum = I0+I1+I2+I3+I4+I5;
         double dt = sum > 0 ? 60*P/sum : 60;
 
-        int hour = qrand() % ((15 + 1) - 4) + 4;
+        int hour = qrand() % ((15 + 1) - 3) + 3;
         double start = hour*60;
 
         eout << QString("%1:%2 ").arg(day).arg(start+0*dt,4,'f',0,'0') << I2 << "\n";
@@ -640,7 +662,8 @@ void MainWindow::convertDailyPrecipitation()
         eout << QString("%1:%2 ").arg(day).arg(start+5*dt,4,'f',0,'0') << I5 << "\n";
         eout << QString("%1:%2 ").arg(day).arg(start+6*dt,4,'f',0,'0') << "0.00\n";
 
-        qDebug() << P << dt/60*(I0+I1+I2+I3+I4);
+        text_out->appendPlainText(QString("%1:%2").arg(day).arg(start,4,'f',0,'0'));
+//        qDebug() << P << dt/60*(I0+I1+I2+I3+I4);
 //        qDebug() << QString("%1:0720 ").arg(day) << I2;
 //        qDebug() << QString("%1:0780 ").arg(day) << I1;
 //        qDebug() << QString("%1:0840 ").arg(day) << I2;
@@ -651,11 +674,38 @@ void MainWindow::convertDailyPrecipitation()
 
     }
     fileout.close();
+    return true;
 }
 
 
-void MainWindow::on_toolButton_convertDailyRain_clicked()
+void MainWindow::on_pushButton_generateGPMRain_clicked()
 {
-    convertDailyPrecipitation();
+    runModel();
 }
+
+
+void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
+{
+    bool res = convertDailyPrecipitation();
+    if (res)
+        text_out->appendPlainText("Synthetic rainfall generated.");
+    else
+        text_out->appendPlainText("Error encountered, file not generated.");
+}
+
+
+void MainWindow::on_tabWidgetOptions_currentChanged(int index)
+{
+    toolButton_clear->setVisible(index < 3);
+    toolButton_stop->setVisible(index < 3);
+    pushButton_start->setVisible(index < 3);
+}
+
+
+void MainWindow::on_toolButton_stopGPM_clicked()
+{
+    Process->kill();
+    text_out->appendPlainText("User interrupt");
+}
+
 

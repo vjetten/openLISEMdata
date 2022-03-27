@@ -91,6 +91,8 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
     settings.setValue("RAINFALL/RainDailyFilename", RainDailyFilename);
+    settings.setValue("RAINFALL/dailyA", dailyA);
+    settings.setValue("RAINFALL/dailyB", dailyB);
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
     settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
     settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
@@ -163,6 +165,8 @@ void MainWindow::getIni(QString name)
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
     RainDailyFilename = settings.value("RAINFALL/RainDailyFilename").toString();
+    dailyA = settings.value("RAINFALL/dailyA").toDouble();
+    dailyB = settings.value("RAINFALL/dailyB").toDouble();
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
     timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
     interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
@@ -228,6 +232,9 @@ void MainWindow::readValuesfromUI()
     RainDirName = lineEdit_RainfallDir->text();
     RainFilename = lineEdit_RainFilename->text();
     RainDailyFilename = lineEdit_RainDailyFilename->text();
+    dailyA = spin_dailyA->value();
+    dailyB = spin_dailyB->value();
+
     conversionmm = spin_conversionmm->value();
     timeintervalGPM = spin_timeinterval->value();
     interpolationGPM = spin_interpolation->value();
@@ -300,6 +307,8 @@ void MainWindow::writeValuestoUI()
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilename->setText(RainFilename);
     lineEdit_RainDailyFilename->setText(RainDailyFilename);
+    spin_dailyA->setValue(dailyA);
+    spin_dailyB->setValue(dailyB);
     spin_conversionmm->setValue(conversionmm);
     spin_timeinterval->setValue(timeintervalGPM);
     spin_interpolation->setValue(interpolationGPM);

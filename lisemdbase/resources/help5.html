@@ -1,4 +1,6 @@
-<p><strong>Rainfall data from satellite images</strong></p>
+<p><strong>Rainfall generation options</strong></p>
+<p>Two options are avilable: i. generate rainfall maps for the area from satellite images, and ii. generate an input file from daily data using synthetic rainfall.</p>
+<p><strong>i. Rainfall data from satellite images</strong></p>
 <p>Rainfall maps can be generated from the Global Precipitation Mission IMERG data. IMERG stands for Integrated Multi-satellitE Retrievals,based on a constellation of satellites. This is free data with rainfall intensity, for the entire globe in 11 km resolution, every 30 minutes. Data are available since 2000. The DBase generator does not download the data, but assumes that you have downloaded the necessary dataset in a folder.</p>
 <p>They can be found here:</p>
 <p><a href="https://jsimpsonhttps.pps.eosdis.nasa.gov/imerg/gis/">https://jsimpsonhttps.pps.eosdis.nasa.gov/imerg/gis/</a></p>
@@ -6,7 +8,7 @@
 <p>The DBase generator asks for the folder where your dataset is stored. It assumes that all files for the entire run are stored in one folder (if you have multiple months, store them in one folder).</p>
 <p>Specify the folder where the reprojected ranfall input data should be stored (usualy a subfolder under the rain folder in the project dbase&nbsp; structure). The reprojection is done using the base dem and ESPG number.</p>
 <p>LISEM needs an input text file that lists all images in the run with their time interval. LISEM uses Julian day number. So for instance noon (minute 720) on the first of June (day 152) is time 152:0720. The generated file looks like this:</p>
-<p><code># GPM data<br /></code><code>2<br /></code><code>time (ddd:mmmm)<br /></code><code>filename<br /></code><code>152:0000 3B-HHR-L.MS.MRG.3IMERG.20140601-S000000-E002959.0000.V06B.30min.map<br /></code><code>152:0030 3B-HHR-L.MS.MRG.3IMERG.20140601-S003000-E005959.0030.V06B.30min.map<br /></code><code>152:0060 3B-HHR-L.MS.MRG.3IMERG.20140601-S010000-E012959.0060.V06B.30min.map<br />etc.<br /></code></p>
+<p><code># GPM data<br /></code><code>2<br /></code><code>time (ddd:mmmm)<br /></code><code>filename<br />152:0000 3B-HHR-L.MS.MRG.3IMERG.20140601-S000000-E002959.0000.V06B.30min.map<br /></code><code>152:0030 3B-HHR-L.MS.MRG.3IMERG.20140601-S003000-E005959.0030.V06B.30min.map<br /></code><code>152:0060 3B-HHR-L.MS.MRG.3IMERG.20140601-S010000-E012959.0060.V06B.30min.map<br />etc.<br /></code></p>
 <p>The rainfall used in LISEM is from the interval that it is listed at, until the next time interval, when a new map is loaded.</p>
 <p>There are 3 options:</p>
 <ul>
@@ -14,3 +16,20 @@
 <li><em>time interval</em> of the images: (30 minutes for GPM data)</li>
 <li>the type of interpolation used: 0 = nearest neighbour; 1 = biliear interpolation; 2 = bicubic interpolation.</li>
 </ul>
+<p><strong>ii. Generate syntathic rainfall from daily data</strong></p>
+<p>Provide a text file with daily rainfall values for the area, with the format:</p>
+<p><code>#header<br /></code> <code>2<br /></code> <code>day<br /></code><code>Pday<br /></code> <code>152 0.0<br /></code> <code>153 1.23<br /></code> <code>154 2.34<br /></code> <code>etc.</code></p>
+<p>It is assumed you have a relation between the daily rainfall amount and the maximum intensity (Imax) on that day. This can be obtained from stations with hourly data. For each day with rainfall a synthetic storm is generated that has 5 intervals:</p>
+<ol>
+<li>interval 1: intensity = 0.5*Imax</li>
+<li>interval 2: intensity = Imax</li>
+<li>interval 3: intensity = 0.5*Imax</li>
+<li>interval 4: intensity = 0.25*Imax</li>
+<li>interval 5: intensity = 0.125*Imax</li>
+<li>interval 6: intensity = 0.0625*Imax</li>
+</ol>
+<p>Each inerval has a durtaion of approximately 1 hour, but adjusted to ensure that the sum of the timeintervals equals the daily total for that day.</p>
+<p>The rainfall starts randomly during the day, between 3 a.m. and 3 p.m. This is arbitrary.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
