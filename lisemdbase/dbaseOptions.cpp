@@ -73,8 +73,10 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
     settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
+    settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
+    settings.setValue("SOIL/refBulkDens2", QString::number(refBulkDens2, 'f', 0));
     settings.setValue("SOIL/refRootzone", QString::number(refRootzone, 'f', 2));
     settings.setValue("SOIL/refMaxSoildepth", QString::number(refMaxSoildepth, 'f', 2));
     settings.setValue("SOIL/initmoist", QString::number(initmoist, 'f', 2));
@@ -88,6 +90,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
+    settings.setValue("RAINFALL/RainDailyFilename", RainDailyFilename);
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
     settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
     settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
@@ -142,8 +145,10 @@ void MainWindow::getIni(QString name)
     optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = settings.value("SOIL/optionUseBD").toInt();
+    optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
+    refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
     refRootzone = settings.value("SOIL/refRootzone").toDouble();
     refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
     initmoist = settings.value("SOIL/initmoist").toDouble();
@@ -157,6 +162,7 @@ void MainWindow::getIni(QString name)
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
+    RainDailyFilename = settings.value("RAINFALL/RainDailyFilename").toString();
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
     timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
     interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
@@ -204,8 +210,10 @@ void MainWindow::readValuesfromUI()
     optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
     optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
+    optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
+    refBulkDens2 = spin_refBD2->value();
     refRootzone = spin_Rootzone->value();
     refMaxSoildepth = spin_MaxSoildepth->value();
     initmoist = spin_initmoist->value();
@@ -219,6 +227,7 @@ void MainWindow::readValuesfromUI()
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
     RainFilename = lineEdit_RainFilename->text();
+    RainDailyFilename = lineEdit_RainDailyFilename->text();
     conversionmm = spin_conversionmm->value();
     timeintervalGPM = spin_timeinterval->value();
     interpolationGPM = spin_interpolation->value();
@@ -265,8 +274,10 @@ void MainWindow::writeValuestoUI()
     checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
     checkBox_noGravel->setChecked(optionNoGravel > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
+    checkBox_userefBD2->setChecked(optionUseBD2 > 0);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
+    spin_refBD2->setValue(refBulkDens2);
     spin_Rootzone->setValue(refRootzone);
     spin_MaxSoildepth->setValue(refMaxSoildepth);
     spin_initmoist->setValue(initmoist);
@@ -288,6 +299,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilename->setText(RainFilename);
+    lineEdit_RainDailyFilename->setText(RainDailyFilename);
     spin_conversionmm->setValue(conversionmm);
     spin_timeinterval->setValue(timeintervalGPM);
     spin_interpolation->setValue(interpolationGPM);

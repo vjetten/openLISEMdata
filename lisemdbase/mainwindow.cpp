@@ -204,7 +204,8 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 {
     QFileDialog dialog;
     QString dirout = inputdir;
-    qDebug() <<"dir" << inputdir << QFileInfo(inputdir).absoluteDir();
+    QString startdir = QFileInfo(inputdir).absoluteDir().absolutePath();
+    qDebug() <<"dir" << inputdir<< startdir ;
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
@@ -571,5 +572,90 @@ void MainWindow::on_toolButton_GPMrefmap_clicked()
     RainRefName = getFileorDir(tmp,"Select reference map for resmapling", filters, 1);
     if (!RainRefName.isEmpty())
         lineEdit_GPMrefmap->setText(RainRefName);
+}
+
+
+
+
+
+void MainWindow::on_toolButton_dailyRain_clicked()
+{
+    QStringList filters({"Text (*.txt)","Any files (*)"});
+    RainDailyFilename = getFileorDir(RainDirName,"Select file with daily rainfall", filters, 2);
+    if (!RainDailyFilename.isEmpty())
+        lineEdit_RainDailyFilename->setText(RainDailyFilename);
+}
+
+
+void MainWindow::convertDailyPrecipitation()
+{
+    QFile filein(RainDailyFilename);
+    filein.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QStringList sl;
+    while (!filein.atEnd()) {
+        QString S = filein.readLine();
+        if (!S.trimmed().isEmpty())
+        {
+            sl << S;
+        }
+    }
+    filein.close();
+
+    QFile fileout(RainDirName+"/"+RainFilename);
+    fileout.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream eout(&fileout);
+    eout.setRealNumberPrecision(2);
+    eout.setFieldWidth(8);
+    eout.setRealNumberNotation(QTextStream::FixedNotation);
+
+    eout << "#generated from daily rainfall\n";
+    eout << "2\n";
+    eout << "time (ddd:mmmm)\n";
+    eout << "P (mm/h)\n";
+    //parsing
+    for (int i = 0; i < sl.count(); i++) {
+        QStringList line = sl.at(i).split(QRegExp("\\s+"));
+        int day = line.at(0).toInt();
+        double P = line.at(1).toDouble();
+
+        double I1 = 0.6261*qPow(P,0.8908);
+        double I2 = I1/2;
+        double I0 = I2;
+        double I3 = I2/2;
+        double I4 = I3/2;
+        double I5 = I4/2;
+
+        double sum = I0+I1+I2+I3+I4+I5;
+        double dt = sum > 0 ? 60*P/sum : 60;
+
+        int hour = qrand() % ((15 + 1) - 4) + 4;
+        double start = hour*60;
+
+        eout << QString("%1:%2 ").arg(day).arg(start+0*dt,4,'f',0,'0') << I2 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+1*dt,4,'f',0,'0') << I1 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+2*dt,4,'f',0,'0') << I2 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+3*dt,4,'f',0,'0') << I3 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+4*dt,4,'f',0,'0') << I4 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+5*dt,4,'f',0,'0') << I5 << "\n";
+        eout << QString("%1:%2 ").arg(day).arg(start+6*dt,4,'f',0,'0') << "0.00\n";
+
+        qDebug() << P << dt/60*(I0+I1+I2+I3+I4);
+//        qDebug() << QString("%1:0720 ").arg(day) << I2;
+//        qDebug() << QString("%1:0780 ").arg(day) << I1;
+//        qDebug() << QString("%1:0840 ").arg(day) << I2;
+//        qDebug() << QString("%1:0900 ").arg(day) << I3;
+//        qDebug() << QString("%1:0960 ").arg(day) << I4;
+//        qDebug() << QString("%1:1020 ").arg(day) << I4;
+//        qDebug() << QString("%1:1080 0.00").arg(day);
+
+    }
+    fileout.close();
+}
+
+
+void MainWindow::on_toolButton_convertDailyRain_clicked()
+{
+    convertDailyPrecipitation();
 }
 

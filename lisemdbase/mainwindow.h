@@ -39,6 +39,7 @@ public:
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
+    QString RainDailyFilename;
     double conversionmm;
     double timeintervalGPM;
     double interpolationGPM;
@@ -50,6 +51,7 @@ public:
     int SG2;
     double initmoist;
     double refBulkDens;
+    double refBulkDens2;
     double DEMfill;
     double CatchmentSize;
     int optionDEM;
@@ -62,6 +64,7 @@ public:
     int optionErosion;
     int optionD50;
     int optionUseBD;
+    int optionUseBD2;
     int optionUseDensity;
     int optionFillDEM;
     int optionCatchments;
@@ -108,6 +111,8 @@ public:
     void createNNLULCTable();
     void fillOutletsTable();
     void resetOutletsTable();
+
+    void convertDailyPrecipitation();
 
 
     QStandardItemModel *modelOutlets;
@@ -209,6 +214,10 @@ private slots:
     void on_checkBox_createDams_clicked(bool checked);
 
     void on_toolButton_GPMrefmap_clicked();
+
+    void on_toolButton_dailyRain_clicked();
+
+    void on_toolButton_convertDailyRain_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -241,3 +241,6 @@ void MainWindow::on_toolButton_resetOutlets_clicked()
 }
 
 
+
+
+
