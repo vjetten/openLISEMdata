@@ -39,6 +39,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("BaseDEM", BaseDEMName);
     settings.setValue("BaseChannel", BaseChannelName);
     settings.setValue("BaseOutlets", BaseOutletsName);
+    settings.setValue("BaseOutpoints", BaseOutpointsName);
 
     settings.setValue("DEM/optionCatchments", QString::number(optionCatchments));
     settings.setValue("DEM/optionDEM", QString::number(optionDEM));
@@ -91,6 +92,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
     settings.setValue("RAINFALL/RainDailyFilename", RainDailyFilename);
+    settings.setValue("RAINFALL/RainFilenameHour", RainFilenameHour);
     settings.setValue("RAINFALL/dailyA", dailyA);
     settings.setValue("RAINFALL/dailyB", dailyB);
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
@@ -115,6 +117,7 @@ void MainWindow::getIni(QString name)
     BaseDEMName = settings.value("BaseDEM").toString();
     BaseChannelName = settings.value("BaseChannel").toString();
     BaseOutletsName = settings.value("BaseOutlets").toString();
+    BaseOutpointsName = settings.value("BaseOutpoints").toString();
 
     optionCatchments = settings.value("DEM/optionCatchments").toInt();
     optionDEM = settings.value("DEM/optionDEM").toInt();
@@ -127,11 +130,13 @@ void MainWindow::getIni(QString name)
     optionIncludeDams = settings.value("CHANNEL/optionIncludeDams").toInt();
     BaseDamsName = settings.value("CHANNEL/BaseDams").toString();
     optionUserOutlets = settings.value("CHANNEL/optionUserOutlets").toInt();
+
     chWidth = settings.value("CHANNEL/chWidth").toDouble();
     chB = settings.value("CHANNEL/chB").toDouble();
     chDepth = settings.value("CHANNEL/chDepth").toDouble();
     chC = settings.value("CHANNEL/chC").toDouble();
     chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
+
     OutletstableName = settings.value("CHANNEL/Outletstable").toString();
     WatershedsName = settings.value("CHANNEL/Watersheds").toString();
 
@@ -165,6 +170,8 @@ void MainWindow::getIni(QString name)
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
     RainDailyFilename = settings.value("RAINFALL/RainDailyFilename").toString();
+    RainFilenameHour = settings.value("RAINFALL/RainFilenameHour").toString();
+
     dailyA = settings.value("RAINFALL/dailyA").toDouble();
     dailyB = settings.value("RAINFALL/dailyB").toDouble();
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
@@ -184,6 +191,7 @@ void MainWindow::readValuesfromUI()
     BaseDEMName = lineEdit_baseDEM->text();
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();    
+    BaseOutpointsName = lineEdit_userOutpoints->text();
 
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
@@ -232,6 +240,7 @@ void MainWindow::readValuesfromUI()
     RainDirName = lineEdit_RainfallDir->text();
     RainFilename = lineEdit_RainFilename->text();
     RainDailyFilename = lineEdit_RainDailyFilename->text();
+    RainFilenameHour = lineEdit_RainFilenameHour->text();
     dailyA = spin_dailyA->value();
     dailyB = spin_dailyB->value();
 
@@ -251,6 +260,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_baseDEM->setText(BaseDEMName);
     lineEdit_baseChannel->setText(BaseChannelName);
     lineEdit_userOutlets->setText(BaseOutletsName);
+    lineEdit_userOutpoints->setText(BaseOutpointsName);
 
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     spin_DEMfill->setValue(DEMfill);
@@ -307,6 +317,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilename->setText(RainFilename);
     lineEdit_RainDailyFilename->setText(RainDailyFilename);
+    lineEdit_RainFilenameHour->setText(RainFilenameHour);
     spin_dailyA->setValue(dailyA);
     spin_dailyB->setValue(dailyB);
     spin_conversionmm->setValue(conversionmm);

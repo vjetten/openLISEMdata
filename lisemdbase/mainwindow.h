@@ -26,6 +26,7 @@ public:
     QString BaseDEMName;
     QString BaseChannelName;
     QString BaseOutletsName;
+    QString BaseOutpointsName;
     QString OutletstableName;
     QString WatershedsName;
     QString BaseDamsName;
@@ -39,6 +40,7 @@ public:
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
+    QString RainFilenameHour;
     QString RainDailyFilename;
     double conversionmm;
     double timeintervalGPM;
@@ -226,6 +228,8 @@ private slots:
     void on_toolButton_resetsoil_clicked();
 
     void on_toolButton_resetRain_clicked();
+
+    void on_toolButton_userOutpoints_clicked();
 
 private:
     Ui::MainWindow *ui;

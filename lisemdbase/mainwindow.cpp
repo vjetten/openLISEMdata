@@ -624,7 +624,13 @@ bool MainWindow::convertDailyPrecipitation()
     }
     filein.close();
 
-    QFile fileout(RainDirName+"/"+RainFilename);
+    QString fno;
+    if (RainFilenameHour != lineEdit_RainFilenameHour->text())
+        fno = RainDirName+lineEdit_RainFilenameHour->text();
+    else
+        fno = RainDirName+RainFilenameHour;
+    QFile fileout(fno);
+    qDebug() << fno;
     fileout.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream eout(&fileout);
     eout.setRealNumberPrecision(2);
@@ -643,24 +649,25 @@ bool MainWindow::convertDailyPrecipitation()
 
         double I1 = dailyA*qPow(P,dailyB);
         double I2 = I1/2;
-        double I0 = I2;
         double I3 = I2/2;
         double I4 = I3/2;
         double I5 = I4/2;
+        double I6 = I5/2;
 
-        double sum = I0+I1+I2+I3+I4+I5;
+        double sum = I1+I2+I3+I4+I5+I6;
         double dt = sum > 0 ? 60*P/sum : 60;
 
         int hour = qrand() % ((15 + 1) - 3) + 3;
         double start = hour*60;
 
-        eout << QString("%1:%2 ").arg(day).arg(start+0*dt,4,'f',0,'0') << I2 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+1*dt,4,'f',0,'0') << I1 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+2*dt,4,'f',0,'0') << I2 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+3*dt,4,'f',0,'0') << I3 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+4*dt,4,'f',0,'0') << I4 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+5*dt,4,'f',0,'0') << I5 << "\n";
-        eout << QString("%1:%2 ").arg(day).arg(start+6*dt,4,'f',0,'0') << "0.00\n";
+        int j = 0;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I3 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I1 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I2 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I4 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I5 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I6 << "\n";j++;
+        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
 
         text_out->appendPlainText(QString("%1:%2").arg(day).arg(start,4,'f',0,'0'));
 //        qDebug() << P << dt/60*(I0+I1+I2+I3+I4);
@@ -669,7 +676,7 @@ bool MainWindow::convertDailyPrecipitation()
 //        qDebug() << QString("%1:0840 ").arg(day) << I2;
 //        qDebug() << QString("%1:0900 ").arg(day) << I3;
 //        qDebug() << QString("%1:0960 ").arg(day) << I4;
-//        qDebug() << QString("%1:1020 ").arg(day) << I4;
+//        qDebug() << QString("%1:1020 ").arg(day) << I5;
 //        qDebug() << QString("%1:1080 0.00").arg(day);
 
     }
@@ -708,4 +715,14 @@ void MainWindow::on_toolButton_stopGPM_clicked()
     text_out->appendPlainText("User interrupt");
 }
 
+
+
+void MainWindow::on_toolButton_userOutpoints_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userOutpoints->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    BaseOutpointsName = getFileorDir(tmp,"Select outpoints map", filters, 1);
+    if (!BaseOutpointsName.isEmpty())
+        lineEdit_userOutpoints->setText(BaseOutpointsName);
+}
 

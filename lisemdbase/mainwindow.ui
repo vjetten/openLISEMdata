@@ -425,49 +425,45 @@
            <property name="verticalSpacing">
             <number>4</number>
            </property>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_29">
-             <property name="text">
-              <string>Base outlet(s) (reference map)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>Base Channel (reference map)</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="3" colspan="2">
-            <widget class="QDoubleSpinBox" name="spin_DEMfill">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
              <property name="font">
               <font>
                <pointsize>9</pointsize>
                <bold>false</bold>
               </font>
              </property>
-             <property name="decimals">
-              <number>1</number>
+             <property name="text">
+              <string>Reference DEM </string>
              </property>
-             <property name="value">
-              <double>1.000000000000000</double>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="2" column="4">
-            <widget class="QLabel" name="label_21">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_10">
              <property name="text">
-              <string>(if multiplle outlets: use unique numbers: 1, 2 ... n)</string>
+              <string>Reference channel mask</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="2">
+            <widget class="QLineEdit" name="lineEdit_userOutlets">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>outlet0.map</string>
              </property>
             </widget>
            </item>
@@ -491,75 +487,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QToolButton" name="toolButton_baseChannel">
-             <property name="font">
-              <font>
-               <pointsize>7</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="2">
-            <widget class="QLineEdit" name="lineEdit_baseChannel">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>chanmask0.map</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="2">
-            <widget class="QLineEdit" name="lineEdit_userOutlets">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>outlet0.map</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1" colspan="2">
-            <widget class="QLineEdit" name="lineEdit_Dams">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QCheckBox" name="checkBox_createDams">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -581,10 +509,13 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="3">
-            <widget class="QToolButton" name="toolButton_Dams">
-             <property name="enabled">
-              <bool>false</bool>
+           <item row="1" column="3">
+            <widget class="QToolButton" name="toolButton_baseChannel">
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+               <bold>false</bold>
+              </font>
              </property>
              <property name="text">
               <string>...</string>
@@ -595,22 +526,17 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0" colspan="3">
-            <widget class="QCheckBox" name="checkBox_correctDEM">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
+           <item row="4" column="3">
+            <widget class="QToolButton" name="toolButton_Dams">
+             <property name="enabled">
+              <bool>false</bool>
              </property>
              <property name="text">
-              <string>Correct the DEM by filling isolated depressions, deeper than (m):</string>
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
              </property>
             </widget>
            </item>
@@ -636,6 +562,76 @@
              </property>
             </widget>
            </item>
+           <item row="7" column="0" colspan="3">
+            <widget class="QCheckBox" name="checkBox_correctDEM">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Correct the DEM by filling isolated depressions, deeper than (m):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>(one or more outlets for river creation)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" colspan="2">
+            <widget class="QLineEdit" name="lineEdit_Dams">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="3" colspan="2">
+            <widget class="QDoubleSpinBox" name="spin_DEMfill">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="3">
             <widget class="QToolButton" name="toolButton_baseDEM">
              <property name="font">
@@ -653,19 +649,61 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_29">
              <property name="text">
-              <string>Base DEM (reference map)</string>
+              <string>Reference outlet(s)</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" colspan="2">
+            <widget class="QLineEdit" name="lineEdit_baseChannel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>chanmask0.map</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" colspan="2">
+            <widget class="QLineEdit" name="lineEdit_userOutpoints">
+             <property name="text">
+              <string>outpoint0.map</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_53">
+             <property name="text">
+              <string>Observation points</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QToolButton" name="toolButton_userOutpoints">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QLabel" name="label_54">
+             <property name="text">
+              <string>(All reporting points, including outlets, use unique numbers))</string>
              </property>
             </widget>
            </item>
@@ -866,7 +904,7 @@
                     <double>0.100000000000000</double>
                    </property>
                    <property name="value">
-                    <double>10.000000000000000</double>
+                    <double>5.000000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -2669,22 +2707,6 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QLineEdit" name="lineEdit_RainFilename">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-            <bold>false</bold>
-           </font>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_createRainfall">
           <property name="enabled">
@@ -2797,25 +2819,6 @@
           </property>
           <property name="text">
            <string>Evapotranspiration data</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_38">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Rainfall filename in LISEM: </string>
           </property>
          </widget>
         </item>
@@ -2945,345 +2948,6 @@
           </layout>
          </widget>
         </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QGroupBox" name="groupBox_raindata">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="title">
-           <string>GPM based</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_11">
-           <property name="leftMargin">
-            <number>8</number>
-           </property>
-           <property name="topMargin">
-            <number>4</number>
-           </property>
-           <property name="rightMargin">
-            <number>8</number>
-           </property>
-           <property name="bottomMargin">
-            <number>4</number>
-           </property>
-           <property name="horizontalSpacing">
-            <number>8</number>
-           </property>
-           <item row="10" column="4" colspan="3">
-            <widget class="QLabel" name="label_42">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>     Interpolation:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="8" colspan="3">
-            <widget class="QLabel" name="label_43">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>(0-Nearest Neighbour; 1 - Bilinear; 2 - Bicubic)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="8">
-            <widget class="QToolButton" name="toolButton_GPMrefmap">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="1">
-            <widget class="QDoubleSpinBox" name="spin_conversionmm">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="minimum">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="value">
-              <double>10.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="7">
-            <widget class="QSpinBox" name="spin_interpolation">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>3</number>
-             </property>
-             <property name="value">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_19">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>openLISEM dbase Reference map</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="8">
-            <widget class="QToolButton" name="toolButton_GPMin">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Folder-icon.png</normaloff>:/2X/Folder-icon.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="label_28">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Conversion factor to mm</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="2">
-            <widget class="QLabel" name="label_41">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>     Time interval images (min) </string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="3">
-            <widget class="QDoubleSpinBox" name="spin_timeinterval">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="decimals">
-              <number>0</number>
-             </property>
-             <property name="maximum">
-              <double>1440.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>30.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="11">
-            <spacer name="horizontalSpacer_8">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>130</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_26">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Python rainfall script </string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="8">
-            <widget class="QToolButton" name="toolButton_GPMpy">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="7">
-            <widget class="QLineEdit" name="lineEdit_GPMpy">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="7">
-            <widget class="QLineEdit" name="lineEdit_GPMrefmap">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_24">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Folder with global GPM Gtiff files</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1" colspan="7">
-            <widget class="QLineEdit" name="lineEdit_GPMdir">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="11">
-            <widget class="QToolButton" name="toolButton_stopGPM">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Stop-icon.png</normaloff>:/2X/Stop-icon.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="0" colspan="11">
-            <widget class="QPushButton" name="pushButton_generateGPMRain">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>    Generate rainfall input maps</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/play-icon.png</normaloff>:/2X/play-icon.png</iconset>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="3" column="0" colspan="3">
          <widget class="QGroupBox" name="groupBox_dailyraindata">
           <property name="font">
@@ -3314,8 +2978,8 @@
            <property name="verticalSpacing">
             <number>4</number>
            </property>
-           <item row="2" column="5">
-            <widget class="QLabel" name="label_49">
+           <item row="3" column="0" colspan="5">
+            <widget class="QPushButton" name="pushButton_gennerateSyntheticRain">
              <property name="font">
               <font>
                <pointsize>9</pointsize>
@@ -3323,11 +2987,25 @@
               </font>
              </property>
              <property name="text">
-              <string/>
+              <string>    Generate synthetic input rainfall</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/play-icon.png</normaloff>:/2X/play-icon.png</iconset>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="1" column="1" colspan="4">
+            <widget class="QLineEdit" name="lineEdit_RainFilenameHour">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QLabel" name="label_50">
              <property name="font">
               <font>
@@ -3340,7 +3018,69 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_47">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Input daily rainfall file</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="4">
+            <widget class="QLineEdit" name="lineEdit_RainDailyFilename">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QToolButton" name="toolButton_dailyRain">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_55">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Hourly rainfall file name in LISEM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
             <widget class="QLabel" name="label_52">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -3359,43 +3099,33 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QDoubleSpinBox" name="spin_dailyB">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="3" column="5">
+            <widget class="QLabel" name="label_49">
              <property name="font">
               <font>
                <pointsize>9</pointsize>
                <bold>false</bold>
               </font>
              </property>
-             <property name="decimals">
-              <number>4</number>
-             </property>
-             <property name="singleStep">
-              <double>0.000100000000000</double>
-             </property>
-             <property name="value">
-              <double>0.890900000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="5">
-            <widget class="QToolButton" name="toolButton_dailyRain">
              <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="4">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="1">
             <widget class="QDoubleSpinBox" name="spin_dailyA">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -3420,10 +3150,10 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_47">
+           <item row="2" column="3">
+            <widget class="QDoubleSpinBox" name="spin_dailyB">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -3434,57 +3164,14 @@
                <bold>false</bold>
               </font>
              </property>
-             <property name="text">
-              <string>Daily rainfall file</string>
+             <property name="decimals">
+              <number>4</number>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <property name="singleStep">
+              <double>0.000100000000000</double>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="1" colspan="4">
-            <widget class="QLineEdit" name="lineEdit_RainDailyFilename">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="5">
-            <widget class="QPushButton" name="pushButton_gennerateSyntheticRain">
-             <property name="font">
-              <font>
-               <pointsize>9</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>    Generate synthetic input rainfall</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/play-icon.png</normaloff>:/2X/play-icon.png</iconset>
+             <property name="value">
+              <double>0.890900000000000</double>
              </property>
             </widget>
            </item>
@@ -3511,6 +3198,383 @@
            <iconset resource="resources/lisemdbase.qrc">
             <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
           </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QGroupBox" name="groupBox_raindata">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>GPM based</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <property name="leftMargin">
+            <number>8</number>
+           </property>
+           <property name="topMargin">
+            <number>4</number>
+           </property>
+           <property name="rightMargin">
+            <number>8</number>
+           </property>
+           <property name="bottomMargin">
+            <number>4</number>
+           </property>
+           <property name="horizontalSpacing">
+            <number>8</number>
+           </property>
+           <item row="12" column="3">
+            <widget class="QDoubleSpinBox" name="spin_timeinterval">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <double>1440.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>30.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="1">
+            <widget class="QDoubleSpinBox" name="spin_conversionmm">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="minimum">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>10.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="8">
+            <widget class="QToolButton" name="toolButton_GPMrefmap">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="8" colspan="3">
+            <widget class="QLabel" name="label_43">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>(0-Nearest Neighbour; 1 - Bilinear; 2 - Bicubic)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="7">
+            <widget class="QSpinBox" name="spin_interpolation">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>3</number>
+             </property>
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="11">
+            <spacer name="horizontalSpacer_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>130</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_26">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Python rainfall script </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0" colspan="11">
+            <widget class="QPushButton" name="pushButton_generateGPMRain">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>    Generate rainfall input maps</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/play-icon.png</normaloff>:/2X/play-icon.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="8">
+            <widget class="QToolButton" name="toolButton_GPMpy">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QLabel" name="label_28">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Conversion factor to mm</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="7">
+            <widget class="QLineEdit" name="lineEdit_GPMpy">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="4" colspan="3">
+            <widget class="QLabel" name="label_42">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>     Interpolation:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_19">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>openLISEM dbase Reference map</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" colspan="7">
+            <widget class="QLineEdit" name="lineEdit_GPMrefmap">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="11">
+            <widget class="QToolButton" name="toolButton_stopGPM">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Stop-icon.png</normaloff>:/2X/Stop-icon.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="2">
+            <widget class="QLabel" name="label_41">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>     Time interval images (min) </string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_24">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Folder with global GPM Gtiff files</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="7">
+            <widget class="QLineEdit" name="lineEdit_GPMdir">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QToolButton" name="toolButton_GPMin">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/Folder-icon.png</normaloff>:/2X/Folder-icon.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_38">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>GPM Rainfall filename in LISEM</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" colspan="7">
+            <widget class="QLineEdit" name="lineEdit_RainFilename">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -3640,7 +3704,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 3.0 - 220327)</string>
+       <string>openLISEM database generator (version 3.1 - 220418)</string>
       </property>
      </widget>
     </item>
