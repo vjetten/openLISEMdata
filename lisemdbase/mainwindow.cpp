@@ -5,10 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
-//resize(QDesktopWidget().availableGeometry(this).size() * 0.8);
+//resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
 
-    setMinimumSize(1280, 800);
-
+  //  setMinimumSize(1280, 800);
+setWindowState(Qt::WindowMaximized);
     CondaInstall = GetCondaEnvs();
 
     QStringList sss;
@@ -44,13 +44,14 @@ MainWindow::MainWindow(QWidget *parent)
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(4);
 
-    QFont codeFont("Consolas", 9, QFont::Normal);
+    QFont codeFont("Consolas", 8, QFont::Normal);
     tableViewLULC->setFont(codeFont);
     tableViewOutlets->setFont(codeFont);
     text_out->setFont(codeFont);
 
-    findDPIscale();
-
+    //findDPIscale();
+    //groupBox_ETdata1->setVisible(false);
+    //groupBox_NDVIdata->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +64,9 @@ void MainWindow::findDPIscale()
 {
     QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
     int _H = rect.height();
-
+    if (_H > 600) {
+        genfontsize = -1;//12;
+    }
     if (_H > 800) {
         genfontsize = 0;//12;
     }
@@ -71,14 +74,14 @@ void MainWindow::findDPIscale()
         genfontsize = 1;// 14;
     }
     if (_H > 1440) {
-        genfontsize = 3;//12;
+        genfontsize = 2;//12;
     }
 
     const QWidgetList allWidgets = QApplication::allWidgets();
     for (QWidget *widget : allWidgets) {
         QFont font = widget->font();
         //qDebug() << font;
-        int ps = 8 + genfontsize;
+        int ps = 7 + genfontsize;
         font.setPointSize(ps);
         widget->setFont(font);
         widget->update();
@@ -438,7 +441,7 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     model = new QStandardItemModel( nrow, ncol, this );
    // model->setHorizontalHeaderItem( i++, new QStandardItem("LULC type"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("#"));
-    model->setHorizontalHeaderItem( i++, new QStandardItem("Random \nRoughness (cm)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Random\nRoughness (cm)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Manning's n\n (-)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Plant Height\n (m)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Plant Cover\n (-)"));
@@ -646,38 +649,47 @@ bool MainWindow::convertDailyPrecipitation()
         QStringList line = sl.at(i).split(QRegExp("\\s+"));
         int day = line.at(0).toInt();
         double P = line.at(1).toDouble();
+        if (P >0) {
 
-        double I1 = dailyA*qPow(P,dailyB);
-        double I2 = I1/2;
-        double I3 = I2/2;
-        double I4 = I3/2;
-        double I5 = I4/2;
-        double I6 = I5/2;
+//        double I1 = dailyA*qPow(P,dailyB);
+//        double I2 = I1/2;
+//        double I3 = I2/2;
+//        double I4 = I3/2;
+//        double I5 = I4/2;
+//        double I6 = I5/2;
+//        double I6 = I5/2;
+        double I[11];
+        double sum = 0;
 
-        double sum = I1+I2+I3+I4+I5+I6;
+        for (int i = 0; i < 11; i++) {
+            I[i] = P/12.0*dailyA*qPow(i+0.5,dailyB);
+            sum += I[i];
+                   // qDebug()  <<i << I[i] << sum << P;
+        }
         double dt = sum > 0 ? 60*P/sum : 60;
 
-        int hour = qrand() % ((15 + 1) - 3) + 3;
+       // int hour = 11;//qrand() % ((15 + 1) - 3) + 3;
+        int hour = QRandomGenerator::global()->bounded(9)+1;
         double start = hour*60;
 
-        int j = 0;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I3 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I1 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I2 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I4 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I5 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I6 << "\n";j++;
-        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
-
         text_out->appendPlainText(QString("%1:%2").arg(day).arg(start,4,'f',0,'0'));
-//        qDebug() << P << dt/60*(I0+I1+I2+I3+I4);
-//        qDebug() << QString("%1:0720 ").arg(day) << I2;
-//        qDebug() << QString("%1:0780 ").arg(day) << I1;
-//        qDebug() << QString("%1:0840 ").arg(day) << I2;
-//        qDebug() << QString("%1:0900 ").arg(day) << I3;
-//        qDebug() << QString("%1:0960 ").arg(day) << I4;
-//        qDebug() << QString("%1:1020 ").arg(day) << I5;
-//        qDebug() << QString("%1:1080 0.00").arg(day);
+        for (int i = 0; i < 11; i++) {
+            eout << QString("%1:%2 ").arg(day).arg(start+(i+1)*dt,4,'f',0,'0') << I[i] << "\n";
+
+        }
+        eout << QString("%1:%2 ").arg(day).arg(start+12*dt,4,'f',0,'0') << "0.00\n";
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I3 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I1 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I2 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I4 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I5 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I6 << "\n";j++;
+//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
+
+        } else {
+            eout << QString("%1:%2 ").arg(day).arg(720,4,'f',0,'0') << "0.00\n";
+        }
+
 
     }
     fileout.close();

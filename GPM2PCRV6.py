@@ -53,7 +53,7 @@ option = 1
 BaseDir = myvars["BaseDirectory"]
 inputdir = myvars["RainBaseDirectory"]
 outputdir = myvars["RainDirectory"]
-maskmapname  = myvars["BaseDEM"]
+maskmapname  = myvars["RainRefName"]
 rainfilename = myvars["RainFilename"]
 conversionmm = float(myvars["conversionmm"])
 timeinterval = float(myvars["timeinterval"])
@@ -143,12 +143,12 @@ if (option > -1) :
             
             count += 1            
             #if count % int(totalcount/50) == 0 :
-            update_progress(count/totalcount*2)
+            update_progress(count/(totalcount))
 
             #del dst, Flush
             dst = None
 
-print("\n",flush = True)        
+print("\nreprojection done.",flush = True)        
 
 
 # covert date into ddd:mmmm and add to stringlist
@@ -210,7 +210,7 @@ for link in totallinks:
 
 f.close()
 report(sum,outputdir+'sumrainfall.map')
-
+print(">>> Done.", flush=True)
 
 
 # print("making area average rainfall graph file")
