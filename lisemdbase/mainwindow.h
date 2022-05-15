@@ -51,6 +51,7 @@ public:
     double dailyB;
     int day0;
     int dayn;
+    int dt30min;
 
     QString LULCNames;
     QString ESPGnumber;

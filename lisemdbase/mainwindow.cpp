@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     dailyB = -0.374;
     day0 = 152;
     dayn = 273;
+    dt30min = 30;
 
     label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 

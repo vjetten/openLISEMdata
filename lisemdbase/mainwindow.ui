@@ -2560,7 +2560,7 @@
                 </widget>
                </item>
                <item row="3" column="10">
-                <widget class="QSpinBox" name="spinBox">
+                <widget class="QSpinBox" name="spin_30min">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>

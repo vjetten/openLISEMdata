@@ -98,6 +98,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/dailyB", dailyB);
     settings.setValue("RAINFALL/day0", day0);
     settings.setValue("RAINFALL/dayn", dayn);
+    settings.setValue("RAINFALL/30min", dt30min);
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
     settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
     settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
@@ -178,8 +179,9 @@ void MainWindow::getIni(QString name)
 
     dailyA = settings.value("RAINFALL/dailyA").toDouble();
     dailyB = settings.value("RAINFALL/dailyB").toDouble();
-    day0 = settings.value("RAINFALL/day0").toDouble();
-    dayn = settings.value("RAINFALL/dayn").toDouble();
+    day0 = settings.value("RAINFALL/day0").toInt();
+    dayn = settings.value("RAINFALL/dayn").toInt();
+    dt30min = settings.value("RAINFALL/30min").toInt();
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
     timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
     interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
@@ -252,6 +254,7 @@ void MainWindow::readValuesfromUI()
     dailyB = spin_dailyB->value();
     day0 = spin_day0->value();
     dayn = spin_dayn->value();
+    dt30min = spin_30min->value();
 
     conversionmm = spin_conversionmm->value();
     timeintervalGPM = spin_timeinterval->value();
@@ -332,6 +335,7 @@ void MainWindow::writeValuestoUI()
     spin_dailyB->setValue(dailyB);
     spin_day0->setValue(day0);
     spin_dayn->setValue(dayn);
+    spin_30min->setValue(dt30min);
     spin_conversionmm->setValue(conversionmm);
     spin_timeinterval->setValue(timeintervalGPM);
     spin_interpolation->setValue(interpolationGPM);
