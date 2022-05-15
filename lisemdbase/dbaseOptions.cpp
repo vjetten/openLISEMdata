@@ -222,10 +222,10 @@ void MainWindow::readValuesfromUI()
     optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
     optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
-    optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
+   // optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
-    refBulkDens2 = spin_refBD2->value();
+  //  refBulkDens2 = spin_refBD2->value();
     refRootzone = spin_Rootzone->value();
     refMaxSoildepth = spin_MaxSoildepth->value();
     initmoist = spin_initmoist->value();
@@ -291,10 +291,10 @@ void MainWindow::writeValuestoUI()
     checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
     checkBox_noGravel->setChecked(optionNoGravel > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
-    checkBox_userefBD2->setChecked(optionUseBD2 > 0);
+    //checkBox_userefBD2->setChecked(optionUseBD2 > 0);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
-    spin_refBD2->setValue(refBulkDens2);
+    //spin_refBD2->setValue(refBulkDens2);
     spin_Rootzone->setValue(refRootzone);
     spin_MaxSoildepth->setValue(refMaxSoildepth);
     spin_initmoist->setValue(initmoist);

@@ -24,6 +24,7 @@ FORMS += \
 
 RESOURCES += resources/lisemdbase.qrc
 RC_FILE = lisemdbase.rc
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

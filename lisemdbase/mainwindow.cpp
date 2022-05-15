@@ -492,14 +492,14 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     spin_Rootzone->setValue(0.6);
     spin_MaxSoildepth->setValue(5.0);
     spin_refBD->setValue(1350);
-    spin_refBD2->setValue(1350);
+    //spin_refBD2->setValue(1350);
     spin_initmoist->setValue(0);
 
     checkBox_SGInterpolation->setChecked(false);
     checkBox_noGravel->setChecked(true);
     checkBox_Soilgrids->setChecked(false);
     checkBox_userefBD->setChecked(true);
-    checkBox_userefBD2->setChecked(true);
+    //checkBox_userefBD2->setChecked(true);
     checkBox_useLUdensity->setChecked(true);
     checkBox_erosion->setChecked(true);
     checkBox_D50->setChecked(true);
