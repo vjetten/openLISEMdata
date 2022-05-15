@@ -74,10 +74,10 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
     settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
-    settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
+    //settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
-    settings.setValue("SOIL/refBulkDens2", QString::number(refBulkDens2, 'f', 0));
+    //settings.setValue("SOIL/refBulkDens2", QString::number(refBulkDens2, 'f', 0));
     settings.setValue("SOIL/refRootzone", QString::number(refRootzone, 'f', 2));
     settings.setValue("SOIL/refMaxSoildepth", QString::number(refMaxSoildepth, 'f', 2));
     settings.setValue("SOIL/initmoist", QString::number(initmoist, 'f', 2));
@@ -91,10 +91,13 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
+    settings.setValue("RAINFALL/IDMScript", IDMScriptFileName);
     settings.setValue("RAINFALL/RainDailyFilename", RainDailyFilename);
     settings.setValue("RAINFALL/RainFilenameHour", RainFilenameHour);
     settings.setValue("RAINFALL/dailyA", dailyA);
     settings.setValue("RAINFALL/dailyB", dailyB);
+    settings.setValue("RAINFALL/day0", day0);
+    settings.setValue("RAINFALL/dayn", dayn);
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
     settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
     settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
@@ -152,10 +155,10 @@ void MainWindow::getIni(QString name)
     optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = settings.value("SOIL/optionUseBD").toInt();
-    optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
+    //optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
-    refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
+    //refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
     refRootzone = settings.value("SOIL/refRootzone").toDouble();
     refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
     initmoist = settings.value("SOIL/initmoist").toDouble();
@@ -169,11 +172,14 @@ void MainWindow::getIni(QString name)
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
+    IDMScriptFileName = settings.value("RAINFALL/IDMScript").toString();
     RainDailyFilename = settings.value("RAINFALL/RainDailyFilename").toString();
     RainFilenameHour = settings.value("RAINFALL/RainFilenameHour").toString();
 
     dailyA = settings.value("RAINFALL/dailyA").toDouble();
     dailyB = settings.value("RAINFALL/dailyB").toDouble();
+    day0 = settings.value("RAINFALL/day0").toDouble();
+    dayn = settings.value("RAINFALL/dayn").toDouble();
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
     timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
     interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
@@ -238,11 +244,14 @@ void MainWindow::readValuesfromUI()
     RainRefName = lineEdit_GPMrefmap->text();
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
+    IDMScriptFileName = lineEdit_IMDpy->text();
     RainFilename = lineEdit_RainFilename->text();
     RainDailyFilename = lineEdit_RainDailyFilename->text();
     RainFilenameHour = lineEdit_RainFilenameHour->text();
     dailyA = spin_dailyA->value();
     dailyB = spin_dailyB->value();
+    day0 = spin_day0->value();
+    dayn = spin_dayn->value();
 
     conversionmm = spin_conversionmm->value();
     timeintervalGPM = spin_timeinterval->value();
@@ -314,12 +323,15 @@ void MainWindow::writeValuestoUI()
     lineEdit_GPMpy->setText(RainScriptFileName);
     lineEdit_GPMrefmap->setText(RainRefName);
     lineEdit_GPMdir->setText(RainBaseDirName);
+    lineEdit_IMDpy->setText(IDMScriptFileName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilename->setText(RainFilename);
     lineEdit_RainDailyFilename->setText(RainDailyFilename);
     lineEdit_RainFilenameHour->setText(RainFilenameHour);
     spin_dailyA->setValue(dailyA);
     spin_dailyB->setValue(dailyB);
+    spin_day0->setValue(day0);
+    spin_dayn->setValue(dayn);
     spin_conversionmm->setValue(conversionmm);
     spin_timeinterval->setValue(timeintervalGPM);
     spin_interpolation->setValue(interpolationGPM);

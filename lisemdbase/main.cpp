@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         double scale = width / minWidth;
         std::string scaleAsString = std::to_string(scale);
         QByteArray scaleAsQByteArray(scaleAsString.c_str(), scaleAsString.length());
-       // qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+        qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
     }
     delete temp;
 

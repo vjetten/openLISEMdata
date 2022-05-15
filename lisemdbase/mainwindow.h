@@ -17,6 +17,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    QString ProjectDirName;
     QString CondaBaseDirName;
     QString iniName;
     QString ScriptFileName;
@@ -36,6 +37,7 @@ public:
     QString LULCNNtableName;
 
     QString RainScriptFileName;
+    QString IDMScriptFileName;
     QString RainRefName;
     QString RainBaseDirName;
     QString RainDirName;
@@ -47,6 +49,8 @@ public:
     double interpolationGPM;
     double dailyA;
     double dailyB;
+    int day0;
+    int dayn;
 
     QString LULCNames;
     QString ESPGnumber;
@@ -83,6 +87,9 @@ public:
     double chBaseflow;
     double refRootzone;
     double refMaxSoildepth;
+    bool runGPMscript;
+    bool runIDMscript;
+    bool runOptionsscript;
 
     int genfontsize;
 
@@ -230,6 +237,12 @@ private slots:
     void on_toolButton_resetRain_clicked();
 
     void on_toolButton_userOutpoints_clicked();
+
+    void on_IMDpy_clicked();
+
+    void on_toolButton_stopIDM_clicked();
+
+    void on_pushButton_start_clicked();
 
 private:
     Ui::MainWindow *ui;

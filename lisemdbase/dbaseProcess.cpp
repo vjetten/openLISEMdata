@@ -7,14 +7,12 @@ void MainWindow::setupModel()
 
     connect(Process, SIGNAL(readyReadStandardError()),this, SLOT(readFromStderr()) );
     connect(Process, SIGNAL(readyReadStandardOutput()),this, SLOT(readFromOutput()) );
-    connect(pushButton_start, SIGNAL(clicked()), this, SLOT(runModel()));
+    //connect(pushButton_start, SIGNAL(clicked()), this, SLOT(runModel()));
 }
 
 void MainWindow::runModel()
 {
     text_out->clear();
-
-    createNNLULCTable();
 
     // add the env path names, copied from Spyder. Maybe overkill but it works
     QString condaenv = combo_envs->currentText();
@@ -35,15 +33,20 @@ void MainWindow::runModel()
     env.insert("PATH", addpath + env.value("Path"));
     Process->setProcessEnvironment(env);
 
+    if (runOptionsscript)
+        createNNLULCTable();
+
     readValuesfromUI();
     setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg", true);
 
     QStringList pythonCommandArguments;
 
-    if (tabWidgetOptions->currentIndex() < 3)
-        pythonCommandArguments << ScriptFileName;
-     else
-        pythonCommandArguments << RainScriptFileName;
+    if (runOptionsscript) pythonCommandArguments << ScriptFileName;
+    else
+        if (runGPMscript) pythonCommandArguments << RainScriptFileName;
+        else
+            if (runIDMscript) pythonCommandArguments << IDMScriptFileName;
+
 
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
 

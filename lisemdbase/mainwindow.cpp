@@ -5,18 +5,20 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
-//resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
+ //  resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
 
   //  setMinimumSize(1280, 800);
-setWindowState(Qt::WindowMaximized);
+  //  setWindowState(Qt::WindowMaximized);
     CondaInstall = GetCondaEnvs();
 
     QStringList sss;
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
-    dailyA = 0.6162;
-    dailyB = 0.8909;
+    dailyA = 0.14;
+    dailyB = -0.374;
+    day0 = 152;
+    dayn = 273;
 
     label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 
@@ -41,15 +43,18 @@ setWindowState(Qt::WindowMaximized);
             combo_envs->setCurrentIndex(i);
     }
 
+    if (QFileInfo(BaseDirName).exists())
+       ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
+
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(4);
 
-    QFont codeFont("Consolas", 8, QFont::Normal);
+    QFont codeFont("Consolas", 9, QFont::Normal);
     tableViewLULC->setFont(codeFont);
     tableViewOutlets->setFont(codeFont);
     text_out->setFont(codeFont);
 
-    //findDPIscale();
+    findDPIscale();
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
 }
@@ -62,15 +67,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::findDPIscale()
 {
-    QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
-    int _H = rect.height();
+    //QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
+    int _H = QApplication::desktop()->height();
+    //int _H = rect.height();
     if (_H > 600) {
         genfontsize = -1;//12;
     }
     if (_H > 800) {
         genfontsize = 0;//12;
     }
-    if (_H > 1080-5) {
+    if (_H > 1080) {
         genfontsize = 1;// 14;
     }
     if (_H > 1440) {
@@ -81,7 +87,7 @@ void MainWindow::findDPIscale()
     for (QWidget *widget : allWidgets) {
         QFont font = widget->font();
         //qDebug() << font;
-        int ps = 7 + genfontsize;
+        int ps = 8 + genfontsize;
         font.setPointSize(ps);
         widget->setFont(font);
         widget->update();
@@ -246,129 +252,6 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 //====================================================================================
 
 
-void MainWindow::on_toolButton_openIni_clicked()
-{
-    QStringList filters({"dbase ini file (*.ini)","Any files (*)"});
-    QString S = combo_iniName->currentText();
-    QString FileName = getFileorDir(S,"Select database ini file", filters, 2);
-    if (!FileName.isEmpty()) {
-        combo_iniName->insertItem(0,FileName);
-        combo_iniName->setCurrentIndex(0);
-        setIniStart();
-    }
-
-}
-
-void MainWindow::on_toolButton_OutletsTable_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_userOutlets->text();
-    QStringList filters({"Text table (*.tbl)","Any files (*)"});
-    OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 2);
-    if (!OutletstableName.isEmpty())
-        lineEdit_outletsTable->setText(OutletstableName);
-
-    fillOutletsTable();
-}
-void MainWindow::on_toolButton_base_clicked()
-{
-    QStringList filters;
-    QString S = lineEdit_Base->text();
-    BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, 0);
-    if (!BaseDirName.isEmpty())
-        lineEdit_Base->setText(BaseDirName);
-    else
-        lineEdit_Base->setText(S);
-
-}
-
-void MainWindow::on_toolButton_maps_clicked()
-{
-    QStringList filters;
-    MapsDirName = getFileorDir(lineEdit_Maps->text(),"Select Maps folder", filters, 0);
-    if (!MapsDirName.isEmpty())
-        lineEdit_Maps->setText(MapsDirName);
-
-}
-
-void MainWindow::on_toolButton_script_clicked()
-{
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    ScriptFileName = getFileorDir(ScriptFileName,"Select python script", filters, 2);
-    if (!ScriptFileName.isEmpty())
-        lineEdit_Script->setText(ScriptFileName);
-}
-
-void MainWindow::on_toolButton_LULCTable_clicked()
-{
-    QString tmp = lineEdit_LULCTable->text();
-    QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
-    LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 2);
-    if (!LULCtableName.isEmpty())
-        lineEdit_LULCTable->setText(LULCtableName);
-
-    if (!LULCtableName.isEmpty()) {
-        fillLULCTable();        
-        copyLULCTable();
-    }
-}
-
-void MainWindow::on_toolButton_LULCMap_clicked()
-{
-    //QString tmp = LULCDirName+lineEdit_LULCMap->text();
-    QString tmp = lineEdit_LULCMap->text();
-    QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
-    LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 2);
-    if (!LULCmapName.isEmpty())
-        lineEdit_LULCMap->setText(LULCmapName);
-}
-
-void MainWindow::on_toolButton_baseDEM_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_baseDEM->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseDEMName = getFileorDir(tmp,"Select Base DEM", filters, 1);
-    if (!BaseDEMName.isEmpty())
-        lineEdit_baseDEM->setText(BaseDEMName);
-}
-
-void MainWindow::on_toolButton_baseChannel_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_baseChannel->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseChannelName = getFileorDir(tmp,"Select Channel mask", filters, 1);
-    if (!BaseChannelName.isEmpty())
-        lineEdit_baseChannel->setText(BaseChannelName);
-}
-
-void MainWindow::on_toolButton_userOutlets_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_userOutlets->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseOutletsName = getFileorDir(tmp,"Select outlet(s) map", filters, 1);
-    if (!BaseOutletsName.isEmpty())
-        lineEdit_userOutlets->setText(BaseOutletsName);
-}
-
-void MainWindow::on_toolButton_Dams_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_Dams->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseDamsName = getFileorDir(tmp,"Select dams map", filters, 1);
-    if (!BaseDamsName.isEmpty())
-        lineEdit_Dams->setText(BaseDamsName);
-}
-
-
-void MainWindow::on_toolButton_userWatersheds_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_userWatersheds->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    WatershedsName = getFileorDir(tmp,"Select watershed map", filters, 2);
-    if (!WatershedsName.isEmpty())
-        lineEdit_userWatersheds->setText(WatershedsName);
-}
-
-
 void MainWindow::on_toolButton_clear_clicked()
 {
     text_out->clear();
@@ -400,16 +283,6 @@ void MainWindow::on_checkBox_Soilgrids_toggled(bool checked)
 void MainWindow::on_checkBox_DEM_toggled(bool checked)
 {
     DEMoptions->setEnabled(checked);
-}
-
-void MainWindow::on_toolButton_SaveIni_clicked()
-{
-    readValuesfromUI();
-    if (combo_iniName->currentText().isEmpty())
-        combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
-    QString sss = combo_iniName->currentText();
-    qDebug() << sss;
-    setIni(combo_iniName->currentText(), false);
 }
 
 void MainWindow::on_toolButton_stop_clicked()
@@ -465,26 +338,15 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     fillOutletsTable();
 }
 
-void MainWindow::on_toolButton_saveas_clicked()
-{
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File as ini",
-                               qApp->applicationDirPath(),
-                               "*.ini");
-    if (!fileName.isEmpty()) {
-        readValuesfromUI();
-        setIni(fileName, false);
-        combo_iniName->insertItem(0, fileName);
-        combo_iniName->setCurrentIndex(0);
-    }
-}
-
 void MainWindow::on_toolButton_resetRain_clicked()
 {
     spin_conversionmm->setValue(10);
     spin_timeinterval->setValue(30);
     spin_interpolation->setValue(1);
-    spin_dailyA->setValue(0.6261);
-    spin_dailyB->setValue(0.8909);
+    spin_dailyA->setValue(0.14);
+    spin_dailyB->setValue(-0.374);
+    spin_day0->setValue(152);
+    spin_dayn->setValue(273);
 }
 
 void MainWindow::on_toolButton_resetsoil_clicked()
@@ -551,60 +413,10 @@ void MainWindow::on_checkBox_createRainfall_clicked(bool checked)
     groupBox_dailyraindata->setEnabled(checked);
 }
 
-
-void MainWindow::on_toolButton_GPMpy_clicked()
-{
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    RainScriptFileName = getFileorDir(RainScriptFileName,"Select python script", filters, 2);
-    if (!RainScriptFileName.isEmpty())
-        lineEdit_GPMpy->setText(RainScriptFileName);
-}
-
-
-void MainWindow::on_toolButton_GPMin_clicked()
-{
-    QStringList filters;
-    RainBaseDirName = getFileorDir(lineEdit_GPMdir->text(),"Select GPM Rain folder", filters, 0);
-    if (!RainBaseDirName.isEmpty())
-        lineEdit_GPMdir->setText(RainBaseDirName);
-}
-
-
-void MainWindow::on_toolButton_GPMout_clicked()
-{
-    QStringList filters;
-    RainDirName = getFileorDir(lineEdit_Maps->text(),"Select Rain folder", filters, 0);
-    if (!RainDirName.isEmpty())
-        lineEdit_RainfallDir->setText(RainDirName);
-}
-
-
 void MainWindow::on_checkBox_createDams_clicked(bool checked)
 {
     lineEdit_Dams->setEnabled(checked);
     toolButton_Dams->setEnabled(checked);
-}
-
-
-void MainWindow::on_toolButton_GPMrefmap_clicked()
-{
-    QString tmp = BaseDirName+lineEdit_GPMrefmap->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    RainRefName = getFileorDir(tmp,"Select reference map for resmapling", filters, 1);
-    if (!RainRefName.isEmpty())
-        lineEdit_GPMrefmap->setText(RainRefName);
-}
-
-
-
-
-
-void MainWindow::on_toolButton_dailyRain_clicked()
-{
-    QStringList filters({"Text (*.txt)","Any files (*)"});
-    RainDailyFilename = getFileorDir(RainDirName,"Select file with daily rainfall", filters, 2);
-    if (!RainDailyFilename.isEmpty())
-        lineEdit_RainDailyFilename->setText(RainDailyFilename);
 }
 
 
@@ -699,17 +511,25 @@ bool MainWindow::convertDailyPrecipitation()
 
 void MainWindow::on_pushButton_generateGPMRain_clicked()
 {
+    runGPMscript = true;
+    runIDMscript = false;
+    runOptionsscript = false;
     runModel();
 }
 
 
 void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
 {
-    bool res = convertDailyPrecipitation();
-    if (res)
-        text_out->appendPlainText("Synthetic rainfall generated.");
-    else
-        text_out->appendPlainText("Error encountered, file not generated.");
+    runGPMscript =false;
+    runIDMscript = true;
+    runOptionsscript = false;
+
+    runModel();
+//    bool res = convertDailyPrecipitation();
+//    if (res)
+//        text_out->appendPlainText("Synthetic rainfall generated.");
+//    else
+//        text_out->appendPlainText("Error encountered, file not generated.");
 }
 
 
@@ -729,12 +549,19 @@ void MainWindow::on_toolButton_stopGPM_clicked()
 
 
 
-void MainWindow::on_toolButton_userOutpoints_clicked()
+void MainWindow::on_toolButton_stopIDM_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userOutpoints->text();
-    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    BaseOutpointsName = getFileorDir(tmp,"Select outpoints map", filters, 1);
-    if (!BaseOutpointsName.isEmpty())
-        lineEdit_userOutpoints->setText(BaseOutpointsName);
+    Process->kill();
+    text_out->appendPlainText("User interrupt");
+}
+
+
+void MainWindow::on_pushButton_start_clicked()
+{
+    runGPMscript =false;
+    runIDMscript = false;
+    runOptionsscript = true;
+
+    runModel();
 }
 

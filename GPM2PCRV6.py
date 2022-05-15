@@ -47,7 +47,7 @@ with open(sys.argv[1], 'r') as myfile:
         myvars[S0] = S1
 
 conversionmmh = 10
-conversionmmh = 30
+timeinterval = 30
 option = 1
 
 BaseDir = myvars["BaseDirectory"]
