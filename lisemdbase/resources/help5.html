@@ -1,13 +1,15 @@
 <p><strong>Rainfall generation options</strong></p>
-<p>Two options are avilable: i. generate rainfall maps for the area from satellite images, and ii. generate an input file from daily data using synthetic rainfall.</p>
+<p>Two options are avilable: i. generate rainfall maps for the area from satellite images, and ii. generate an input file from daily spatial data using a synthetic rainfall gereator.</p>
+<p>In all cases a reference map is needed, such as the DEM of the area (in PCRaster format)</p>
 <p><strong>i. Rainfall data from satellite images</strong></p>
 <p>Rainfall maps can be generated from the Global Precipitation Mission IMERG data. IMERG stands for Integrated Multi-satellitE Retrievals,based on a constellation of satellites. This is free data with rainfall intensity, for the entire globe in 11 km resolution, every 30 minutes. Data are available since 2000. The DBase generator does not download the data, but assumes that you have downloaded the necessary dataset in a folder.</p>
 <p>They can be found here:</p>
 <p><a href="https://jsimpsonhttps.pps.eosdis.nasa.gov/imerg/gis/">https://jsimpsonhttps.pps.eosdis.nasa.gov/imerg/gis/</a></p>
-<p>The data is stored per month. You need the 30min tif files. Note that registraton is required.</p>
-<p>The DBase generator asks for the folder where your dataset is stored. It assumes that all files for the entire run are stored in one folder (if you have multiple months, store them in one folder).</p>
-<p>Specify the folder where the reprojected ranfall input data should be stored (usualy a subfolder under the rain folder in the project dbase&nbsp; structure). The reprojection is done using the base dem and ESPG number.</p>
-<p>LISEM needs an input text file that lists all images in the run with their time interval. LISEM uses Julian day number. So for instance noon (minute 720) on the first of June (day 152) is time 152:0720. The generated file looks like this:</p>
+<p>On the server, the data is stored per month. You need the 30min tif files. Note that registraton is required.</p>
+<p>The following folders and files are needed:</p>
+<p>1) The folder where your global 'raw' dataset is stored (GTiff files). It assumes that all files for the entire run are stored in one folder (if you have multiple months, store them in one folder).</p>
+<p>2) The Python script that converts GPM Tiff to PCRaster maps for the area, currently this is: <code>GPM2PCRV6.py</code></p>
+<p>3) openLISEM needs an input text file that lists all images in the run with their time interval. LISEM uses Julian day number. So for instance noon (minute 720) on the first of June (day 152) is time 152:0720. The generated file looks like this:</p>
 <p><code># GPM data<br /></code><code>2<br /></code><code>time (ddd:mmmm)<br /></code><code>filename<br />152:0000 3B-HHR-L.MS.MRG.3IMERG.20140601-S000000-E002959.0000.V06B.30min.map<br /></code><code>152:0030 3B-HHR-L.MS.MRG.3IMERG.20140601-S003000-E005959.0030.V06B.30min.map<br /></code><code>152:0060 3B-HHR-L.MS.MRG.3IMERG.20140601-S010000-E012959.0060.V06B.30min.map<br />etc.<br /></code></p>
 <p>The rainfall used in LISEM is from the interval that it is listed at, until the next time interval, when a new map is loaded.</p>
 <p>There are 3 options:</p>
@@ -16,20 +18,17 @@
 <li><em>time interval</em> of the images: (30 minutes for GPM data)</li>
 <li>the type of interpolation used: 0 = nearest neighbour; 1 = biliear interpolation; 2 = bicubic interpolation.</li>
 </ul>
-<p><strong>ii. Generate syntathic rainfall from daily data</strong></p>
-<p>Provide a text file with daily rainfall values for the area, with the format:</p>
-<p><code>#header<br /></code> <code>2<br /></code> <code>day<br /></code><code>Pday<br /></code> <code>152 0.0<br /></code> <code>153 1.23<br /></code> <code>154 2.34<br /></code> <code>etc.</code></p>
-<p>It is assumed you have a relation between the daily rainfall amount and the maximum intensity (Imax) on that day. This can be obtained from stations with hourly data. For each day with rainfall a synthetic storm is generated that has 5 intervals:</p>
-<ol>
-<li>interval 1: intensity = 0.5*Imax</li>
-<li>interval 2: intensity = Imax</li>
-<li>interval 3: intensity = 0.5*Imax</li>
-<li>interval 4: intensity = 0.25*Imax</li>
-<li>interval 5: intensity = 0.125*Imax</li>
-<li>interval 6: intensity = 0.0625*Imax</li>
-</ol>
-<p>Each inerval has a durtaion of approximately 1 hour, but adjusted to ensure that the sum of the timeintervals equals the daily total for that day.</p>
-<p>The rainfall starts randomly during the day, between 3 a.m. and 3 p.m. This is arbitrary.</p>
+<p>NOTE: the python script also generates a map with the series total: <code>sumrainfall.map</code></p>
+<p><strong>ii. Generate synthetic rainfall from daily data</strong></p>
+<p>The source is a NetCDF file procided by the Indian Meteorological Department. The file has 4 layers: Time, Latitute, Langitude, Rainfall. The rainfall information consts of 365 layers with daily rainfall in a 0.25 degree grid, for all of India.</p>
+<p>The following folders and files are needed:</p>
+<p>1) The file name of the input NetCDF file.</p>
+<p>2) The Python script that converts IDM NetCDF to a text file with columns for each gridcell inside the study areaPCRaster maps for the area, currently this is: <code>netcdf30min.py</code></p>
+<p>3) The name of the input ranifall text file with a header listing the gridcells inside the area with a number and the row and col of the gridcell center. This allows openLISEM to do an inverse distance interpolation<code>:</code></p>
+<p>4) Parameters needed to generate the synthetic raifall per day: two curve paraneters a and b that describe the syntehetic rainfall exponential decline. The begin and end day of the timeseries, and a chocie for 30 or 60 min timesteps<code>.</code></p>
+<p><code># 1/2 hourly data from C:/data/India/imd_2014.nc in C:/data/India/Narmada/Mohgoan/Base/try.tif with paramaters 0.14,-0.374</code><br /><code>10</code><br /><code>time (ddd:mmmm)</code><br /><code>1 59 56</code><br /><code>2 59 109</code><br /><code>3 59 162</code><br /><code>4 59 215</code><br /><code>5 59 268</code><br /><code>6 59 321</code><br /><code>7 112 56</code><br /><code>8 112 109</code><br /><code>9 112 162</code><br /><code>151:0000 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0180 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0210 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0240 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0270 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0300 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0330 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0360 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0390 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0420 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0450 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0480 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 </code><br /><code>152:0510 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00</code> </p>
+<p><code>etc.</code></p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
