@@ -41,9 +41,9 @@ dt30min = 30
 BaseDir = myvars["BaseDirectory"]
 #inputdir = myvars["RainBaseDirectory"]
 outputdir = myvars["RainDirectory"]
-maskmapname  = myvars["RainRefName"]
-RainDailyFilename = myvars["RainDailyFilename"]
-rainfilename = myvars["RainFilenameHour"]
+maskmapname  = myvars["RainRefNameDEM"]
+IDMFilename = myvars["IDMFilename"]
+rainfilename = myvars["RainFilenameHourIDM"]
 # ESPG = myvars["ESPGnumber"]    
 dailyA= float(myvars["dailyA"])
 dailyB= float(myvars["dailyB"])
@@ -83,7 +83,7 @@ print("rows,cols,box:",nrRows,nrCols,lly,llx,ury,urx)
 del maskgdal
 
 # Open netCDF4 file
-f = netCDF4.Dataset(RainDailyFilename)
+f = netCDF4.Dataset(IDMFilename)
 
 # print (f.variables.keys())
 # print (f.data_model)
@@ -139,13 +139,15 @@ print('\n  - Gridcells in mask: ',nrstations,flush = True)
 print(longitudes[startlon+1],llx,latitudes[startlat+1],lly)
 
 # calculate row and col number of IMD center grideclls
-drows = round((longitudes[startlon+1]-longitudes[startlon])/dx)
-startrow = round((longitudes[startlon+1]-llx)/dx)
+dcols = round((longitudes[startlon+1]-longitudes[startlon])/dx)
+startcol = round((longitudes[startlon+1]-llx)/dx)
 
-dcols = round((latitudes[startlat+1]-latitudes[startlat])/dx)
-startcol = round((latitudes[startlat+1]-lly)/dx)
+drows = round((latitudes[startlat+1]-latitudes[startlat])/dx)
+startrow = round((latitudes[startlat+1]-lly)/dx)
+endrow = round((ury-latitudes[startlat+1])/dx)
 
-print(drows,startrow,dcols,startcol,(longitudes[1]-longitudes[0]),dx)
+
+print(drows,startrow,endrow,dcols,startcol,(longitudes[1]-longitudes[0]),dx)
 
 print(">>> Making openLISEM rainfall input file: ", rainfilename, flush=True)
 
@@ -160,7 +162,8 @@ with open(rainfilename, 'w') as f:
     for i in range(1,nrstations+1):   
         j = int((i-1)/cols)
         k = (i-1) % cols 
-        f.write("{0} {1:6} {2:6}\n".format(i,startrow+j*drows,startcol+k*dcols))
+        f.write("{0} {1:6} {2:6}\n".format(i,endrow-j*drows,startcol+k*dcols))
+        #f.write("{0} {1:6} {2:6}\n".format(i,startrow+j*drows,startcol+k*dcols))
 
     # first line with 0 rainfall
     f.write("{0}:{1:04d}".format(day0-1,0)) 
@@ -171,7 +174,9 @@ with open(rainfilename, 'w') as f:
     # for all days   
     sumdays = [0 for x in range(nrstations)]
     sumTdays = [0 for x in range(nrstations)]
+    
     for t in range(day0,dayn+1) :    
+        
         starthour = 240 + random.randint(-1,5)*dt30min*int(60/dt30min)
         #print(starthour)
         P = [0 for x in range(nrstations)]

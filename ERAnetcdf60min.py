@@ -41,9 +41,9 @@ dt30min = 30
 BaseDir = myvars["BaseDirectory"]
 #inputdir = myvars["RainBaseDirectory"]
 outputdir = myvars["RainDirectory"]
-maskmapname  = myvars["RainRefName"]
-RainDailyFilename = myvars["RainDailyFilename"]
-rainfilename = myvars["RainFilenameHour"]
+maskmapname  = myvars["RainRefNameDEM"]
+ERAFilename = myvars["ERAFilename"]
+rainfilename = myvars["RainFilenameHourERA"]
 # ESPG = myvars["ESPGnumber"]    
 dailyA= float(myvars["dailyA"])
 dailyB= float(myvars["dailyB"])
@@ -83,26 +83,28 @@ print("rows,cols,box:",nrRows,nrCols,lly,llx,ury,urx)
 del maskgdal
 
 # Open netCDF4 file
-f = netCDF4.Dataset(RainDailyFilename)
+f = netCDF4.Dataset(ERAFilename)
 
-# print (f.variables.keys())
-# print (f.data_model)
+print (f.variables.keys())
+print (f.data_model)
 
 # Find the attributes
-Data = f.variables['RAINFALL']
-#print(Data.get_dims())
+Data = f.variables['tp']
+print(Data.get_dims())
  
 # Get dimensions
 time_dim,  lat_dim, lon_dim = Data.get_dims()
-time_var = f.variables[time_dim.name]
-times = num2date(time_var[:], time_var.units)
+#time_var = f.variables[time_dim.name]
+#times = num2date(time_var[:], time_var.units)
 latitudes = f.variables[lat_dim.name][:]
 longitudes = f.variables[lon_dim.name][:]
+
 
 Getdimensions = np.shape(Data)
 Time = Getdimensions[0]
 Latdim  = Getdimensions[1]
 Longdim = Getdimensions[2]
+print(Time,Latdim,Longdim)
 
 print('  - Latitudes in mask:', end = ' ',flush = True)
 startlat = -999
@@ -149,12 +151,11 @@ print(drows,startrow,dcols,startcol,(longitudes[1]-longitudes[0]),dx)
 
 print(">>> Making openLISEM rainfall input file: ", rainfilename, flush=True)
 
-nnn = int(12*60/dt30min)
 
 with open(rainfilename, 'w') as f:
     
     # write the header with pixel coord of stations
-    f.write('# 1/2 hourly data from {0} in {3} with paramaters {1},{2}\n'.format(RainDailyFilename,dailyA,dailyB,maskname))
+    f.write('# hourly data from {0} in {3} with paramaters {1},{2}\n'.format(RainDailyFilename,dailyA,dailyB,maskname))
     f.write("{0}\n".format(nrstations+1))
     f.write('time (ddd:mmmm)\n')
     for i in range(1,nrstations+1):   
@@ -162,87 +163,48 @@ with open(rainfilename, 'w') as f:
         k = (i-1) % cols 
         f.write("{0} {1:6} {2:6}\n".format(i,startrow+j*drows,startcol+k*dcols))
 
-    # first line with 0 rainfall
-    f.write("{0}:{1:04d}".format(day0-1,0)) 
-    for k in range(0,nrstations) :              
-        f.write(" {0:6.2f}".format(0))                 
-    f.write("\n")                        
-
     # for all days   
     sumdays = [0 for x in range(nrstations)]
-    sumTdays = [0 for x in range(nrstations)]
-    for t in range(day0,dayn+1) :    
-        starthour = 240 + random.randint(-1,5)*dt30min*int(60/dt30min)
-        #print(starthour)
-        P = [0 for x in range(nrstations)]
-        step = 0
+    
+    endtime = Time #(dayn-day0)*24
+    day = day0
+    min = 0
+    #print(endtime)
+    
+    P = [0 for x in range(nrstations)]
+    for t in range(0,endtime) : 
+        
 
-        #get the daily rainfall for all gridcells               
+        nrst = 0
+        #get the hourly rainfall for all gridcellsand fill the P station array               
         for i in range(0,Latdim):
             if latitudes[i] > lly and latitudes[i] < ury:
-                for j in range(0,Longdim):
+                #for j in range(0,Longdim):
+                for j in range(Longdim-1,0,-1):
                     if longitudes[j] > llx and longitudes[j] < urx:
                         # missng values are set to ZERO!!!
                         r = 0
                         if Data[t,i,j] > 0:
                             r = Data[t,i,j]
-                        P[step] = r
-                        step += 1
-
-        # create hourly rainfall        
-        rhour = [[0 for x in range(nnn)] for y in range(nrstations)]
-        # open the day with 0
-        f.write("{0}:{1:04d}".format(t,starthour)) 
+                        P[nrst] = r*1000
+       # print(P, flush = True)                        
+                        
+        #write hourly rainfall
+        f.write("{0}:{1:04d}".format(day,min)) 
         for k in range(0,nrstations) :              
-            f.write(" {0:6.2f}".format(0))
+            f.write(" {0:6.2f}".format(P[k]))
         f.write("\n") 
-        
-        # do the magic for each hour           
-       
-        sum = [0 for x in range(nrstations)]
-        for th in range(0,nnn) :
-           for k in range(0,nrstations) :  
-                rhour[k][th] = P[k]*dailyA*pow(th+0.5,dailyB)
-                sum[k] = sum[k] + rhour[k][th]
-                
-        for th in range(0,nnn) :
-           for k in range(0,nrstations) :  
-               if sum[k] > 0 :
-                   rhour[k][th] = rhour[k][th] * P[k]/sum[k] 
-                   
-        # for k in range(0,nrstations) :                
-        #        if sum[k] > 0 :
-        #            print(P[k]/sum[k])
-
-        # swap the first two, alternating block method
-        # f.write("{0}:{1:04d}".format(t,starthour+60+0*60)) 
-        # for k in range(0,nrstations) :  
-        #     f.write(" {0:6.2f}".format(rhour[k][1])) 
-        # f.write("\n")
-
-        # f.write("{0}:{1:04d}".format(t,starthour+60+1*60)) 
-        # for k in range(0,nrstations) :  
-        #     f.write(" {0:6.2f}".format(rhour[k][0])) 
-        # f.write("\n")
-
-        for th in range(0,nnn) :
-            f.write("{0}:{1:04d}".format(t,starthour+dt30min+th*dt30min)) 
-            for k in range(0,nrstations) :  
-                f.write(" {0:6.2f}".format(rhour[k][th]*60/dt30min)) 
-            f.write("\n")
-        
-        # close the day with 0
-        f.write("{0}:{1:04d}".format(t,starthour+(nnn+1)*dt30min)) 
-        for k in range(0,nrstations) :              
-            f.write(" {0:6.2f}".format(0))                 
-        f.write("\n")  
+        nrst += 1
+        min = min + 60
+        if (min >= 1440):
+            min = 0
+            day += 1            
+            
              
-        update_progress(t/dayn)
+        update_progress(t/endtime)
         
         for k in range(0,nrstations) :  
             sumdays[k] = sumdays[k] + P[k]
-            for th in range(0,12) :
-                sumTdays[k] = sumdays[k] + rhour[k][th]
             
 
     # end the file with 0    
@@ -253,7 +215,6 @@ with open(rainfilename, 'w') as f:
 
     f.close()    
     
-    # print('\n\nGridcell totals:\n',sumdays, '\n')   
-    # print(sumTdays)
+    print('\n\nGridcell totals:\n',sumdays, '\n')   
                
 print('\n>>> done\n',flush = True)

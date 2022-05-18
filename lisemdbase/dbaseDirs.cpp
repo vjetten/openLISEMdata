@@ -229,23 +229,18 @@ void MainWindow::on_toolButton_GPMrefmap_clicked()
 {
     QString tmp = BaseDirName+lineEdit_GPMrefmap->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
-    RainRefName = getFileorDir(tmp,"Select reference map for resampling", filters, 1);
-    if (!RainRefName.isEmpty())
-        lineEdit_GPMrefmap->setText(RainRefName);
+    RainRefNameDEM = getFileorDir(tmp,"Select reference map for resampling", filters, 1);
+    if (!RainRefNameDEM.isEmpty())
+        lineEdit_GPMrefmap->setText(RainRefNameDEM);
 }
 
 
 void MainWindow::on_toolButton_dailyRain_clicked()
 {
-//    QStringList filters({"Text (*.txt)","Any files (*)"});
-//    RainDailyFilename = getFileorDir(RainDirName,"Select file with daily rainfall", filters, 2);
-//    if (!RainDailyFilename.isEmpty())
-//        lineEdit_RainDailyFilename->setText(RainDailyFilename);
-
     QStringList filters({"NetCDF maps (*.nc)","Any files (*)"});
-    RainDailyFilename = getFileorDir(RainDailyFilename,"Select IDM NetCDF map with daily rainfall", filters, 1);
-    if (!RainDailyFilename.isEmpty())
-        lineEdit_RainDailyFilename->setText(RainDailyFilename);
+    IDMFilename = getFileorDir(IDMFilename,"Select IDM NetCDF map with daily rainfall", filters, 2);
+    if (!IDMFilename.isEmpty())
+        lineEdit_IDMFilename->setText(IDMFilename);
 }
 
 
@@ -255,5 +250,25 @@ void MainWindow::on_IMDpy_clicked()
     IDMScriptFileName = getFileorDir(IDMScriptFileName,"Select python script", filters, 2);
     if (!IDMScriptFileName.isEmpty())
         lineEdit_IMDpy->setText(IDMScriptFileName);
+}
+
+
+
+void MainWindow::on_toolButtontoolButton_RainERA_clicked()
+{
+
+    QStringList filters({"NetCDF maps (*.nc)","Any files (*)"});
+    ERAFilename = getFileorDir(ERAFilename,"Select IDM NetCDF map with daily rainfall", filters, 2);
+    if (!ERAFilename.isEmpty())
+        lineEdit_ERAFilename->setText(ERAFilename);
+}
+
+
+void MainWindow::on_ERApy_clicked()
+{
+    QStringList filters({"Python (*.py)","Any files (*)"});
+    ERAScriptFileName = getFileorDir(ERAScriptFileName,"Select python script", filters, 2);
+    if (!ERAScriptFileName.isEmpty())
+        lineEdit_ERApy->setText(ERAScriptFileName);
 }
 

@@ -420,11 +420,11 @@ void MainWindow::on_checkBox_createDams_clicked(bool checked)
     toolButton_Dams->setEnabled(checked);
 }
 
-
+//OBSOLETE
 bool MainWindow::convertDailyPrecipitation()
 {
-    QFile filein(RainDailyFilename);
-    if (RainDailyFilename.isEmpty() || !QFileInfo(RainDailyFilename).exists())
+    QFile filein(IDMFilename);
+    if (IDMFilename.isEmpty() || !QFileInfo(IDMFilename).exists())
         return false;
 
     filein.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -441,10 +441,10 @@ bool MainWindow::convertDailyPrecipitation()
     filein.close();
 
     QString fno;
-    if (RainFilenameHour != lineEdit_RainFilenameHour->text())
-        fno = RainDirName+lineEdit_RainFilenameHour->text();
+    if (RainFilenameHourIDM != lineEdit_RainFilenameHourIDM->text())
+        fno = RainDirName+lineEdit_RainFilenameHourIDM->text();
     else
-        fno = RainDirName+RainFilenameHour;
+        fno = RainDirName+RainFilenameHourIDM;
     QFile fileout(fno);
     qDebug() << fno;
     fileout.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -510,30 +510,6 @@ bool MainWindow::convertDailyPrecipitation()
 }
 
 
-void MainWindow::on_pushButton_generateGPMRain_clicked()
-{
-    runGPMscript = true;
-    runIDMscript = false;
-    runOptionsscript = false;
-    runModel();
-}
-
-
-void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
-{
-    runGPMscript =false;
-    runIDMscript = true;
-    runOptionsscript = false;
-
-    runModel();
-//    bool res = convertDailyPrecipitation();
-//    if (res)
-//        text_out->appendPlainText("Synthetic rainfall generated.");
-//    else
-//        text_out->appendPlainText("Error encountered, file not generated.");
-}
-
-
 void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 {
     toolButton_clear->setVisible(index < 3);
@@ -562,7 +538,48 @@ void MainWindow::on_pushButton_start_clicked()
     runGPMscript =false;
     runIDMscript = false;
     runOptionsscript = true;
+    runERAscript = false;
 
     runModel();
+}
+
+
+void MainWindow::on_pushButton_generateGPMRain_clicked()
+{
+    runGPMscript = true;
+    runERAscript = false;
+    runIDMscript = false;
+    runOptionsscript = false;
+    runModel();
+}
+
+
+void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
+{
+    runERAscript = false;
+    runGPMscript =false;
+    runIDMscript = true;
+    runOptionsscript = false;
+
+    runModel();
+}
+
+
+
+void MainWindow::on_pushButton_generateERARain_clicked()
+{
+    runERAscript = true;
+    runGPMscript =false;
+    runIDMscript = false;
+    runOptionsscript = false;
+
+    runModel();
+}
+
+
+void MainWindow::on_toolButton_stopERA_clicked()
+{
+    Process->kill();
+    text_out->appendPlainText("User interrupt");
 }
 

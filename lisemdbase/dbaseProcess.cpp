@@ -46,6 +46,8 @@ void MainWindow::runModel()
         if (runGPMscript) pythonCommandArguments << RainScriptFileName;
         else
             if (runIDMscript) pythonCommandArguments << IDMScriptFileName;
+            else
+                if (runERAscript) pythonCommandArguments << ERAScriptFileName;
 
 
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";

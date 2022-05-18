@@ -87,13 +87,13 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("EROSION/optionChannelsNoEros", QString::number(optionChannelsNoEros));
 
     settings.setValue("RAINFALL/RainScript", RainScriptFileName);    
-    settings.setValue("RAINFALL/RainRefName", RainRefName);
+    settings.setValue("RAINFALL/RainRefNameDEM", RainRefNameDEM);
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
     settings.setValue("RAINFALL/IDMScript", IDMScriptFileName);
-    settings.setValue("RAINFALL/RainDailyFilename", RainDailyFilename);
-    settings.setValue("RAINFALL/RainFilenameHour", RainFilenameHour);
+    settings.setValue("RAINFALL/IDMFilename", IDMFilename);
+    settings.setValue("RAINFALL/RainFilenameHourIDM", RainFilenameHourIDM);
     settings.setValue("RAINFALL/dailyA", dailyA);
     settings.setValue("RAINFALL/dailyB", dailyB);
     settings.setValue("RAINFALL/day0", day0);
@@ -102,6 +102,9 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/conversionmm", QString::number(conversionmm, 'f', 2));
     settings.setValue("RAINFALL/timeinterval", QString::number(timeintervalGPM, 'f', 2));
     settings.setValue("RAINFALL/interpolation", QString::number(interpolationGPM, 'f', 2));
+    settings.setValue("RAINFALL/ERAScript", ERAScriptFileName);
+    settings.setValue("RAINFALL/ERAFilename", ERAFilename);
+    settings.setValue("RAINFALL/RainFilenameHourERA", RainFilenameHourERA);
 
 
     settings.sync();
@@ -169,13 +172,16 @@ void MainWindow::getIni(QString name)
     optionChannelsNoEros = settings.value("EROSION/optionChannelsNoEros").toInt();
 
     RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
-    RainRefName = settings.value("RAINFALL/RainRefName").toString();
+    RainRefNameDEM = settings.value("RAINFALL/RainRefNameDEM").toString();
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
     IDMScriptFileName = settings.value("RAINFALL/IDMScript").toString();
-    RainDailyFilename = settings.value("RAINFALL/RainDailyFilename").toString();
-    RainFilenameHour = settings.value("RAINFALL/RainFilenameHour").toString();
+    IDMFilename = settings.value("RAINFALL/IDMFilename").toString();
+    RainFilenameHourIDM = settings.value("RAINFALL/RainFilenameHourIDM").toString();
+    ERAScriptFileName = settings.value("RAINFALL/ERAScript").toString();
+    ERAFilename = settings.value("RAINFALL/ERAFilename").toString();
+    RainFilenameHourERA = settings.value("RAINFALL/RainFilenameHourERA").toString();
 
     dailyA = settings.value("RAINFALL/dailyA").toDouble();
     dailyB = settings.value("RAINFALL/dailyB").toDouble();
@@ -242,23 +248,29 @@ void MainWindow::readValuesfromUI()
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
 
-    RainScriptFileName= lineEdit_GPMpy->text();
-    RainRefName = lineEdit_GPMrefmap->text();
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
+
+    RainScriptFileName= lineEdit_GPMpy->text();
+    RainRefNameDEM = lineEdit_GPMrefmap->text();
+    RainFilename = lineEdit_RainFilenameGPM->text();
+
     IDMScriptFileName = lineEdit_IMDpy->text();
-    RainFilename = lineEdit_RainFilename->text();
-    RainDailyFilename = lineEdit_RainDailyFilename->text();
-    RainFilenameHour = lineEdit_RainFilenameHour->text();
+    IDMFilename = lineEdit_IDMFilename->text();
+    RainFilenameHourIDM = lineEdit_RainFilenameHourIDM->text();
+
     dailyA = spin_dailyA->value();
     dailyB = spin_dailyB->value();
     day0 = spin_day0->value();
     dayn = spin_dayn->value();
     dt30min = spin_30min->value();
-
     conversionmm = spin_conversionmm->value();
     timeintervalGPM = spin_timeinterval->value();
     interpolationGPM = spin_interpolation->value();
+
+    ERAScriptFileName = lineEdit_ERApy->text();
+    RainFilenameHourERA = lineEdit_RainFilenameHourERA->text();
+    ERAFilename = lineEdit_ERAFilename->text();
 }
 
 void MainWindow::writeValuestoUI()
@@ -324,13 +336,15 @@ void MainWindow::writeValuestoUI()
     }    
 
     lineEdit_GPMpy->setText(RainScriptFileName);
-    lineEdit_GPMrefmap->setText(RainRefName);
+    lineEdit_GPMrefmap->setText(RainRefNameDEM);
     lineEdit_GPMdir->setText(RainBaseDirName);
-    lineEdit_IMDpy->setText(IDMScriptFileName);
     lineEdit_RainfallDir->setText(RainDirName);
-    lineEdit_RainFilename->setText(RainFilename);
-    lineEdit_RainDailyFilename->setText(RainDailyFilename);
-    lineEdit_RainFilenameHour->setText(RainFilenameHour);
+    lineEdit_RainFilenameGPM->setText(RainFilename);
+
+    lineEdit_IMDpy->setText(IDMScriptFileName);
+    lineEdit_IDMFilename->setText(IDMFilename);
+    lineEdit_RainFilenameHourIDM->setText(RainFilenameHourIDM);
+
     spin_dailyA->setValue(dailyA);
     spin_dailyB->setValue(dailyB);
     spin_day0->setValue(day0);
@@ -340,6 +354,9 @@ void MainWindow::writeValuestoUI()
     spin_timeinterval->setValue(timeintervalGPM);
     spin_interpolation->setValue(interpolationGPM);
 
+    lineEdit_ERApy->setText(ERAScriptFileName);
+    lineEdit_ERAFilename->setText(ERAFilename);
+    lineEdit_RainFilenameHourERA->setText(RainFilenameHourERA);
 
 }
 

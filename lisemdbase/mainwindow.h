@@ -38,12 +38,15 @@ public:
 
     QString RainScriptFileName;
     QString IDMScriptFileName;
-    QString RainRefName;
+    QString ERAScriptFileName;
+    QString RainRefNameDEM;
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
-    QString RainFilenameHour;
-    QString RainDailyFilename;
+    QString RainFilenameHourIDM;
+    QString RainFilenameHourERA;
+    QString IDMFilename;
+    QString ERAFilename;
     double conversionmm;
     double timeintervalGPM;
     double interpolationGPM;
@@ -91,6 +94,7 @@ public:
     bool runGPMscript;
     bool runIDMscript;
     bool runOptionsscript;
+    bool runERAscript;
 
     int genfontsize;
 
@@ -244,6 +248,14 @@ private slots:
     void on_toolButton_stopIDM_clicked();
 
     void on_pushButton_start_clicked();
+
+    void on_toolButtontoolButton_RainERA_clicked();
+
+    void on_ERApy_clicked();
+
+    void on_pushButton_generateERARain_clicked();
+
+    void on_toolButton_stopERA_clicked();
 
 private:
     Ui::MainWindow *ui;
