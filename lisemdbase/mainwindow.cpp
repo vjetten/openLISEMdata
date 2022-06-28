@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     day0 = 152;
     dayn = 273;
     dt30min = 30;
+    bufstart = false;
 
     label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 
@@ -512,7 +513,7 @@ bool MainWindow::convertDailyPrecipitation()
 
 void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 {
-    toolButton_clear->setVisible(index < 3);
+    //toolButton_clear->setVisible(index < 3);
     toolButton_stop->setVisible(index < 3);
     pushButton_start->setVisible(index < 3);
 }
@@ -581,5 +582,13 @@ void MainWindow::on_toolButton_stopERA_clicked()
 {
     Process->kill();
     text_out->appendPlainText("User interrupt");
+}
+
+
+
+
+void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
+{
+    gaugeFrame->setEnabled(checked);
 }
 

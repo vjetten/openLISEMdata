@@ -64,23 +64,34 @@ void MainWindow::readFromStderr()
 
     bufprev=text_out->toPlainText();
 
-    text_out->clear();
+    //text_out->clear();
     text_out->appendPlainText(buffer);
 }
 
 void MainWindow::readFromOutput()
 {
     QString buffer = QString(Process->readAllStandardOutput());
+    QString bufshow;
 
-    bufprev=text_out->toPlainText();
 
     if (buffer.contains("Processing")){
-        bufprev.remove(bufprev.indexOf("Processing")-1,100);
-        bufprev+=buffer;
+        if (bufstart) {
+            bufprev = text_out->toPlainText();
+            bufstart = false;
+            bufprev += buffer;
+            bufprev.remove('\r');
+            QStringList SL = bufprev.split("\n");
+            SL.removeLast();
+            bufprev = SL.join('\n');
+        }
+
+        bufshow = bufprev+buffer;
     } else {
-        bufprev+=buffer;
+        bufshow = text_out->toPlainText() + buffer;
+        bufstart = true;
+
     }
 
     text_out->clear();
-    text_out->appendPlainText(bufprev);
+    text_out->appendPlainText(bufshow);
 }

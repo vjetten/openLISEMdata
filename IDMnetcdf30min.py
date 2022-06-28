@@ -29,9 +29,9 @@ with open(sys.argv[1], 'r') as myfile:
         myvars[S0] = S1
 
 rainfilename = 'raingauge2014hr.txt'
-maskname = 'try.tif' #'mohgaon_latlon.tif'
+RainRefNameTIF = 'try.tif' #'mohgaon_latlon.tif'
 RainDailyFilename = 'imd_2014.nc'
-#masknamem = 'dem500m.tif'
+#RainRefNameTIFm = 'dem500m.tif'
 day0 = 152
 dayn = 273
 dailyA = 0.14
@@ -41,7 +41,7 @@ dt30min = 30
 BaseDir = myvars["BaseDirectory"]
 #inputdir = myvars["RainBaseDirectory"]
 outputdir = myvars["RainDirectory"]
-maskmapname  = myvars["RainRefNameDEM"]
+RainRefNameDEM  = myvars["RainRefNameDEM"]
 IDMFilename = myvars["IDMFilename"]
 rainfilename = myvars["RainFilenameHourIDM"]
 # ESPG = myvars["ESPGnumber"]    
@@ -55,19 +55,32 @@ dt30min= int(myvars["30min"])
 print('>>> Analyzing mask ...',flush = True)
 
 # warp pcraster to tif with lat lon 
-maskmapname = BaseDir+maskmapname
-maskname = BaseDir+maskname
+RainRefNameDEM = BaseDir+RainRefNameDEM
+RainRefNameTIF = BaseDir+RainRefNameTIF
 rainfilename=outputdir+rainfilename
 
-#print(maskmapname,maskname,rainfilename)
+#print(RainRefNameDEM,RainRefNameTIF,rainfilename)
+
+maskgdal = gdal.Open(RainRefNameDEM)
+maskproj = maskgdal.GetProjection()
+
+nrRows1= maskgdal.RasterYSize
+nrCols1= maskgdal.RasterXSize
+dx1 = maskgdal.GetGeoTransform()[1]
+dy1 = maskgdal.GetGeoTransform()[5]
+llx1 = maskgdal.GetGeoTransform()[0]
+ury1 = maskgdal.GetGeoTransform()[3]
+urx1 = llx1 + nrCols1*dx1
+lly1 = ury1 + dy1*nrRows1
+maskbox1 = [llx1,lly1,urx1,ury1]
+print("rows,cols,box:",nrRows1,nrCols1,lly1,llx1,ury1,urx1)
+del maskgdal
 
 
-#gdalwarp trydem.tif hoi.tif -t_srs EPSG:4326 -tr 0.25 0.25
-#goptions = gdal.WarpOptions(dstSRS="+proj=longlat +datum=WGS84 +no_defs",xRes="0.25", yRes="0.25")
 goptions = gdal.WarpOptions(srcSRS="EPSG:32644",dstSRS="EPSG:4326")#,xRes="0.25", yRes="0.25")
-gdal.Warp(maskname, maskmapname, options=goptions) #srcSRS="EPSG:32644", dstSRS="EPSG:4326")
+gdal.Warp(RainRefNameTIF, RainRefNameDEM, options=goptions) 
 
-maskgdal = gdal.Open(maskname)
+maskgdal = gdal.Open(RainRefNameTIF)
 maskproj = maskgdal.GetProjection()
 
 nrRows = maskgdal.RasterYSize
@@ -85,12 +98,12 @@ del maskgdal
 # Open netCDF4 file
 f = netCDF4.Dataset(IDMFilename)
 
-# print (f.variables.keys())
-# print (f.data_model)
+print (f.variables.keys())
+#print (f.data_model)
 
 # Find the attributes
 Data = f.variables['RAINFALL']
-#print(Data.get_dims())
+print(Data.get_dims())
  
 # Get dimensions
 time_dim,  lat_dim, lon_dim = Data.get_dims()
@@ -147,6 +160,7 @@ startrow = round((latitudes[startlat+1]-lly)/dx)
 endrow = round((ury-latitudes[startlat+1])/dx)
 
 
+
 print(drows,startrow,endrow,dcols,startcol,(longitudes[1]-longitudes[0]),dx)
 
 print(">>> Making openLISEM rainfall input file: ", rainfilename, flush=True)
@@ -156,7 +170,7 @@ nnn = int(12*60/dt30min)
 with open(rainfilename, 'w') as f:
     
     # write the header with pixel coord of stations
-    f.write('# 1/2 hourly data from {0} in {3} with paramaters {1},{2}\n'.format(RainDailyFilename,dailyA,dailyB,maskname))
+    f.write('# 1/2 hourly data from {0} in {3} with paramaters {1},{2}\n'.format(RainDailyFilename,dailyA,dailyB,RainRefNameTIF))
     f.write("{0}\n".format(nrstations+1))
     f.write('time (ddd:mmmm)\n')
     for i in range(1,nrstations+1):   

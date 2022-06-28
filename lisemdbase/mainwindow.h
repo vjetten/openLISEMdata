@@ -43,6 +43,8 @@ public:
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
+    QString RainGaugeFilename;
+    QString RainGaugeFilenameIn;
     QString RainFilenameHourIDM;
     QString RainFilenameHourERA;
     QString IDMFilename;
@@ -84,6 +86,7 @@ public:
     int optionPruneBranch;
     int optionIncludeDams;
     int optionChannelsNoEros;
+    int optionGaugeGPM;
     double chB;
     double chC;
     double chWidth;
@@ -110,6 +113,7 @@ public:
     int layer2;
 
     QString bufprev;
+    bool bufstart;
 
     void setIniStart();
     void getIniStart();
@@ -256,6 +260,10 @@ private slots:
     void on_pushButton_generateERARain_clicked();
 
     void on_toolButton_stopERA_clicked();
+
+    void on_toolButton_GPMGauge_clicked();
+
+    void on_checkBox_writeGaugeData_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

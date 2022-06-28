@@ -212,6 +212,15 @@ void MainWindow::on_toolButton_GPMpy_clicked()
 }
 
 
+void MainWindow::on_toolButton_GPMGauge_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_RainGaugeFilenameGPM->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    RainGaugeFilename = getFileorDir(tmp,"Select map with Gauge location (1 point)", filters, 1);
+    if (!RainGaugeFilename.isEmpty())
+        lineEdit_RainGaugeFilenameGPM->setText(RainGaugeFilename);
+}
+
 void MainWindow::on_toolButton_GPMin_clicked()
 {
     QString tmp = lineEdit_GPMdir->text();

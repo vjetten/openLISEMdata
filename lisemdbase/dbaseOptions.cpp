@@ -91,6 +91,9 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
+    settings.setValue("RAINFALL/SelectPointfromGPM", QString::number(optionGaugeGPM));
+    settings.setValue("RAINFALL/RainGaugeFilename", RainGaugeFilename);
+    settings.setValue("RAINFALL/RainGaugeFilenameIn", RainGaugeFilenameIn);
     settings.setValue("RAINFALL/IDMScript", IDMScriptFileName);
     settings.setValue("RAINFALL/IDMFilename", IDMFilename);
     settings.setValue("RAINFALL/RainFilenameHourIDM", RainFilenameHourIDM);
@@ -176,6 +179,10 @@ void MainWindow::getIni(QString name)
     RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
     RainDirName = settings.value("RAINFALL/RainDirectory").toString();
     RainFilename = settings.value("RAINFALL/RainFilename").toString();
+
+    optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
+    RainGaugeFilename = settings.value("RAINFALL/RainGaugeFilename").toString();
+    RainGaugeFilenameIn = settings.value("RAINFALL/RainGaugeFilenameIn").toString();
     IDMScriptFileName = settings.value("RAINFALL/IDMScript").toString();
     IDMFilename = settings.value("RAINFALL/IDMFilename").toString();
     RainFilenameHourIDM = settings.value("RAINFALL/RainFilenameHourIDM").toString();
@@ -254,6 +261,9 @@ void MainWindow::readValuesfromUI()
     RainScriptFileName= lineEdit_GPMpy->text();
     RainRefNameDEM = lineEdit_GPMrefmap->text();
     RainFilename = lineEdit_RainFilenameGPM->text();
+    RainGaugeFilename = lineEdit_RainGaugeFilenameGPM->text();
+    RainGaugeFilenameIn = lineEdit_RainGaugeFilenameGPMin->text();
+    optionGaugeGPM = checkBox_writeGaugeData->isChecked() ? 1 : 0;
 
     IDMScriptFileName = lineEdit_IMDpy->text();
     IDMFilename = lineEdit_IDMFilename->text();
@@ -340,6 +350,9 @@ void MainWindow::writeValuestoUI()
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilenameGPM->setText(RainFilename);
+    lineEdit_RainGaugeFilenameGPM->setText(RainGaugeFilename);
+    lineEdit_RainGaugeFilenameGPMin->setText(RainGaugeFilenameIn);
+    checkBox_writeGaugeData->setChecked(optionGaugeGPM > 0);
 
     lineEdit_IMDpy->setText(IDMScriptFileName);
     lineEdit_IDMFilename->setText(IDMFilename);
