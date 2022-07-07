@@ -365,7 +365,7 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     checkBox_userefBD->setChecked(true);
     //checkBox_userefBD2->setChecked(true);
     checkBox_useLUdensity->setChecked(true);
-    checkBox_erosion->setChecked(true);
+    //checkBox_erosion->setChecked(true);
     checkBox_D50->setChecked(true);
     checkBox_ChannelsNoErosion->setChecked(true);
 }
@@ -384,11 +384,11 @@ void MainWindow::on_toolButton_CheckAll_clicked()
 
 
     bool checked = true;
-    checkBox_DEM->setChecked(checked);
-    checkBox_Channels->setChecked(checked);
-    checkBox_LULC->setChecked(checked);
-    checkBox_Infil->setChecked(checked);
-    checkBox_erosion->setChecked(checked);
+    //checkBox_DEM->setChecked(checked);
+    //checkBox_Channels->setChecked(checked);
+    //checkBox_LULC->setChecked(checked);
+    //checkBox_Infil->setChecked(checked);
+    //checkBox_erosion->setChecked(checked);
 //    checkBox_D50->setChecked(checked);
 //    checkBox_ChannelsNoErosion->setChecked(checked);
 }
