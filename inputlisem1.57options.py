@@ -201,8 +201,10 @@ class ChannelMaps(StaticModel):
         maxw = areamaximum(chanlen,ws)*chanmask
         lenrel = (1-(maxw-chanlen)/(maxw-dx)) 
         # make a relative channel width increase from 0 to 1 for every subcatchment
-        chanwidth = lenrel*(chWidthmap-12.0)+12.0
+        #chanwidth = lenrel*(chWidthmap-12.0)+12.0
+        chanwidth = lenrel*(chWidthmap-0.5)+0.5
         # scale that map to a minimum of 2 and a maximum of user defined for each catchment
+        report(lenrel,'rel.map')
         report(chanwidth,chanwidthName)        
         
         # do the same for depth
@@ -516,6 +518,7 @@ class SoilGridsTransform(StaticModel):
         map1 = inversedistance(boolean(mapmask),edge,2,0,0)                
         # combine the original and the ID map into one and save
         map2 = cover(ifthen(map_ > 1e-5,map_),map1)*factor
+        map2 = windowaverage(map2, 250);
         report(map2,namemap2)
         
 
