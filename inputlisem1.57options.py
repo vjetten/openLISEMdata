@@ -148,7 +148,8 @@ class ChannelMaps(StaticModel):
             lddchan = lddcreate((DEM-mainout*100-cm*100)*cm,100,1e20,1e20,1e20)
             cm = cover(cm, 0)*mask
             chanmask = cm
-
+        cm = cover(cm, 0)*mask
+        chanmask = cm
         report(lddchan,lddchanName)
         report(cm, chanmaskName)
         
@@ -201,7 +202,7 @@ class ChannelMaps(StaticModel):
         maxw = areamaximum(chanlen,ws)*chanmask
         lenrel = (1-(maxw-chanlen)/(maxw-dx)) 
         # make a relative channel width increase from 0 to 1 for every subcatchment
-        chanwidth = lenrel*(chWidthmap-12.0)+12.0
+        chanwidth = lenrel*(chWidthmap-0.5)+0.5
         # scale that map to a minimum of 2 and a maximum of user defined for each catchment
         report(chanwidth,chanwidthName)        
         
@@ -359,6 +360,8 @@ class SurfaceMaps(StaticModel):
         Cover = lookupscalar(LULCtable, 4, unitmap) * mask
         Cover = max(0,min(1.0,Cover))
         report(Cover,coverName)
+        report(Cover,LitterName)        
+        
 
         # cover = 1-exp(-0.4*LAI)
         LAI = mask*(ln(1-min(0.95,Cover))/-0.4)   # VJ 220119 this was wrong, reversed
@@ -374,12 +377,12 @@ class SurfaceMaps(StaticModel):
 
         smax1 = ifthenelse(smaxnr == 1, a[1]*LAI**b[1],0)*mask
         smax2 = ifthenelse(smaxnr == 2, a[2]*LAI,0)*mask
-        smax3 = ifthenelse(smaxnr == 2, a[3]*LAI,0)*mask
-        smax4 = ifthenelse(smaxnr == 3, a[4]*LAI**b[4],0)*mask
-        smax5 = ifthenelse(smaxnr == 4, a[5]*LAI**b[5],0)*mask
-        smax6 = ifthenelse(smaxnr == 5, a[6]*LAI,0)*mask
-        smax7 = ifthenelse(smaxnr == 6, a[7]*LAI,0)*mask
-        smax8 = ifthenelse(smaxnr == 7, a[8]*LAI**b[8],0)*mask
+        smax3 = ifthenelse(smaxnr == 3  a[3]*LAI,0)*mask
+        smax4 = ifthenelse(smaxnr == 4, a[4]*LAI**b[4],0)*mask
+        smax5 = ifthenelse(smaxnr == 5, a[5]*LAI**b[5],0)*mask
+        smax6 = ifthenelse(smaxnr == 6, a[6]*LAI,0)*mask
+        smax7 = ifthenelse(smaxnr == 7, a[7]*LAI,0)*mask
+        smax8 = ifthenelse(smaxnr == 8, a[8]*LAI**b[8],0)*mask
 
         Smax = smax1+smax2+smax3+smax4+smax5+smax6+smax7
         report(Smax, smaxName)
@@ -400,6 +403,13 @@ class SurfaceMaps(StaticModel):
 
         building = readmap(housecoverinName)*mask
         report(building,housecovName)
+        roofstore = 1 * mask
+        report(roofstore, roofstoreName)
+        drumstore = 0 * mask
+        report(drumstore, drumstoreName)
+        
+        
+        
 
 ### ---------- class GetSoilGridsLayer ---------- ###
 
@@ -516,6 +526,10 @@ class SoilGridsTransform(StaticModel):
         map1 = inversedistance(boolean(mapmask),edge,2,0,0)                
         # combine the original and the ID map into one and save
         map2 = cover(ifthen(map_ > 1e-5,map_),map1)*factor
+        
+        print(">>> Smoothing texture with 250m window average!", flush=True)
+        map2 = windowaverage(map2, 250)
+        
         report(map2,namemap2)
         
 
@@ -575,7 +589,7 @@ class PedoTransfer(StaticModel):
 
         #bdsg = bd1*0.1            
         #bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
-        Gravel = Grv
+        Gravel = Grv * 0
         if useNoGravel == 1 :
             Gravel *= 0.2
 
@@ -754,6 +768,7 @@ class ErosionMaps(StaticModel):
         report(cropheight,cropheightName)
 
         aggrstab = ((S+0.15*C)/1.3) * mask #from table A9.1 page 27 eurosem manual 2nd column erod (= kfactor multiply directly with splash energy)
+        
         # detachability in g/J in lisem this is directly multiplied to the KE
         #aggrstab = 6 * mask;  # aggregate stability
         report(aggrstab,asName)
@@ -918,6 +933,7 @@ if __name__ == "__main__":
     
     doProcessesChannels = int(myvars["optionChannels"])
     doPruneBranch = int(myvars["optionPruneBranch"])
+    doPruneBranch = 0
     doProcessesDams = int(myvars["optionIncludeDams"])
     damsbaseName = myvars["BaseDams"]
     doUserOutlets = int(myvars["optionUserOutlets"])
