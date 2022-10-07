@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+//#include <QMainWindow>
 #include <QtGui>
 #include <QtWidgets>
 
@@ -28,6 +28,7 @@ public:
     QString BaseChannelName;
     QString BaseOutletsName;
     QString BaseOutpointsName;
+    QString BaseCulvertsName;
     QString OutletstableName;
     QString WatershedsName;
     QString BaseDamsName;
@@ -264,6 +265,10 @@ private slots:
     void on_toolButton_GPMGauge_clicked();
 
     void on_checkBox_writeGaugeData_toggled(bool checked);
+
+    void on_toolButton_userCulverts_clicked();
+
+    void on_toolButton_deleteIni_clicked();
 
 private:
     Ui::MainWindow *ui;

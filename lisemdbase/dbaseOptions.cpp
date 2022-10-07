@@ -39,7 +39,8 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("BaseDEM", BaseDEMName);
     settings.setValue("BaseChannel", BaseChannelName);
     settings.setValue("BaseOutlets", BaseOutletsName);
-    settings.setValue("BaseOutpoints", BaseOutpointsName);
+    settings.setValue("BaseOutpoints",  BaseOutpointsName);
+    settings.setValue("BaseCulverts",  BaseCulvertsName);
 
     settings.setValue("DEM/optionCatchments", QString::number(optionCatchments));
     settings.setValue("DEM/optionDEM","1");// QString::number(optionDEM));
@@ -128,6 +129,7 @@ void MainWindow::getIni(QString name)
     BaseChannelName = settings.value("BaseChannel").toString();
     BaseOutletsName = settings.value("BaseOutlets").toString();
     BaseOutpointsName = settings.value("BaseOutpoints").toString();
+    BaseCulvertsName = settings.value("BaseCulverts").toString();
 
     optionCatchments = settings.value("DEM/optionCatchments").toInt();
     //optionDEM = settings.value("DEM/optionDEM").toInt();
@@ -213,6 +215,7 @@ void MainWindow::readValuesfromUI()
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();    
     BaseOutpointsName = lineEdit_userOutpoints->text();
+    BaseCulvertsName = lineEdit_userCulverts->text();
 
     optionDEM = 1;//checkBox_DEM->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
@@ -295,6 +298,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_baseChannel->setText(BaseChannelName);
     lineEdit_userOutlets->setText(BaseOutletsName);
     lineEdit_userOutpoints->setText(BaseOutpointsName);
+    lineEdit_userCulverts->setText(BaseCulvertsName);
 
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     spin_DEMfill->setValue(DEMfill);

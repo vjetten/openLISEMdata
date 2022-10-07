@@ -592,3 +592,5 @@ void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
     gaugeFrame->setEnabled(checked);
 }
 
+
+

@@ -40,6 +40,17 @@ void MainWindow::on_toolButton_saveas_clicked()
 }
 
 
+void MainWindow::on_toolButton_deleteIni_clicked()
+{
+    QString S = combo_iniName->currentText();
+    int i = combo_iniName->currentIndex();
+    if (!S.isEmpty()) {
+        combo_iniName->removeItem(i);
+        combo_iniName->setCurrentIndex(0);
+        setIniStart();
+    }
+}
+
 void MainWindow::on_toolButton_script_clicked()
 {
     QStringList filters({"Python (*.py)","Any files (*)"});
@@ -133,6 +144,16 @@ void MainWindow::on_toolButton_userOutpoints_clicked()
     BaseOutpointsName = getFileorDir(tmp,"Select outpoints map", filters, 1);
     if (!BaseOutpointsName.isEmpty())
         lineEdit_userOutpoints->setText(BaseOutpointsName);
+}
+
+
+void MainWindow::on_toolButton_userCulverts_clicked()
+{
+    QString tmp = BaseDirName+lineEdit_userCulverts->text();
+    QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
+    BaseCulvertsName = getFileorDir(tmp,"Select culverts map", filters, 1);
+    if (!BaseCulvertsName.isEmpty())
+        lineEdit_userCulverts->setText(BaseCulvertsName);
 }
 
 
