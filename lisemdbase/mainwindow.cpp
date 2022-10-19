@@ -322,7 +322,8 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     model->setHorizontalHeaderItem( i++, new QStandardItem("Plant Cover\n (-)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Density\n factor (0.9-1.2)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Smax type\n (1-8)"));
-    model->setHorizontalHeaderItem( i, new QStandardItem("Add. Cohesion\n (kPa)"));
+    model->setHorizontalHeaderItem( i++, new QStandardItem("Add. Cohesion\n (kPa)"));
+    model->setHorizontalHeaderItem( i  , new QStandardItem("Add. Org Mat\n (%)"));
     tableViewLULC->setModel(model);
 
     LULCNNtableName.clear();

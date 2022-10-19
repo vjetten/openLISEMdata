@@ -28,8 +28,10 @@ void MainWindow::on_toolButton_SaveIni_clicked()
 
 void MainWindow::on_toolButton_saveas_clicked()
 {
+    QString dir = QFileInfo(combo_iniName->currentText()).dir().absolutePath();
+    qDebug() << dir;
     QString fileName = QFileDialog::getSaveFileName(this, "Give a new project INI filename to save all options",
-                               qApp->applicationDirPath(),
+                               dir,
                                "*.ini");
     if (!fileName.isEmpty()) {
         readValuesfromUI();

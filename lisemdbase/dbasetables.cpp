@@ -82,7 +82,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
         int n = model->rowCount();
         int m = model->columnCount();
 
-        QString sss = QString("LULC =   0   1   2   3   4   5   6   7\n");
+        QString sss = QString("LULC =   0   1   2   3   4   5   6   7   8\n");
         stream << sss;
 
         for (int i=0; i<n; ++i)
@@ -122,7 +122,7 @@ void MainWindow::createNNLULCTable()
         int n = model->rowCount();
         int m = model->columnCount();
 
-        QString sss = QString("0   1   2   3   4   5   6   7\n");
+        QString sss = QString("0   1   2   3   4   5   6   7   8\n");
         stream << sss;
 
         for (int i=0; i<n; ++i) {

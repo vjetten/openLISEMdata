@@ -69,6 +69,7 @@ public:
     double refBulkDens2;
     double DEMfill;
     double CatchmentSize;
+    double CorrOM;
     int optionDEM;
     int optionChannels;
     int optionLULC;
@@ -80,6 +81,7 @@ public:
     int optionD50;
     int optionUseBD;
     int optionUseBD2;
+    int optionUseCorrOM;
     int optionUseDensity;
     int optionFillDEM;
     int optionCatchments;
@@ -95,6 +97,7 @@ public:
     double chBaseflow;
     double refRootzone;
     double refMaxSoildepth;
+    double corrOM;
     bool runGPMscript;
     bool runIDMscript;
     bool runOptionsscript;

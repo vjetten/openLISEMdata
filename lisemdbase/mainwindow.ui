@@ -106,7 +106,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 3.5 - 2201006)</string>
+       <string>openLISEM database generator (version 3.6 - 221018)</string>
       </property>
      </widget>
     </item>
@@ -142,7 +142,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="iconSize">
        <size>
@@ -763,16 +763,16 @@
                         </font>
                        </property>
                        <property name="decimals">
-                        <number>1</number>
+                        <number>2</number>
                        </property>
                        <property name="maximum">
                         <double>9999.000000000000000</double>
                        </property>
                        <property name="singleStep">
-                        <double>0.100000000000000</double>
+                        <double>0.010000000000000</double>
                        </property>
                        <property name="value">
-                        <double>10.000000000000000</double>
+                        <double>1.000000000000000</double>
                        </property>
                       </widget>
                      </item>
@@ -1608,7 +1608,7 @@
             <item row="1" column="1">
              <widget class="QCheckBox" name="checkBox_Soilgrids">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1654,8 +1654,21 @@
                <property name="verticalSpacing">
                 <number>4</number>
                </property>
-               <item row="3" column="3">
-                <widget class="QSpinBox" name="spin_refBD">
+               <item row="3" column="4" colspan="3">
+                <widget class="QLabel" name="label_18">
+                 <property name="font">
+                  <font>
+                   <pointsize>9</pointsize>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>(in kg/m3,  higher values gives lower Ksat top and subsoil)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="3">
+                <widget class="QCheckBox" name="checkBox_userefBD">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1668,21 +1681,63 @@
                    <bold>false</bold>
                   </font>
                  </property>
-                 <property name="minimum">
-                  <number>700</number>
+                 <property name="text">
+                  <string>Reference bulk density topsoil:</string>
                  </property>
-                 <property name="maximum">
-                  <number>2000</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>1</number>
-                 </property>
-                 <property name="value">
-                  <number>1350</number>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="3" colspan="4">
+               <item row="1" column="5">
+                <widget class="QDoubleSpinBox" name="spin_MaxSoildepth">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>5.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3" colspan="2">
+                <widget class="QLabel" name="label_36">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Maximum soil depth (m)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="7">
+                <widget class="QCheckBox" name="checkBox_useLUdensity">
+                 <property name="font">
+                  <font>
+                   <pointsize>9</pointsize>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Include density factor (0.9-1.1) per LULC type, specified in the landuse table</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="3" colspan="4">
                 <widget class="QLabel" name="label_14">
                  <property name="font">
                   <font>
@@ -1695,7 +1750,39 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1" colspan="2">
+               <item row="1" column="6">
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>9</pointsize>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Soil depth top soil (m)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
                 <widget class="QDoubleSpinBox" name="spin_Rootzone">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1720,42 +1807,20 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="6">
-                <spacer name="horizontalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0" colspan="3">
-                <widget class="QCheckBox" name="checkBox_userefBD">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>false</bold>
-                  </font>
+               <item row="0" column="0" colspan="7">
+                <widget class="QCheckBox" name="checkBox_SGInterpolation">
+                 <property name="enabled">
+                  <bool>true</bool>
                  </property>
                  <property name="text">
-                  <string>Reference bulk density topsoil:</string>
+                  <string>Inverse distance interpolation of missing values </string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="2">
+               <item row="9" column="2">
                 <widget class="QDoubleSpinBox" name="spin_initmoist">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1786,52 +1851,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="4" colspan="3">
-                <widget class="QLabel" name="label_18">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>(in kg/m3,  higher values gives lower Ksat top and subsoil)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3" colspan="2">
-                <widget class="QLabel" name="label_36">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Maximum soil depth (m)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="5">
-                <widget class="QDoubleSpinBox" name="spin_MaxSoildepth">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.000000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>5.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0" colspan="2">
+               <item row="9" column="0" colspan="2">
                 <widget class="QLabel" name="label_7">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1850,10 +1870,20 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_44">
+               <item row="8" column="0" colspan="7">
+                <widget class="QCheckBox" name="checkBox_noGravel">
+                 <property name="text">
+                  <string>Decrease gravel effect in Ksat and porosity estimates (ksat will be higher)</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QSpinBox" name="spin_refBD">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1864,47 +1894,41 @@
                    <bold>false</bold>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>Soil depth top soil (m)</string>
+                 <property name="minimum">
+                  <number>700</number>
+                 </property>
+                 <property name="maximum">
+                  <number>2000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>1350</number>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0" colspan="7">
-                <widget class="QCheckBox" name="checkBox_noGravel">
+               <item row="4" column="0" colspan="3">
+                <widget class="QCheckBox" name="checkBox_useCorrOM">
                  <property name="text">
-                  <string>Decrease gravel effect in Ksat and porosity estimates (ksat will be higher)</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                  <string>Corection factor organic matter (%)</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0" colspan="7">
-                <widget class="QCheckBox" name="checkBox_useLUdensity">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>false</bold>
-                  </font>
+               <item row="4" column="3">
+                <widget class="QDoubleSpinBox" name="spin_corrOM">
+                 <property name="minimum">
+                  <double>-100.000000000000000</double>
                  </property>
-                 <property name="text">
-                  <string>Include density factor (0.9-1.1) per LULC type, specified in the landuse table</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="checkBox_SGInterpolation">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
+               <item row="4" column="4" colspan="3">
+                <widget class="QLabel" name="label_71">
                  <property name="text">
-                  <string>Inverse distance interpolation of missing values </string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                  <string>(value added to organic mattr of top soil)</string>
                  </property>
                 </widget>
                </item>
@@ -4317,7 +4341,7 @@
           <string/>
          </property>
          <property name="text">
-          <string>32644</string>
+          <string/>
          </property>
         </widget>
        </item>

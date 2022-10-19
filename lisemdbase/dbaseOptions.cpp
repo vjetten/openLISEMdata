@@ -57,7 +57,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("CHANNEL/chB", QString::number(chB, 'f', 3));
     settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 1));
     settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
-    settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 1));
+    settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 2));
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
     settings.setValue("CHANNEL/Watersheds", WatershedsName);
 
@@ -75,6 +75,8 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
     settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
+    settings.setValue("SOIL/optionUseCorrOM", QString::number(optionUseCorrOM));
+    settings.setValue("SOIL/corrOM", QString::number(corrOM, 'f', 2));
     //settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
@@ -165,8 +167,11 @@ void MainWindow::getIni(QString name)
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = settings.value("SOIL/optionUseBD").toInt();
     //optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
+    optionUseCorrOM = settings.value("SOIL/optionUseCorrOM ").toInt();
+    corrOM = settings.value("SOIL/corrOM").toDouble();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
+
     //refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
     refRootzone = settings.value("SOIL/refRootzone").toDouble();
     refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
@@ -247,6 +252,8 @@ void MainWindow::readValuesfromUI()
     optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
     optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
    // optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
+    optionUseCorrOM  = checkBox_useCorrOM->isChecked() ? 1 : 0;
+    corrOM = spin_corrOM->value();
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
   //  refBulkDens2 = spin_refBD2->value();
@@ -330,6 +337,8 @@ void MainWindow::writeValuestoUI()
     checkBox_noGravel->setChecked(optionNoGravel > 0);
     checkBox_userefBD->setChecked(optionUseBD > 0);
     //checkBox_userefBD2->setChecked(optionUseBD2 > 0);
+    checkBox_useCorrOM->setChecked(optionUseCorrOM > 0);
+    spin_corrOM->setValue(corrOM);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
     //spin_refBD2->setValue(refBulkDens2);

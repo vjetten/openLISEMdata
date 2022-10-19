@@ -580,18 +580,18 @@ class PedoTransfer(StaticModel):
 
         print(">>> Creating infiltration parameters for layer "+xs, flush=True)
 
+        lun = readmap(landuseName)
+        OMaddition = scalar(0.0)*mask
+        if useLUdensity == 1 and x == 1:
+            OMaddition =  lookupscalar(LULCtable, 7, nominal(lun)) * mask
+
         S = S1 
         C = C1 
         Si = Si1 
         OC = OC1*100  # conversion OC from fraction to percentage
-        OM = OC*1.73   #conversion org carbon to org matter factor 2
+        OM = OC*1.73+OMaddition   #conversion org carbon to org matter factor 2
         report(OM, om1)
 
-        lun = readmap(landuseName)
-        #densityveg = lookupscalar(LULCtable, 4, nominal(lun))
-
-        #bdsg = bd1*0.1            
-        #bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
         Gravel = Grv
         if useNoGravel == 1 :
             Gravel *= 0.2
