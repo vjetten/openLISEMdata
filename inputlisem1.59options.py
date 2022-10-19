@@ -53,9 +53,9 @@ class DEMderivatives(StaticModel):
     def initial(self):
         global DEM_
         global mainout_
+        global mainoutpoint_  
         global rivers_
         global Ldd_
-        #global watersheds_
         global doCorrectDEM
         global fillDEM
 
@@ -99,8 +99,8 @@ class DEMderivatives(StaticModel):
         Ldd_ = Ldd
 
         outlet = mainout_
-        outpoint = mainout_            
         report(outlet,outletName)
+        outpoint = mainoutpoint_
         report(outpoint,outpointName)
 
         # runoff flow network based on dem, main outlet, channels and barriers
@@ -130,6 +130,7 @@ class ChannelMaps(StaticModel):
     def initial(self):
         global mask_
         global mainout_  
+        global mainoutpoint_  
         global DEM_
         global watersheds_  
         
@@ -147,7 +148,8 @@ class ChannelMaps(StaticModel):
             lddchan = lddcreate((DEM-mainout*100-cm*100)*cm,100,1e20,1e20,1e20)
             cm = cover(cm, 0)*mask
             chanmask = cm
-
+        cm = cover(cm, 0)*mask
+        chanmask = cm
         report(lddchan,lddchanName)
         report(cm, chanmaskName)
         
@@ -166,16 +168,18 @@ class ChannelMaps(StaticModel):
             chDepthmap = lookupscalar(outletstableName, 2, ws)
             chBaseflowmap = lookupscalar(outletstableName, 3, ws)
         
-        outpoint = mainout_
         outlet = mainout_
         report(outlet,outletName)
+        outpoint = mainoutpoint_
         report(outpoint,outpointName)
+        culverts = readmap(BaseDir+culvertsbaseName)
+        report(culverts, chanmaxqName)
 
         # report(chWidthmap,"chw.map")
         # report(chDepthmap,"chd.map")
         # report(chBaseflowmap,"chbf.map")
 
-        changrad = min(0.5,max(0.01,sin(atan(slope(ifthen(chanmask>0,scalar(1))*DEM)))))
+        changrad = min(0.5,max(0.001,sin(atan(slope(ifthen(chanmask>0,scalar(1))*DEM)))))
         changrad = windowaverage(changrad, 3*celllength())*ifthen(chanmask>0,scalar(1))
         report(changrad,changradName)
 
@@ -200,17 +204,17 @@ class ChannelMaps(StaticModel):
         maxw = areamaximum(chanlen,ws)*chanmask
         lenrel = (1-(maxw-chanlen)/(maxw-dx)) 
         # make a relative channel width increase from 0 to 1 for every subcatchment
-        chanwidth = lenrel*(chWidthmap-2.0)+2.0
+        minwidth = 1.0
+        chanwidth = lenrel*(chWidthmap-minwidth)+minwidth
         # scale that map to a minimum of 2 and a maximum of user defined for each catchment
         report(chanwidth,chanwidthName)        
         
         # do the same for depth
         chandepth = max(1.0,chanwidth**chC)**chanmask
-        chandepth = lenrel*(chDepthmap-1.0)+1.0
+        mindepth = 0.8
+        chandepth = lenrel*(chDepthmap-mindepth)+mindepth
         report(chandepth,chandepthName)
 
-        chanmaxq = 0*mask#if(culverts gt 0, 2, 0)*mask;
-        report(chanmaxq,chanmaxqName)
         chanksat = 0*mask
         report(chanksat,chanksatName)
 
@@ -358,6 +362,8 @@ class SurfaceMaps(StaticModel):
         Cover = lookupscalar(LULCtable, 4, unitmap) * mask
         Cover = max(0,min(1.0,Cover))
         report(Cover,coverName)
+        report(Cover,LitterName)        
+        
 
         # cover = 1-exp(-0.4*LAI)
         LAI = mask*(ln(1-min(0.95,Cover))/-0.4)   # VJ 220119 this was wrong, reversed
@@ -373,12 +379,12 @@ class SurfaceMaps(StaticModel):
 
         smax1 = ifthenelse(smaxnr == 1, a[1]*LAI**b[1],0)*mask
         smax2 = ifthenelse(smaxnr == 2, a[2]*LAI,0)*mask
-        smax3 = ifthenelse(smaxnr == 2, a[3]*LAI,0)*mask
-        smax4 = ifthenelse(smaxnr == 3, a[4]*LAI**b[4],0)*mask
-        smax5 = ifthenelse(smaxnr == 4, a[5]*LAI**b[5],0)*mask
-        smax6 = ifthenelse(smaxnr == 5, a[6]*LAI,0)*mask
-        smax7 = ifthenelse(smaxnr == 6, a[7]*LAI,0)*mask
-        smax8 = ifthenelse(smaxnr == 7, a[8]*LAI**b[8],0)*mask
+        smax3 = ifthenelse(smaxnr == 3, a[3]*LAI,0)*mask
+        smax4 = ifthenelse(smaxnr == 4, a[4]*LAI**b[4],0)*mask
+        smax5 = ifthenelse(smaxnr == 5, a[5]*LAI**b[5],0)*mask
+        smax6 = ifthenelse(smaxnr == 6, a[6]*LAI,0)*mask
+        smax7 = ifthenelse(smaxnr == 7, a[7]*LAI,0)*mask
+        smax8 = ifthenelse(smaxnr == 8, a[8]*LAI**b[8],0)*mask
 
         Smax = smax1+smax2+smax3+smax4+smax5+smax6+smax7
         report(Smax, smaxName)
@@ -399,6 +405,13 @@ class SurfaceMaps(StaticModel):
 
         building = readmap(housecoverinName)*mask
         report(building,housecovName)
+        roofstore = 1 * mask
+        report(roofstore, roofstoreName)
+        drumstore = 0 * mask
+        report(drumstore, drumstoreName)
+        
+        
+        
 
 ### ---------- class GetSoilGridsLayer ---------- ###
 
@@ -473,7 +486,7 @@ class SoilGridsTransform(StaticModel):
         if mapnr == 2: name = "silt{0}".format(xs); factor = 0.001  # fraction clay, server gives g/kg
         if mapnr == 3: name = "soc{0}".format(xs);  factor = 0.0001 # fraction SOC, server give dg/kg
         if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001  # fraction gravel, server gives cm3/dm3
-       # if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # bulk density kg/m3, server gives cg/cm3 
+        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # bulk density kg/m3, server gives cg/cm3 
         #print(mapnr,name)
         nametif = name+".tif"
         #namemap = name+"_.map"
@@ -515,6 +528,10 @@ class SoilGridsTransform(StaticModel):
         map1 = inversedistance(boolean(mapmask),edge,2,0,0)                
         # combine the original and the ID map into one and save
         map2 = cover(ifthen(map_ > 1e-5,map_),map1)*factor
+        
+        map2 = windowaverage(map2, 250) #3*celllength())
+        
+        
         report(map2,namemap2)
         
 
@@ -529,6 +546,7 @@ class PedoTransfer(StaticModel):
         StaticModel.__init__(self)
     def initial(self):
         standardBD = scalar(standardbulkdensity_)  # standard bulk dens assumed by saxton and rawls. High! 1350 would be better
+        #standardBD2 = scalar(standardbulkdensity2_)  # standard bulk dens assumed by saxton and rawls. High! 1350 would be better
         fractionmoisture = scalar(initmoisture_)   #inital moisture as fraction between porosity and field capacity
         x = layer_
         mask = mask_
@@ -542,7 +560,7 @@ class PedoTransfer(StaticModel):
         C1 = readmap("clay{0}.map".format(xs))  # clay g/kg
         OC1 = readmap("soc{0}.map".format(xs))  # organic carbon in dg/kg
         Grv = readmap("cfvo{0}.map".format(xs)) # coarse fragments cm3/dm3,
-       # bda = readmap("bdod{0}.map".format(xs))   # bulk density in cg/m3 so kg/m3 = *0.1
+        bdod = readmap("bdod{0}.map".format(xs)) # bulk density in cg/m3 so kg/m3 = *0.1
 
         #output map name strings
         om1 = "om{0}.map".format(xs)             # organic matter in %
@@ -557,29 +575,29 @@ class PedoTransfer(StaticModel):
         psi1 = psiName+"{0}.map".format(xs)  		    # suction with init moisture in cm, used in LISEM
         DF1 = "densfact{0}.map".format(xs)
         
-        BDdf1 = "bddf1_{0}.map".format(xs) 
+        BDdf = "bddf1_{0}.map".format(xs) 
 
         print(">>> Creating infiltration parameters for layer "+xs, flush=True)
 
+        lun = readmap(landuseName)
+        OMaddition = scalar(0.0)*mask
+        if useLUdensity == 1 and x == 1:
+            OMaddition =  lookupscalar(LULCtable, 8, nominal(lun)) * mask
+        CorrectionOM = 0.0
+        if useCorrOM == 1 :
+            CorrectionOM = CorrOM_            
+        
         S = S1 
         C = C1 
         Si = Si1 
         OC = OC1*100  # conversion OC from fraction to percentage
-        OM = OC*1.73   #conversion org carbon to org matter factor 2
+        OM = min(OC*1.73,5) +  OMaddition - CorrectionOM  #conversion org carbon to org matter factor 2
+        
         report(OM, om1)
 
-        lun = readmap(landuseName)
-        #densityveg = lookupscalar(LULCtable, 4, nominal(lun))
-
-        #bdsg = bd1*0.1            
-        #bdsg = ifthenelse(bd1 < 1,standardBD,bdsg) # replace areas with MV bdsg to standard BD
-        Gravel = Grv
+        Gravel = 0 #fGrv
         if useNoGravel == 1 :
             Gravel *= 0.2
-        
-        #Densityfactor *= standardBD/(Gravel*2.65+(1-Gravel)*standardBD)
-        #Gravel *= 0
-        #Gravel = Gravel * (1-StandardBG/(Gravel*2.65+(1-Gravel)*StandardBG))
 
         #------ this part does not consider density factor
         # wilting point stuff
@@ -599,47 +617,41 @@ class PedoTransfer(StaticModel):
         SatSadj = -0.097*S+0.043  #AD18) =-0.097*F18+0.043
         SadjSat = SatPM33  + SatSadj  #AE18) =AC18+AD18
         Dens_om = (1-SadjSat)*2.65  #AF18) =(1-AE18)*2.65
-        poredf1 = (1-Dens_om/2.65)  # pore with dens factor 1.0
-        bddf1 = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
-        #------ this part does not consider density factor
-        #report(Dens_om,BDdf1)
+        poredf1 = (1-Dens_om/2.65)  # pore with dens factor 1.0        
+      #  bddf = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
+        
+        #------ this part does not consider density factor        
         Densityfactor = scalar(1.0)*mask
-        
-        
-        if useBulkdensity == 1:
-           Densityfactor = standardBD/bddf1*mask   # e.g. bddf1 = 1200 kg/m3 standard is 1350 then density < 1
+        Densityfactor2 = scalar(1.0)*mask
                               
         if useLUdensity == 1 and x == 1:
             Densityfactor2 =  lookupscalar(LULCtable, 5, nominal(lun)) * mask
+
             # Densityfactor = (2*Densityfactor2+Densityfactor)/3.0
             # minv = mapminimum(Densityfactor)
             # maxv = mapmaximum(Densityfactor)
             # Densityfactor = minv + (maxv-minv)*(Densityfactor-0.9)/(1.1-0.9)
-            Densityfactor = min(Densityfactor,Densityfactor2)            
-           
-        #Densityfactor = min(max(0.9, Densityfactor*Densityfactor2, 1.1) *mask # was 1.2 but that is too much        
-        #Densityfactor = (Densityfactor+Densityfactor2)/2.0*mask
-        # density factor is 1.0, but could be made lower for organic soils and higher for compacted urban areas.
+        #Densityfactor = min(Densityfactor,Densityfactor2)*standardBD/bddf*mask  
+        Densityfactor = min(Densityfactor,Densityfactor2)*standardBD/bdod*mask
+        Densityfactor = max(0.9,min(1.2,Densityfactor))            
+        # limit between 0.9 and 1.2 else can generate missing values         
         report(Densityfactor,DF1)
         
         Dens_comp = Dens_om * Densityfactor  #AG18) =AF18*(I18)
         PORE_comp =(1-Dens_om/2.65)-(1-Dens_comp/2.65)  #AI18) =(1-AG18/2.65)-(1-AF18/2.65)
         M33comp = M33adj + 0.2*PORE_comp  #AJ18)  =Z18+0.2*AI18
-        report(Dens_comp,BDdf1)
+      #  report(Dens_comp,BDdf)
         #output maps
-        POROSITY = (1-Dens_comp/2.65)*mask  #AH18)
-               
+        POROSITY = (1-Dens_comp/2.65)*mask  #AH18)               
         
         PoreMcomp = POROSITY-M33comp  #AK18)
         LAMBDA = (ln(M33comp)-ln(M1500adj))/(ln(1500)-ln(33))  #AL18)
         GravelRedKsat =(1-Gravel)/(1-Gravel*(1-1.5*(Dens_comp/2.65)))  #AM18)
         # NOTE: soilgrids gravel is a volume fraction while the PTF need a weight fraction
         # if gravel = 0 then gravelreduction = 1
-        report(GravelRedKsat,'gravred.map')
-        
+        report(GravelRedKsat,'gravred.map')       
         #report(LAMBDA,'lambda.map')
-        #report(PoreMcomp,'PoreMcomp.map')
-        #report(M33comp,'M33comp.map')
+        
         Ksat = mask*max(0.0, 1930*(PoreMcomp)**(3-LAMBDA)*GravelRedKsat)  #AN18)
         BD = Gravel*2.65+(1-Gravel)*Dens_comp* mask     #U18
         WP = M1500adj*mask
@@ -663,7 +675,7 @@ class PedoTransfer(StaticModel):
         report(FC,FC1)
         report(PAW,PAW1)
         report(initmoist,initmoist1)
-        #report(bddf1, BDdf1)
+        #report(bddf, BDdf1)
         
         report(Gravel*mask,stoneName)
 
@@ -752,12 +764,13 @@ class ErosionMaps(StaticModel):
         cropheight = lookupscalar(LULCtable, 3, unitmap) * mask #plant height in m
         report(cropheight,cropheightName)
 
-        aggrstab = (S+0.15*C)/1.3 #from table A9.1 page 27 eurosem manual 2nd column erod (= kfactor multiply directly with splash energy)
+        aggrstab = ((S+0.15*C)/1.3) * mask #from table A9.1 page 27 eurosem manual 2nd column erod (= kfactor multiply directly with splash energy)
+        
         # detachability in g/J in lisem this is directly multiplied to the KE
         #aggrstab = 6 * mask;  # aggregate stability
         report(aggrstab,asName)
         
-        cohadd = lookupscalar(LULCtable, 7, unitmap) * mask #plant height in m
+        cohadd = lookupscalar(LULCtable, 7, unitmap) * mask #added cohesion by roots
         
         Coh = ifthenelse(cohadd < 0, -1, Coh)    
         report(Coh, cohName)
@@ -853,12 +866,16 @@ if __name__ == "__main__":
     doUserOutlets = 0  ## VJ 210523  added options user defined outlets that are forced in the DEM
     doPruneBranch = 0
     useBulkdensity = 0
+    #useBulkdensity2 = 0
     useLUdensity = 0
-    useNoGravel = 0
+    useNoGravel = 0    
     standardbulkdensity_ = 1350.0
+    #standardbulkdensity2_ = 1350.0
     initmoisture_ = 0.0
     rootzone = 0.6
     maxSoildepth = 5.0
+    useCorrOM = 0
+    CorrOM_ = 0.0
     
     ### input maps ###
     MapsDir = "/Maps"
@@ -867,6 +884,8 @@ if __name__ == "__main__":
     DEMbaseName = "dem0.map"
     riversbaseName = "chanmask0.map"
     outletsbaseName = "outlet0.map"    
+    outpointsbaseName = "outpoints0.map"    
+    culvertsbaseName = "chanmaxq0.map"    
     damsbaseName = "dams0.map"
     masknamemap_ = "mask0.map"
     
@@ -905,6 +924,8 @@ if __name__ == "__main__":
     DEMbaseName = myvars["BaseDEM"]
     riversbaseName = myvars["BaseChannel"]
     outletsbaseName = myvars["BaseOutlets"]
+    outpointsbaseName = myvars["BaseOutpoints"]
+    culvertsbaseName = myvars["BaseCulverts"]
 
     doProcessesDEM = int(myvars["optionDEM"])
     doCatchment = int(myvars["optionCatchments"])
@@ -914,6 +935,7 @@ if __name__ == "__main__":
     
     doProcessesChannels = int(myvars["optionChannels"])
     doPruneBranch = int(myvars["optionPruneBranch"])
+    doPruneBranch = 0
     doProcessesDams = int(myvars["optionIncludeDams"])
     damsbaseName = myvars["BaseDams"]
     doUserOutlets = int(myvars["optionUserOutlets"])
@@ -935,12 +957,17 @@ if __name__ == "__main__":
     optionSG2 = int(myvars["optionSG2"])+1
     doProcessesSGInterpolation = int(myvars["optionSGInterpolation"])
     useBulkdensity = int(myvars["optionUseBD"])
+    #useBulkdensity2 = int(myvars["optionUseBD2"])
     useLUdensity = int(myvars["optionUseDensity"])
     useNoGravel = int(myvars["optionNoGravel"])
     standardbulkdensity_ = float(myvars["refBulkDens"])
+    #standardbulkdensity2_ = float(myvars["refBulkDens2"])
     rootzone = float(myvars["refRootzone"]) 
     maxSoildepth = float(myvars["refMaxSoildepth"]) 
     initmoisture_ = float(myvars["initmoist"])  
+    useCorrOM = int(myvars["optionUseCorrOM"])
+    CorrOM_ = float(myvars["corrOM"])  
+
     
     doProcessesErosion = int(myvars["optionErosion"])
     doChannelsNoEros = int(myvars["optionChannelsNoEros"])
@@ -949,6 +976,7 @@ if __name__ == "__main__":
     # main options determine the suboptions:
     if doProcessesInfil == 0 :
         useBulkdensity = 0
+       # useBulkdensity2 = 0
     if doProcessesErosion == 0 :
         optionD50 = 0
     if doProcessesDEM == 0:
@@ -1071,6 +1099,7 @@ if __name__ == "__main__":
     mask_ = (DEM_*0) + scalar(1)
     rivers_ = readmap(BaseDir+riversbaseName)
     mainout_ = scalar(readmap(BaseDir+outletsbaseName))
+    mainoutpoint_ = scalar(readmap(BaseDir+outpointsbaseName))
     DAMS_= DEM_*0
        
     report(mask_, BaseDir+masknamemap_)
@@ -1166,12 +1195,12 @@ if __name__ == "__main__":
     # fill in missing vaklues and convert to fractions
     if doProcessesInfil == 1 and doProcessesSGInterpolation == 1:
         print(">>> Inverse distance interpolation SOILGRIDS layers for missing values", flush=True)
-        for x in range(0,5):
+        for x in range(0,6):
             layer_ = 1
             mapnr_ = x
             staticModel = StaticFramework(SoilGridsTransform())
             staticModel.run()
-        for x in range(0,5):
+        for x in range(0,6):
             layer_ = 2
             mapnr_ = x
             staticModel = StaticFramework(SoilGridsTransform())
