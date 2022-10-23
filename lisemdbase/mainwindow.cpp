@@ -274,6 +274,7 @@ void MainWindow::on_checkBox_Infil_toggled(bool checked)
     infiloptions->setEnabled(checked);
     SGoptions->setEnabled(checked);
     checkBox_SGInterpolation->setEnabled(checked);
+    checkBox_SGAverage->setEnabled(checked);
     checkBox_Soilgrids->setEnabled(checked);
 }
 
@@ -361,9 +362,10 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     spin_initmoist->setValue(0);
 
     checkBox_SGInterpolation->setChecked(false);
+    checkBox_SGAverage->setChecked(false);
     checkBox_noGravel->setChecked(true);
     checkBox_Soilgrids->setChecked(false);
-    checkBox_userefBD->setChecked(true);
+    //checkBox_userefBD->setChecked(true);
     //checkBox_userefBD2->setChecked(true);
     checkBox_useLUdensity->setChecked(true);
     //checkBox_erosion->setChecked(true);
@@ -375,16 +377,20 @@ void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
     spin_refBD->setValue(1350);
-    //E_DEMfill->setText(QString::number(10,'f',1));
-    spin_DEMfill->setValue(10);
+    spin_DEMfill->setValue(1);
     spin_chB->setValue(0.459);
     spin_chC->setValue(0.300);
-    spin_chWidth->setValue(500.0);
+    spin_chWidth->setValue(100.0);
+    spin_chWidthS->setValue(2.0);
     spin_chDepth->setValue(10.0);
+    spin_chDepthS->setValue(2.0);
     spin_chBaseflow->setValue(0.0);
+    spin_chN->setValue(0.05);
+    spin_corrOM->setValue(0.0);
+    spin_Rootzone->setValue(0.6);
+    spin_MaxSoildepth->setValue(5);
 
-
-    bool checked = true;
+    //bool checked = true;
     //checkBox_DEM->setChecked(checked);
     //checkBox_Channels->setChecked(checked);
     //checkBox_LULC->setChecked(checked);
@@ -592,6 +598,8 @@ void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
+
+
 
 
 

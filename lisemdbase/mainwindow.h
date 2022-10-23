@@ -36,6 +36,7 @@ public:
     QString LULCmapName;
     QString LULCtableName;
     QString LULCNNtableName;
+    QString NDVImapName;
 
     QString RainScriptFileName;
     QString IDMScriptFileName;
@@ -75,6 +76,7 @@ public:
     int optionLULC;
     int optionSG;
     int optionSGInterpolation;
+    int optionSGAverage;
     int optionNoGravel;
     int optionInfil;
     int optionErosion;
@@ -90,10 +92,14 @@ public:
     int optionIncludeDams;
     int optionChannelsNoEros;
     int optionGaugeGPM;
+    int optionUseNDVI;
     double chB;
     double chC;
     double chWidth;
     double chDepth;
+    double chWidthS;
+    double chDepthS;
+    double chN;
     double chBaseflow;
     double refRootzone;
     double refMaxSoildepth;
@@ -272,6 +278,8 @@ private slots:
     void on_toolButton_userCulverts_clicked();
 
     void on_toolButton_deleteIni_clicked();
+
+    void on_toolButton_NDVIMap_clicked();
 
 private:
     Ui::MainWindow *ui;

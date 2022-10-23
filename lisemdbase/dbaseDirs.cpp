@@ -225,6 +225,18 @@ void MainWindow::on_toolButton_LULCMap_clicked()
 }
 
 
+void MainWindow::on_toolButton_NDVIMap_clicked()
+{
+    QString tmp = lineEdit_NDVIMap->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = ProjectDirName;
+
+    QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
+    NDVImapName = getFileorDir(tmp,"Select NDVI map", filters, 2);
+    if (!LULCmapName.isEmpty())
+        lineEdit_NDVIMap->setText(NDVImapName);
+}
+
 //==============================================================================
 void MainWindow::on_toolButton_GPMpy_clicked()
 {

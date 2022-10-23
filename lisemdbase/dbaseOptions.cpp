@@ -53,26 +53,32 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("CHANNEL/optionIncludeDams", QString::number(optionIncludeDams));
     settings.setValue("CHANNEL/BaseDams", BaseDamsName);
     settings.setValue("CHANNEL/optionUserOutlets", QString::number(optionUserOutlets));  //0=1 outlet, >0 is multiple
-    settings.setValue("CHANNEL/chWidth", QString::number(chWidth, 'f', 1));
+    settings.setValue("CHANNEL/chWidth", QString::number(chWidth, 'f', 2));
+    settings.setValue("CHANNEL/chWidthS", QString::number(chWidthS, 'f', 2));
     settings.setValue("CHANNEL/chB", QString::number(chB, 'f', 3));
-    settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 1));
+    settings.setValue("CHANNEL/chDepth", QString::number(chDepth, 'f', 2));
+    settings.setValue("CHANNEL/chDepthS", QString::number(chDepthS, 'f', 2));
     settings.setValue("CHANNEL/chC", QString::number(chC, 'f', 3));
-    settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 2));
+    settings.setValue("CHANNEL/chBaseflow", QString::number(chBaseflow, 'f', 3));
+    settings.setValue("CHANNEL/chN", QString::number(chN, 'f', 3));
     settings.setValue("CHANNEL/Outletstable", OutletstableName);
     settings.setValue("CHANNEL/Watersheds", WatershedsName);
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
     settings.setValue("LULC/LULCmap", LULCmapName);
     if (yes)
-    settings.setValue("LULC/LULCNNtable", LULCNNtableName);
+        settings.setValue("LULC/LULCNNtable", LULCNNtableName);
     else
-    settings.setValue("LULC/LULCtable", LULCtableName);
+        settings.setValue("LULC/LULCtable", LULCtableName);
+    settings.setValue("LULC/NDVImap", NDVImapName);
+    settings.setValue("LULC/optionUseNDVI", QString::number(optionUseNDVI));
 
     settings.setValue("SOIL/optionInfil", QString::number(optionInfil));
     settings.setValue("SOIL/optionSG", QString::number(optionSG)); // do soilgrids
     settings.setValue("SOIL/optionSG1", QString::number(SG1));
     settings.setValue("SOIL/optionSG2", QString::number(SG2));
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
+    settings.setValue("SOIL/optionSGAverage", QString::number(optionSGAverage)); // do soilgrids
     settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
     settings.setValue("SOIL/optionUseCorrOM", QString::number(optionUseCorrOM));
@@ -146,9 +152,12 @@ void MainWindow::getIni(QString name)
     optionUserOutlets = settings.value("CHANNEL/optionUserOutlets").toInt();
 
     chWidth = settings.value("CHANNEL/chWidth").toDouble();
+    chWidthS = settings.value("CHANNEL/chWidthS").toDouble();
     chB = settings.value("CHANNEL/chB").toDouble();
     chDepth = settings.value("CHANNEL/chDepth").toDouble();
+    chDepthS = settings.value("CHANNEL/chDepthS").toDouble();
     chC = settings.value("CHANNEL/chC").toDouble();
+    chN = settings.value("CHANNEL/chN").toDouble();
     chBaseflow = settings.value("CHANNEL/chBaseflow").toDouble();
 
     OutletstableName = settings.value("CHANNEL/Outletstable").toString();
@@ -157,15 +166,17 @@ void MainWindow::getIni(QString name)
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = settings.value("LULC/LULCmap").toString();
     LULCtableName = settings.value("LULC/LULCtable").toString();
-  //  LULCNNtableName = settings.value("LULC/LULCNNtable").toString();
+    NDVImapName = settings.value("LULC/NDVImap").toString();
+    optionUseNDVI = settings.value("LULC/optionUseNDVI").toInt();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
     optionSG = settings.value("SOIL/optionSG").toInt();
     SG1 = settings.value("SOIL/optionSG1").toInt();
     SG2 = settings.value("SOIL/optionSG2").toInt();
     optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
+    optionSGAverage = settings.value("SOIL/optionSGAverage").toInt();
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
-    optionUseBD = settings.value("SOIL/optionUseBD").toInt();
+    optionUseBD = 1;//settings.value("SOIL/optionUseBD").toInt();
     //optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
     optionUseCorrOM = settings.value("SOIL/optionUseCorrOM ").toInt();
     corrOM = settings.value("SOIL/corrOM").toDouble();
@@ -232,9 +243,12 @@ void MainWindow::readValuesfromUI()
     BaseDamsName = lineEdit_Dams->text();
     optionUserOutlets = radioButton_OutletMultiple->isChecked() ? 1 : 0;
     chWidth = spin_chWidth->value();
+    chWidthS = spin_chWidthS->value();
     chB = spin_chB->value();
     chDepth = spin_chDepth->value();
+    chDepthS = spin_chDepthS->value();
     chC = spin_chC->value();
+    chN = spin_chN->value();
     chBaseflow = spin_chBaseflow->value();
     OutletstableName = lineEdit_outletsTable->text();
     WatershedsName = lineEdit_userWatersheds->text();
@@ -242,15 +256,17 @@ void MainWindow::readValuesfromUI()
     optionLULC = 1;//checkBox_LULC->isChecked() ? 1 : 0;
     LULCmapName = lineEdit_LULCMap->text();
     LULCtableName = lineEdit_LULCTable->text();
-    //LULCNames = lineEdit_LULCNames->text();
+    NDVImapName = lineEdit_NDVIMap->text();
+    optionUseNDVI = checkBox_useNDVI->isChecked() ? 1 : 0;
 
     optionInfil = 1;//checkBox_Infil->isChecked() ? 1 : 0;
     optionSG = checkBox_Soilgrids->isChecked() ? 1 : 0;
     SG1 = comboBox_SGlayer1->currentIndex();
     SG2 = comboBox_SGlayer2->currentIndex();
     optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
+    optionSGAverage = checkBox_SGAverage->isChecked() ? 1 : 0;
     optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
-    optionUseBD = checkBox_userefBD->isChecked() ? 1 : 0;
+    optionUseBD = 1; //checkBox_userefBD->isChecked() ? 1 : 0;
    // optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
     optionUseCorrOM  = checkBox_useCorrOM->isChecked() ? 1 : 0;
     corrOM = spin_corrOM->value();
@@ -317,9 +333,12 @@ void MainWindow::writeValuestoUI()
     radioButton_OutletSIngle->setChecked(optionUserOutlets == 0);
     radioButton_OutletMultiple->setChecked(optionUserOutlets > 0);
     spin_chWidth->setValue(chWidth);
+    spin_chWidthS->setValue(chWidthS);
     spin_chB->setValue(chB);
     spin_chDepth->setValue(chDepth);
+    spin_chDepthS->setValue(chDepthS);
     spin_chC->setValue(chC);
+    spin_chN->setValue(chN);
     spin_chBaseflow->setValue(chBaseflow);
     lineEdit_outletsTable->setText(OutletstableName);
     lineEdit_userWatersheds->setText(WatershedsName);
@@ -327,15 +346,17 @@ void MainWindow::writeValuestoUI()
     //checkBox_LULC->setChecked(optionLULC > 0);
     lineEdit_LULCMap->setText(LULCmapName);
     lineEdit_LULCTable->setText(LULCtableName);
-    //lineEdit_LULCNames->setText(LULCNames);
+    lineEdit_NDVIMap->setText(NDVImapName);
+    checkBox_useNDVI->setChecked(optionUseNDVI > 0);
 
     //checkBox_Infil->setChecked(optionInfil > 0);
     checkBox_Soilgrids->setChecked(optionSG > 0);
     comboBox_SGlayer1->setCurrentIndex(SG1);
     comboBox_SGlayer2->setCurrentIndex(SG2);
     checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
+    checkBox_SGAverage->setChecked(optionSGAverage > 0);
     checkBox_noGravel->setChecked(optionNoGravel > 0);
-    checkBox_userefBD->setChecked(optionUseBD > 0);
+    //checkBox_userefBD->setChecked(optionUseBD > 0);
     //checkBox_userefBD2->setChecked(optionUseBD2 > 0);
     checkBox_useCorrOM->setChecked(optionUseCorrOM > 0);
     spin_corrOM->setValue(corrOM);
