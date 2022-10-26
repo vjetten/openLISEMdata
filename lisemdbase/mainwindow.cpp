@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
 
     tabWidgetOptions->setCurrentIndex(0);
-    tabWidgetOptions->removeTab(4);
+    tabWidgetOptions->removeTab(5);
 
     QFont codeFont("Consolas", 9, QFont::Normal);
     tableViewLULC->setFont(codeFont);
@@ -59,6 +59,11 @@ MainWindow::MainWindow(QWidget *parent)
     findDPIscale();
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
+
+//    QSplitter *splitter = new QSplitter(tabWidgetOptions);
+//   // splitter->addWidget(tabWidgetOptions);
+//    splitter->addWidget(buttonWidget);
+//    splitter->addWidget(resultsWidget);
 }
 
 MainWindow::~MainWindow()

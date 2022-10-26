@@ -40,7 +40,6 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("BaseChannel", BaseChannelName);
     settings.setValue("BaseOutlets", BaseOutletsName);
     settings.setValue("BaseOutpoints",  BaseOutpointsName);
-    settings.setValue("BaseCulverts",  BaseCulvertsName);
 
     settings.setValue("DEM/optionCatchments", QString::number(optionCatchments));
     settings.setValue("DEM/optionDEM","1");// QString::number(optionDEM));
@@ -48,6 +47,8 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("DEM/optionFillDEM", QString::number(optionFillDEM));
     settings.setValue("DEM/DEMfill", QString::number(DEMfill, 'f', 2));
 
+    settings.setValue("CHANNEL/BaseCulverts",  BaseCulvertsName);
+    settings.setValue("CHANNEL/optionUseCulverts", QString::number(optionUseCulverts));
     settings.setValue("CHANNEL/optionChannels", "1");//QString::number(optionChannels));
     settings.setValue("CHANNEL/optionPruneBranch", QString::number(optionPruneBranch));
     settings.setValue("CHANNEL/optionIncludeDams", QString::number(optionIncludeDams));
@@ -137,7 +138,6 @@ void MainWindow::getIni(QString name)
     BaseChannelName = settings.value("BaseChannel").toString();
     BaseOutletsName = settings.value("BaseOutlets").toString();
     BaseOutpointsName = settings.value("BaseOutpoints").toString();
-    BaseCulvertsName = settings.value("BaseCulverts").toString();
 
     optionCatchments = settings.value("DEM/optionCatchments").toInt();
     //optionDEM = settings.value("DEM/optionDEM").toInt();
@@ -145,6 +145,8 @@ void MainWindow::getIni(QString name)
     optionFillDEM = settings.value("DEM/optionFillDEM").toInt();
     DEMfill = settings.value("DEM/DEMfill").toDouble();
 
+    BaseCulvertsName = settings.value("CHANNEL/BaseCulverts").toString();
+    optionUseCulverts = settings.value("CHANNEL/optionUseCulverts").toInt();
     //optionChannels = settings.value("CHANNEL/optionChannels").toInt();
     optionPruneBranch = settings.value("CHANNEL/optionPruneBranch").toInt();
     optionIncludeDams = settings.value("CHANNEL/optionIncludeDams").toInt();
@@ -231,12 +233,13 @@ void MainWindow::readValuesfromUI()
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();    
     BaseOutpointsName = lineEdit_userOutpoints->text();
-    BaseCulvertsName = lineEdit_userCulverts->text();
 
     optionDEM = 1;//checkBox_DEM->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
     DEMfill = spin_DEMfill->value();
 
+    BaseCulvertsName = lineEdit_userCulverts->text();
+    optionUseCulverts = checkBox_useCulverts->isChecked() ? 1 : 0;
     optionChannels = 1;//checkBox_Channels->isChecked() ? 1 : 0;
     optionPruneBranch = 1; //checkBox_pruneBranch->isChecked() ? 1 : 0;
     optionIncludeDams = checkBox_createDams->isChecked() ? 1 : 0;
@@ -322,6 +325,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_userOutlets->setText(BaseOutletsName);
     lineEdit_userOutpoints->setText(BaseOutpointsName);
     lineEdit_userCulverts->setText(BaseCulvertsName);
+    checkBox_useCulverts->setChecked(optionUseCulverts > 0);
 
     checkBox_correctDEM->setChecked(optionFillDEM > 0);
     spin_DEMfill->setValue(DEMfill);

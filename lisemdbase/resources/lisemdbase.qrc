@@ -49,6 +49,7 @@
         <file>help3.html</file>
         <file>help4.html</file>
         <file>help5.html</file>
+        <file>2X/house.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

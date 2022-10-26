@@ -7,7 +7,7 @@
 
 #include "ui_mainwindow.h"
 
-#define WarningMsg(s) QMessageBox::warning(this,"NutShell WARNING",QString(s),QMessageBox::Yes)
+#define WarningMsg(s) QMessageBox::warning(this,"LISEM DBASE generator WARNING",QString(s),QMessageBox::Yes)
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -90,6 +90,7 @@ public:
     int optionUserOutlets;
     int optionPruneBranch;
     int optionIncludeDams;
+    int optionUseCulverts;
     int optionChannelsNoEros;
     int optionGaugeGPM;
     int optionUseNDVI;
