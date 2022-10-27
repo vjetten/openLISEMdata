@@ -106,7 +106,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 3.7 - 221023)</string>
+       <string>openLISEM database generator (version 3.8 - 221027)</string>
       </property>
      </widget>
     </item>
@@ -139,17 +139,32 @@
          <property name="verticalSpacing">
           <number>2</number>
          </property>
-         <item row="1" column="5">
-          <widget class="QToolButton" name="toolButton_saveas">
-           <property name="toolTip">
-            <string>Save as: save interface options to a new name</string>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="combo_iniName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_23">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="text">
-            <string>...</string>
+            <string>LISEMDbase ini file list</string>
            </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/filesaveas2X.png</normaloff>:/2X/filesaveas2X.png</iconset>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -169,61 +184,19 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="3">
-          <widget class="QToolButton" name="toolButton_openIni">
-           <property name="toolTip">
-            <string>Open a file with interface options</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="QToolButton" name="toolButton_script">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label">
            <property name="font">
             <font>
-             <pointsize>7</pointsize>
+             <pointsize>9</pointsize>
              <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>...</string>
+            <string>Conda Environment</string>
            </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QToolButton" name="toolButton_SaveIni">
-           <property name="toolTip">
-            <string>Save interface options to ini file</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="combo_iniName">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -243,19 +216,31 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
+         <item row="1" column="3">
+          <widget class="QToolButton" name="toolButton_openIni">
+           <property name="toolTip">
+            <string>Open a file with interface options</string>
            </property>
            <property name="text">
-            <string>Conda Environment</string>
+            <string>...</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="5">
+          <widget class="QToolButton" name="toolButton_saveas">
+           <property name="toolTip">
+            <string>Save as: save interface options to a new name</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/filesaveas2X.png</normaloff>:/2X/filesaveas2X.png</iconset>
            </property>
           </widget>
          </item>
@@ -278,19 +263,34 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_23">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item row="1" column="4">
+          <widget class="QToolButton" name="toolButton_SaveIni">
+           <property name="toolTip">
+            <string>Save interface options to ini file</string>
            </property>
            <property name="text">
-            <string>LISEMDbase ini file list</string>
+            <string>...</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QToolButton" name="toolButton_script">
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
            </property>
           </widget>
          </item>
@@ -535,7 +535,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>4</number>
          </property>
          <property name="iconSize">
           <size>
@@ -608,7 +608,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-50</y>
+                <y>0</y>
                 <width>1099</width>
                 <height>741</height>
                </rect>
@@ -1952,10 +1952,17 @@
             </widget>
            </item>
            <item row="3" column="2">
-            <widget class="QLineEdit" name="lineEdit_NDVIMap"/>
+            <widget class="QLineEdit" name="lineEdit_NDVIMap">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
            <item row="3" column="3">
             <widget class="QToolButton" name="toolButton_NDVIMap">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>...</string>
              </property>
@@ -2730,14 +2737,14 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-263</y>
                 <width>1099</width>
                 <height>750</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_20">
                <item row="5" column="0" colspan="4">
-                <widget class="QGroupBox" name="groupBox">
+                <widget class="QGroupBox" name="groupBox_ERAdata">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -4608,12 +4615,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>218</x>
-     <y>483</y>
+     <x>287</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
-     <x>361</x>
-     <y>486</y>
+     <x>468</x>
+     <y>545</y>
     </hint>
    </hints>
   </connection>
@@ -4624,12 +4631,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
-     <y>511</y>
+     <x>306</x>
+     <y>572</y>
     </hint>
     <hint type="destinationlabel">
-     <x>350</x>
-     <y>510</y>
+     <x>468</x>
+     <y>573</y>
     </hint>
    </hints>
   </connection>
@@ -4640,12 +4647,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>175</x>
-     <y>476</y>
+     <x>244</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
-     <x>495</x>
-     <y>486</y>
+     <x>503</x>
+     <y>545</y>
     </hint>
    </hints>
   </connection>
@@ -4656,12 +4663,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>191</x>
-     <y>510</y>
+     <x>260</x>
+     <y>572</y>
     </hint>
     <hint type="destinationlabel">
-     <x>493</x>
-     <y>515</y>
+     <x>503</x>
+     <y>573</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_useNDVI</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit_NDVIMap</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>361</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>355</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_useNDVI</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>toolButton_NDVIMap</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>357</y>
     </hint>
    </hints>
   </connection>

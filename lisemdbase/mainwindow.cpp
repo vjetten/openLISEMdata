@@ -57,6 +57,9 @@ MainWindow::MainWindow(QWidget *parent)
     text_out->setFont(codeFont);
 
     findDPIscale();
+
+    groupBox_dailyraindata->setVisible(false);
+    groupBox_ERAdata->setVisible(false);
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
 
