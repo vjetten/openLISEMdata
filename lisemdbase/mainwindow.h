@@ -37,6 +37,9 @@ public:
     QString LULCtableName;
     QString LULCNNtableName;
     QString NDVImapName;
+    QString roadsSHPName;
+    QString buildingsSHPName;
+    QString drummapName;
 
     QString RainScriptFileName;
     QString IDMScriptFileName;
@@ -81,6 +84,7 @@ public:
     int optionInfil;
     int optionErosion;
     int optionD50;
+    int optionSplash;
     int optionUseBD;
     int optionUseBD2;
     int optionUseCorrOM;
@@ -94,6 +98,8 @@ public:
     int optionChannelsNoEros;
     int optionGaugeGPM;
     int optionUseNDVI;
+    int optionUseInfrastructure;
+    int optionSpLash;
     double chB;
     double chC;
     double chWidth;
@@ -105,6 +111,7 @@ public:
     double refRootzone;
     double refMaxSoildepth;
     double corrOM;
+    double roadWidth;
     bool runGPMscript;
     bool runIDMscript;
     bool runOptionsscript;
@@ -281,6 +288,16 @@ private slots:
     void on_toolButton_deleteIni_clicked();
 
     void on_toolButton_NDVIMap_clicked();
+
+    void on_toolButton_buildingsSHP_clicked();
+
+    void on_toolButton_drumMap_clicked();
+
+    void on_toolButton_roadsSHP_clicked();
+
+    void on_toolButton_resetInfra_clicked();
+
+    void on_toolButton_help6_clicked();
 
 private:
     Ui::MainWindow *ui;

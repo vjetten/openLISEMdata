@@ -93,8 +93,15 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/initmoist", QString::number(initmoist, 'f', 2));
 
     settings.setValue("EROSION/optionErosion", QString::number(optionErosion));
+    settings.setValue("EROSION/optionSplash", QString::number(optionSplash));
     settings.setValue("EROSION/optionD50", QString::number(optionD50));
     settings.setValue("EROSION/optionChannelsNoEros", QString::number(optionChannelsNoEros));
+
+    settings.setValue("INFRA/optionUseInfrastructure", QString::number(optionUseInfrastructure));
+    settings.setValue("INFRA/buildingsSHPName", buildingsSHPName);
+    settings.setValue("INFRA/drumMap", drummapName);
+    settings.setValue("INFRA/roadsSHPName", roadsSHPName);
+    settings.setValue("INFRA/roadWidth", QString::number(roadWidth, 'f', 1));
 
     settings.setValue("RAINFALL/RainScript", RainScriptFileName);    
     settings.setValue("RAINFALL/RainRefNameDEM", RainRefNameDEM);
@@ -184,7 +191,6 @@ void MainWindow::getIni(QString name)
     corrOM = settings.value("SOIL/corrOM").toDouble();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
-
     //refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
     refRootzone = settings.value("SOIL/refRootzone").toDouble();
     refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
@@ -192,7 +198,14 @@ void MainWindow::getIni(QString name)
 
     optionErosion = settings.value("EROSION/optionErosion").toInt();
     optionD50 = settings.value("EROSION/optionD50").toInt();
+    optionSplash = settings.value("EROSION/optionSplash").toInt();
     optionChannelsNoEros = settings.value("EROSION/optionChannelsNoEros").toInt();
+
+    optionUseInfrastructure = settings.value("INFRA/optionUseInfrastructure").toInt();
+    buildingsSHPName = settings.value("INFRA/buildingsSHPName").toString();
+    drummapName = settings.value("INFRA/drumMap").toString();
+    roadsSHPName = settings.value("INFRA/roadsSHPName").toString();
+    roadWidth = settings.value("INFRA/roadWidth").toDouble();
 
     RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
     RainRefNameDEM = settings.value("RAINFALL/RainRefNameDEM").toString();
@@ -282,7 +295,14 @@ void MainWindow::readValuesfromUI()
 
     optionErosion = 1;//checkBox_erosion->isChecked() ? 1 : 0;
     optionD50 = checkBox_D50->isChecked() ? 1 : 0;
+    optionSplash = spin_Splash->value();
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
+
+    optionUseInfrastructure = checkBox_UseInfrastructure->isChecked() ? 1 : 0;
+    buildingsSHPName = lineEdit_buildingsSHP->text();
+    drummapName = lineEdit_drumMap->text();
+    roadsSHPName = lineEdit_roadsSHP->text();
+    roadWidth = spin_roadWidth->value();
 
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
@@ -373,7 +393,9 @@ void MainWindow::writeValuestoUI()
 
    // checkBox_erosion->setChecked(optionErosion > 0);
     checkBox_D50->setChecked(optionD50 > 0);
+    spin_Splash->setValue(optionSplash);
     checkBox_ChannelsNoErosion->setChecked(optionChannelsNoEros > 0);
+    spin_Splash->setValue(1);
 
     if (optionUserOutlets == 0) {
         on_radioButton_OutletMultiple_toggled(false);
@@ -382,6 +404,12 @@ void MainWindow::writeValuestoUI()
         on_radioButton_OutletMultiple_toggled(true);
         on_radioButton_OutletSIngle_toggled(false);
     }    
+
+    checkBox_UseInfrastructure->setChecked(optionUseInfrastructure > 0);
+    lineEdit_buildingsSHP->setText(buildingsSHPName);
+    lineEdit_drumMap->setText(drummapName);
+    lineEdit_roadsSHP->setText(roadsSHPName);
+    spin_roadWidth->setValue(roadWidth);
 
     lineEdit_GPMpy->setText(RainScriptFileName);
     lineEdit_GPMrefmap->setText(RainRefNameDEM);

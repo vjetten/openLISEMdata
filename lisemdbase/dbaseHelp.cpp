@@ -27,6 +27,11 @@ void MainWindow::on_toolButton_help1_clicked()
     ShowHelp(1);
 }
 
+void MainWindow::on_toolButton_help6_clicked()
+{
+    ShowHelp(6);
+}
+
 void MainWindow::ShowHelp(int i)
 {
     QString filename;
@@ -35,6 +40,7 @@ void MainWindow::ShowHelp(int i)
     if (i == 3) filename=":/help3.html";
     if (i == 4) filename=":/help4.html";
     if (i == 5) filename=":/help5.html";
+    //if (i == 6) filename=":/help6.html";
     QFile file(filename);
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);

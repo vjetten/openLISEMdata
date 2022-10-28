@@ -63,10 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
 
-//    QSplitter *splitter = new QSplitter(tabWidgetOptions);
-//   // splitter->addWidget(tabWidgetOptions);
-//    splitter->addWidget(buttonWidget);
-//    splitter->addWidget(resultsWidget);
 }
 
 MainWindow::~MainWindow()
@@ -381,6 +377,12 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     checkBox_ChannelsNoErosion->setChecked(true);
 }
 
+
+void MainWindow::on_toolButton_resetInfra_clicked()
+{
+
+}
+
 void MainWindow::on_toolButton_CheckAll_clicked()
 {
     spin_initmoist->setValue(0.0);
@@ -599,15 +601,9 @@ void MainWindow::on_toolButton_stopERA_clicked()
     text_out->appendPlainText("User interrupt");
 }
 
-
-
-
 void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
-
-
-
 
 

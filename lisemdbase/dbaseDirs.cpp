@@ -233,9 +233,49 @@ void MainWindow::on_toolButton_NDVIMap_clicked()
 
     QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
     NDVImapName = getFileorDir(tmp,"Select NDVI map", filters, 2);
-    if (!LULCmapName.isEmpty())
+    if (!NDVImapName.isEmpty())
         lineEdit_NDVIMap->setText(NDVImapName);
 }
+
+//==============================================================================
+void MainWindow::on_toolButton_buildingsSHP_clicked()
+{
+    QString tmp = lineEdit_buildingsSHP->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = ProjectDirName;
+
+    QStringList filters({"ESRI Shape file (*.shp)","Any files (*)"});
+    buildingsSHPName = getFileorDir(tmp,"Select Buildings Shape file", filters, 1);
+    if (!buildingsSHPName.isEmpty())
+        lineEdit_buildingsSHP->setText(buildingsSHPName);
+}
+
+
+void MainWindow::on_toolButton_drumMap_clicked()
+{
+    QString tmp = lineEdit_drumMap->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = ProjectDirName;
+
+    QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
+    drummapName = getFileorDir(tmp,"Select raindrum map", filters, 1);
+    if (!drummapName.isEmpty())
+        lineEdit_drumMap->setText(drummapName);
+}
+
+
+void MainWindow::on_toolButton_roadsSHP_clicked()
+{
+    QString tmp = lineEdit_roadsSHP->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = ProjectDirName;
+
+    QStringList filters({"ESRI Shape file (*.shp)","Any files (*)"});
+    roadsSHPName = getFileorDir(tmp,"Select Road system Shape file", filters, 1);
+    if (!roadsSHPName.isEmpty())
+        lineEdit_roadsSHP->setText(roadsSHPName);
+}
+
 
 //==============================================================================
 void MainWindow::on_toolButton_GPMpy_clicked()

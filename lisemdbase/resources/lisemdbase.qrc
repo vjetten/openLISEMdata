@@ -50,6 +50,15 @@
         <file>help4.html</file>
         <file>help5.html</file>
         <file>2X/house.png</file>
+        <file>../../lisChannels.py</file>
+        <file>../../lisDams.py</file>
+        <file>../../lisDemDerivatives.py</file>
+        <file>../../lisemDBASEgenerator.py</file>
+        <file>../../lisErosion.py</file>
+        <file>../../lisGlobals.py</file>
+        <file>../../lisInfrastructure.py</file>
+        <file>../../lisSoils.py</file>
+        <file>../../lisSurface.py</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
