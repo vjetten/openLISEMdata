@@ -139,17 +139,19 @@
          <property name="verticalSpacing">
           <number>2</number>
          </property>
-         <item row="1" column="3">
-          <widget class="QToolButton" name="toolButton_openIni">
-           <property name="toolTip">
-            <string>Open a file with interface options</string>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
            </property>
            <property name="text">
-            <string>...</string>
+            <string>Conda Environment</string>
            </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -169,20 +171,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="6">
-          <widget class="QToolButton" name="toolButton_deleteIni">
-           <property name="toolTip">
-            <string>Delte from list</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/File-Delete-icon.png</normaloff>:/2X/File-Delete-icon.png</iconset>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_2">
            <property name="font">
@@ -199,19 +187,16 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_23">
+         <item row="1" column="1">
+          <widget class="QComboBox" name="combo_iniName">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="text">
-            <string>LISEMDbase ini file list</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="editable">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -251,32 +236,17 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
+         <item row="1" column="4">
+          <widget class="QToolButton" name="toolButton_SaveIni">
+           <property name="toolTip">
+            <string>Save interface options to ini file</string>
            </property>
            <property name="text">
-            <string>Conda Environment</string>
+            <string>...</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="combo_iniName">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
            </property>
           </widget>
          </item>
@@ -294,17 +264,47 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="4">
-          <widget class="QToolButton" name="toolButton_SaveIni">
+         <item row="1" column="6">
+          <widget class="QToolButton" name="toolButton_deleteIni">
            <property name="toolTip">
-            <string>Save interface options to ini file</string>
+            <string>Delte from list</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
            <property name="icon">
             <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
+             <normaloff>:/2X/File-Delete-icon.png</normaloff>:/2X/File-Delete-icon.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QToolButton" name="toolButton_openIni">
+           <property name="toolTip">
+            <string>Open a file with interface options</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_23">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>LISEMDbase ini file list</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -535,7 +535,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>4</number>
          </property>
          <property name="iconSize">
           <size>
@@ -1983,28 +1983,6 @@
            <string/>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_17">
-           <item row="0" column="4">
-            <widget class="QToolButton" name="toolButton_help4">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/question-mark-button2x.png</normaloff>:/2X/question-mark-button2x.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QToolButton" name="toolButton_resetsoil">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="2" rowspan="3">
             <widget class="QScrollArea" name="scrollArea_2">
              <property name="widgetResizable">
@@ -2015,69 +1993,16 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1099</width>
-                <height>535</height>
+                <width>1120</width>
+                <height>401</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_25">
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_34">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item row="3" column="1">
+                <widget class="QCheckBox" name="checkBox_SGInterpolation">
+                 <property name="enabled">
+                  <bool>true</bool>
                  </property>
-                 <property name="palette">
-                  <palette>
-                   <active>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>0</red>
-                       <green>116</green>
-                       <blue>170</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </active>
-                   <inactive>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>0</red>
-                       <green>116</green>
-                       <blue>170</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </inactive>
-                   <disabled>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>120</red>
-                       <green>120</green>
-                       <blue>120</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </disabled>
-                  </palette>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>4.   Infiltration parameters from pedotransfer functions</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="QCheckBox" name="checkBox_SGAverage">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2085,20 +2010,24 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Window average with 250m size to smooth map</string>
+                  <string>Inverse distance interpolation of missing values </string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_85">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item row="4" column="1">
+                <widget class="QLabel" name="label_84">
+                 <property name="font">
+                  <font>
+                   <pointsize>9</pointsize>
+                   <italic>true</italic>
+                   <bold>true</bold>
+                  </font>
                  </property>
                  <property name="text">
-                  <string/>
+                  <string>General soil parameters</string>
                  </property>
                 </widget>
                </item>
@@ -2336,294 +2265,6 @@
                  </layout>
                 </widget>
                </item>
-               <item row="8" column="3">
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>227</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="9" column="0" colspan="3">
-                <widget class="QLabel" name="label_39">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="palette">
-                  <palette>
-                   <active>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>0</red>
-                       <green>116</green>
-                       <blue>170</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </active>
-                   <inactive>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>0</red>
-                       <green>116</green>
-                       <blue>170</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </inactive>
-                   <disabled>
-                    <colorrole role="WindowText">
-                     <brush brushstyle="SolidPattern">
-                      <color alpha="255">
-                       <red>120</red>
-                       <green>120</green>
-                       <blue>120</blue>
-                      </color>
-                     </brush>
-                    </colorrole>
-                   </disabled>
-                  </palette>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>5.   Erosion parameters from pedotransfer functions</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0" colspan="3">
-                <widget class="QWidget" name="erosionoptions" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_26">
-                  <property name="leftMargin">
-                   <number>12</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>4</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>8</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="0" colspan="2">
-                   <widget class="QCheckBox" name="checkBox_D50">
-                    <property name="font">
-                     <font>
-                      <pointsize>9</pointsize>
-                      <bold>false</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>estimate D50 and D90 texture quantiles from statistical fit (warning: slow)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QSpinBox" name="spin_Splash">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <number>2</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0" colspan="2">
-                   <widget class="QCheckBox" name="checkBox_ChannelsNoErosion">
-                    <property name="font">
-                     <font>
-                      <pointsize>9</pointsize>
-                      <bold>false</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Channels are non-erodible</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLabel" name="label_87">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>1 - soil strength for Splash using LISEM (aggregate stability); 2 - or acccording to EURSEM (erodibility)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <spacer name="horizontalSpacer_10">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="7" column="0" rowspan="2">
-                <widget class="QLabel" name="label_86">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1" rowspan="2" colspan="2">
-                <widget class="QFrame" name="infiloptions">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::Box</enum>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_4">
-                  <property name="leftMargin">
-                   <number>8</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>4</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>8</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>4</number>
-                  </property>
-                  <property name="horizontalSpacing">
-                   <number>8</number>
-                  </property>
-                  <property name="verticalSpacing">
-                   <number>4</number>
-                  </property>
-                  <item row="4" column="2">
-                   <widget class="QDoubleSpinBox" name="spin_corrOM">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimum">
-                     <double>-100.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.010000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="8" column="0" colspan="5">
-                   <widget class="QCheckBox" name="checkBox_noGravel">
-                    <property name="text">
-                     <string>Decrease gravel effect in Ksat and porosity estimates (ksat will be higher)</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0" colspan="2">
-                   <widget class="QCheckBox" name="checkBox_useCorrOM">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>Corection factor organic matter (%)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="3" colspan="2">
-                   <widget class="QLabel" name="label_71">
-                    <property name="text">
-                     <string>(general value added to organic matter of top soil, can be negative)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="0" colspan="5">
-                   <widget class="QCheckBox" name="checkBox_useLUdensity">
-                    <property name="font">
-                     <font>
-                      <pointsize>9</pointsize>
-                      <bold>false</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Include density factor per LULC type, specified in the landuse table (0.9 loose - 1.0 normal - 1.1 compacted soil) </string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="1" colspan="2">
-                <widget class="QCheckBox" name="checkBox_Soilgrids">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Download base data from the SOILGRIDS server (needs to be done only once, maps are stored in the base folder)</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="1" colspan="2">
                 <widget class="QWidget" name="SGoptions" native="true">
                  <property name="enabled">
@@ -2731,11 +2372,77 @@
                  </layout>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QCheckBox" name="checkBox_SGInterpolation">
-                 <property name="enabled">
-                  <bool>true</bool>
+               <item row="0" column="0" colspan="3">
+                <widget class="QLabel" name="label_34">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
+                 <property name="palette">
+                  <palette>
+                   <active>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>0</red>
+                       <green>116</green>
+                       <blue>170</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </active>
+                   <inactive>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>0</red>
+                       <green>116</green>
+                       <blue>170</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </inactive>
+                   <disabled>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>120</red>
+                       <green>120</green>
+                       <blue>120</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </disabled>
+                  </palette>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>4.   Infiltration parameters from pedotransfer functions</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_85">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QCheckBox" name="checkBox_SGAverage">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2743,24 +2450,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Inverse distance interpolation of missing values </string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLabel" name="label_84">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <italic>true</italic>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>General soil parameters</string>
+                  <string>Window average with 250m size to smooth map</string>
                  </property>
                 </widget>
                </item>
@@ -2778,8 +2468,397 @@
                  </property>
                 </widget>
                </item>
+               <item row="7" column="0" rowspan="2">
+                <widget class="QLabel" name="label_86">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1" rowspan="2" colspan="2">
+                <widget class="QFrame" name="infiloptions">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <property name="leftMargin">
+                   <number>8</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>4</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>8</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>4</number>
+                  </property>
+                  <property name="horizontalSpacing">
+                   <number>8</number>
+                  </property>
+                  <property name="verticalSpacing">
+                   <number>4</number>
+                  </property>
+                  <item row="4" column="2">
+                   <widget class="QDoubleSpinBox" name="spin_corrOM">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimum">
+                     <double>-100.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.010000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0" colspan="5">
+                   <widget class="QCheckBox" name="checkBox_noGravel">
+                    <property name="text">
+                     <string>Decrease gravel effect in Ksat and porosity estimates (ksat will be higher)</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="2">
+                   <widget class="QCheckBox" name="checkBox_useCorrOM">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Corection factor organic matter (%)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="3" colspan="2">
+                   <widget class="QLabel" name="label_71">
+                    <property name="text">
+                     <string>(general value added to organic matter of top soil, can be negative)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0" colspan="5">
+                   <widget class="QCheckBox" name="checkBox_useLUdensity">
+                    <property name="font">
+                     <font>
+                      <pointsize>9</pointsize>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Include density factor per LULC type, specified in the landuse table (0.9 loose - 1.0 normal - 1.1 compacted soil) </string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="8" column="3">
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>227</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QCheckBox" name="checkBox_Soilgrids">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>9</pointsize>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Download base data from the SOILGRIDS server (needs to be done only once, maps are stored in the base folder)</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QToolButton" name="toolButton_resetsoil">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QToolButton" name="toolButton_help4">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/question-mark-button2x.png</normaloff>:/2X/question-mark-button2x.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_7">
+          <attribute name="icon">
+           <iconset resource="resources/lisemdbase.qrc">
+            <normaloff>:/2X/eros1bw.png</normaloff>:/2X/eros1bw.png</iconset>
+          </attribute>
+          <attribute name="title">
+           <string/>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="1" column="0" colspan="2">
+            <widget class="QCheckBox" name="checkBox">
+             <property name="text">
+              <string>Include erosion maps</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_39">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>116</green>
+                   <blue>170</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>116</green>
+                   <blue>170</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>5.   Erosion parameters from pedotransfer functions</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_88">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QFrame" name="erosionoptions">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Box</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_26">
+              <property name="leftMargin">
+               <number>12</number>
+              </property>
+              <property name="topMargin">
+               <number>4</number>
+              </property>
+              <property name="rightMargin">
+               <number>8</number>
+              </property>
+              <property name="bottomMargin">
+               <number>4</number>
+              </property>
+              <item row="2" column="3">
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_87">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>1 - soil strength for Splash using LISEM (aggregate stability); 2 - or acccording to EURSEM (erodibility)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QSpinBox" name="spin_Splash">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>2</number>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QCheckBox" name="checkBox_D50">
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>estimate D50 and D90 texture quantiles from statistical fit (warning: slow)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QCheckBox" name="checkBox_ChannelsNoErosion">
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Channels are non-erodible</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QToolButton" name="toolButton_resetEros">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="3">
+            <widget class="QToolButton" name="toolButton_help7">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/question-mark-button2x.png</normaloff>:/2X/question-mark-button2x.png</iconset>
+             </property>
             </widget>
            </item>
           </layout>
@@ -2874,7 +2953,7 @@
               </font>
              </property>
              <property name="text">
-              <string>6. Buildings and infrastructure</string>
+              <string>7. Buildings and infrastructure</string>
              </property>
             </widget>
            </item>
@@ -2888,7 +2967,7 @@
            <item row="1" column="0" colspan="2">
             <widget class="QCheckBox" name="checkBox_UseInfrastructure">
              <property name="text">
-              <string>Include Contsruction of raster maps for buildings and infrastructure</string>
+              <string>Include rasterizing buildings and infrastructure</string>
              </property>
             </widget>
            </item>
@@ -2973,7 +3052,7 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QCheckBox" name="checkBox_2">
+               <widget class="QCheckBox" name="checkBox_useDrums">
                 <property name="text">
                  <string>rainwater drums </string>
                 </property>

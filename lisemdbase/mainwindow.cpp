@@ -362,25 +362,25 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     spin_Rootzone->setValue(0.6);
     spin_MaxSoildepth->setValue(5.0);
     spin_refBD->setValue(1350);
-    //spin_refBD2->setValue(1350);
     spin_initmoist->setValue(0);
 
     checkBox_SGInterpolation->setChecked(false);
     checkBox_SGAverage->setChecked(false);
     checkBox_noGravel->setChecked(true);
     checkBox_Soilgrids->setChecked(false);
-    //checkBox_userefBD->setChecked(true);
-    //checkBox_userefBD2->setChecked(true);
     checkBox_useLUdensity->setChecked(true);
-    //checkBox_erosion->setChecked(true);
+
+}
+
+void MainWindow::on_toolButton_resetEros_clicked()
+{
     checkBox_D50->setChecked(true);
     checkBox_ChannelsNoErosion->setChecked(true);
 }
 
-
 void MainWindow::on_toolButton_resetInfra_clicked()
 {
-
+    spin_roadWidth->setValue(6.0);
 }
 
 void MainWindow::on_toolButton_CheckAll_clicked()
@@ -605,5 +605,6 @@ void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
+
 
 

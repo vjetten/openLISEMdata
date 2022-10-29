@@ -100,6 +100,7 @@ public:
     int optionUseNDVI;
     int optionUseInfrastructure;
     int optionSpLash;
+    int optionUseDrums;
     double chB;
     double chC;
     double chWidth;
@@ -298,6 +299,8 @@ private slots:
     void on_toolButton_resetInfra_clicked();
 
     void on_toolButton_help6_clicked();
+
+    void on_toolButton_resetEros_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -100,6 +100,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("INFRA/optionUseInfrastructure", QString::number(optionUseInfrastructure));
     settings.setValue("INFRA/buildingsSHPName", buildingsSHPName);
     settings.setValue("INFRA/drumMap", drummapName);
+    settings.setValue("INFRA/optionUseDrums", QString::number(optionUseDrums));
     settings.setValue("INFRA/roadsSHPName", roadsSHPName);
     settings.setValue("INFRA/roadWidth", QString::number(roadWidth, 'f', 1));
 
@@ -203,6 +204,7 @@ void MainWindow::getIni(QString name)
 
     optionUseInfrastructure = settings.value("INFRA/optionUseInfrastructure").toInt();
     buildingsSHPName = settings.value("INFRA/buildingsSHPName").toString();
+    optionUseDrums = settings.value("INFRA/optionUseDrums").toInt();
     drummapName = settings.value("INFRA/drumMap").toString();
     roadsSHPName = settings.value("INFRA/roadsSHPName").toString();
     roadWidth = settings.value("INFRA/roadWidth").toDouble();
@@ -300,6 +302,7 @@ void MainWindow::readValuesfromUI()
 
     optionUseInfrastructure = checkBox_UseInfrastructure->isChecked() ? 1 : 0;
     buildingsSHPName = lineEdit_buildingsSHP->text();
+    optionUseDrums = checkBox_useDrums->isChecked() ? 1 : 0;
     drummapName = lineEdit_drumMap->text();
     roadsSHPName = lineEdit_roadsSHP->text();
     roadWidth = spin_roadWidth->value();
@@ -407,6 +410,7 @@ void MainWindow::writeValuestoUI()
 
     checkBox_UseInfrastructure->setChecked(optionUseInfrastructure > 0);
     lineEdit_buildingsSHP->setText(buildingsSHPName);
+    checkBox_useDrums->setChecked(optionUseDrums > 0);
     lineEdit_drumMap->setText(drummapName);
     lineEdit_roadsSHP->setText(roadsSHPName);
     spin_roadWidth->setValue(roadWidth);
