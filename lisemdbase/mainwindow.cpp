@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     comboBox_SGlayer2->addItems(sss);
     dailyA = 0.14;
     dailyB = -0.374;
-    day0 = 152;
-    dayn = 273;
+    day0 = 1;
+    dayn = 365;
     dt30min = 30;
     bufstart = false;
 
@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
 
     tabWidgetOptions->setCurrentIndex(0);
-    tabWidgetOptions->removeTab(5);
+    tabWidgetOptions->removeTab(6);
 
     QFont codeFont("Consolas", 9, QFont::Normal);
     tableViewLULC->setFont(codeFont);
@@ -335,12 +335,15 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     fillLULCTable();
     copyLULCTable();
 
-    ncol = 3;
+    ncol = 6;
     nrow = 0;
     modelOutlets = new QStandardItemModel( nrow, ncol, this );
-    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Channel \nwidth (m)"));
-    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Channel \nDepth (m)"));
-    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Channel \nBaseflow (m3/s)"));
+    modelOutlets->setHorizontalHeaderItem( 0, new QStandardItem("Outlet \nWidth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 1, new QStandardItem("Start \nwidth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 2, new QStandardItem("Outlet \nDepth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 3, new QStandardItem("Start \nDepth (m)"));
+    modelOutlets->setHorizontalHeaderItem( 4, new QStandardItem("Manning n (-)"));
+    modelOutlets->setHorizontalHeaderItem( 5, new QStandardItem("Baseflow (m3/s)"));
     tableViewOutlets->setModel(modelOutlets);
 
     fillOutletsTable();
@@ -381,6 +384,7 @@ void MainWindow::on_toolButton_resetEros_clicked()
 void MainWindow::on_toolButton_resetInfra_clicked()
 {
     spin_roadWidth->setValue(6.0);
+    checkBox_useDrums->setChecked(false);
 }
 
 void MainWindow::on_toolButton_CheckAll_clicked()
@@ -424,7 +428,6 @@ void MainWindow::on_checkBox_erosion_toggled(bool checked)
 {
     erosionoptions->setEnabled(checked);
 }
-
 
 void MainWindow::on_checkBox_createRainfall_clicked(bool checked)
 {
