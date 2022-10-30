@@ -41,6 +41,8 @@ public:
     QString buildingsSHPName;
     QString drummapName;
 
+    QString optionList;
+
     QString RainScriptFileName;
     QString IDMScriptFileName;
     QString ERAScriptFileName;
@@ -96,6 +98,7 @@ public:
     int optionIncludeDams;
     int optionUseCulverts;
     int optionChannelsNoEros;
+    int optionRain;
     int optionGaugeGPM;
     int optionUseNDVI;
     int optionUseInfrastructure;
@@ -112,7 +115,7 @@ public:
     double refRootzone;
     double refMaxSoildepth;
     double corrOM;
-    double roadWidth;
+    double roofStore;
     bool runGPMscript;
     bool runIDMscript;
     bool runOptionsscript;
@@ -232,8 +235,6 @@ private slots:
 
     void on_toolButton_userWatersheds_clicked();
 
-    void on_checkBox_createRainfall_clicked(bool checked);
-
     void on_toolButton_GPMpy_clicked();
 
     void on_toolButton_GPMin_clicked();
@@ -301,6 +302,9 @@ private slots:
     void on_toolButton_help6_clicked();
 
     void on_toolButton_resetEros_clicked();
+
+
+    void on_checkBox_Rain_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

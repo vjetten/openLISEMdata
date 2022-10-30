@@ -69,14 +69,14 @@ if __name__ == "__main__":
     
     # Channel dimensions and characteristics
     if lg.doProcessesChannels == 1:    
-        print('>>> Create channel maps', flush=True)
+        print('>>> Creating channel maps', flush=True)
         obj = lisChannels.ChannelMaps()
         staticModelCH = StaticFramework(obj)
         staticModelCH.run()       
 
     # surface variables related to LULC
     if lg.doProcessesLULC == 1:   
-        print('>>> Create surface and land use related maps', flush=True)
+        print('>>> Creating surface and land use related maps', flush=True)
         obj = lisSurface.SurfaceMaps()
         staticModelSURF = StaticFramework(obj)
         staticModelSURF.run()
@@ -85,9 +85,9 @@ if __name__ == "__main__":
     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
         print(">>> Downloading SOILGRIDS layers from web server ISRIC", flush=True)        
         for x in range(0,6):
-            lisSoils.GetSoilGridsLayer(lg.masknamemap_,lg.ESPG,lg.SG_names_[x],lg.optionSG1,1)
+            lisSoils.GetSoilGridsLayer(x, lg.optionSG1, 1)
         for x in range(0,6):
-            lisSoils.GetSoilGridsLayer(lg.masknamemap_,lg.ESPG,lg.SG_names_[x],lg.optionSG2,2)
+            lisSoils.GetSoilGridsLayer(x, lg.optionSG2, 2)
 
     if lg.doProcessesInfil == 1 and lg.doProcessesSGInterpolation == 1:
         print(">>> Inverse distance interpolation SOILGRIDS layers for missing values ", flush=True)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
             mapnr_ = x
             staticModel.run()        
             update_progress((x+7)/12)
-        update_progress(1)    
+        #update_progress(1)    
 
     
     if lg.doProcessesInfil == 1:
@@ -121,28 +121,24 @@ if __name__ == "__main__":
         obj = lisErosion.ErosionMaps()
         staticModel = StaticFramework(obj)
         staticModel.run()
-       
-    # adjust rivers for large dams
-    if lg.doProcessesDams == 1:
-        print('>>> Adjust maps for Dams', flush=True)
-        obj = lisDams.DamsinRivers()
-        staticModelDams = StaticFramework(obj)
-        staticModelDams.run()
-        
         
     # rasterize infrastructure and buildings shape files 
     if lg.doProcessesInfrastructure == 1 :
         print('>>> Rasterize shapefiles of buildings and roads', flush=True)
         obj = lisInfrastructure.InfrastructureMaps()        
         staticModelBuild = StaticFramework(obj) 
-        lg.ShapeName = lg.BaseDir+lg.buildingsSHPName
-        lg.ShapetoMapName = lg.housecovName #lg.MapsDir+"housecover.map"
-        lg.sizeFactor = 1.0
+        lg.shapeNr = 1
         staticModelBuild.run()
-        lg.ShapeName = lg.BaseDir+lg.roadsSHPName
-        lg.ShapetoMapName = lg.roadwidthName #lg.MapsDir+"roadwidt.map"
-        lg.sizeFactor = lg.roadWidth
+        lg.shapeNr = 2
         staticModelBuild.run()
-        
+               
+    # adjust rivers for large dams
+    if lg.doProcessesDams == 1:
+        print('>>> Adjust maps for Dams', flush=True)
+        obj = lisDams.DamsinRivers()
+        staticModelDams = StaticFramework(obj)
+        staticModelDams.run()
+      
+       
     print("Done")
 

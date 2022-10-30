@@ -42,12 +42,12 @@ void MainWindow::runModel()
     QStringList pythonCommandArguments;
 
     if (runOptionsscript) pythonCommandArguments << ScriptFileName;
-    else
-        if (runGPMscript) pythonCommandArguments << RainScriptFileName;
-        else
-            if (runIDMscript) pythonCommandArguments << IDMScriptFileName;
-            else
-                if (runERAscript) pythonCommandArguments << ERAScriptFileName;
+//    else
+//        if (runGPMscript) pythonCommandArguments << RainScriptFileName;
+//        else
+//            if (runIDMscript) pythonCommandArguments << IDMScriptFileName;
+//            else
+//                if (runERAscript) pythonCommandArguments << ERAScriptFileName;
 
 
     pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";

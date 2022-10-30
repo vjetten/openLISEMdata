@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
 
     tabWidgetOptions->setCurrentIndex(0);
-    tabWidgetOptions->removeTab(6);
+    tabWidgetOptions->removeTab(7);
 
     QFont codeFont("Consolas", 9, QFont::Normal);
     tableViewLULC->setFont(codeFont);
@@ -383,7 +383,7 @@ void MainWindow::on_toolButton_resetEros_clicked()
 
 void MainWindow::on_toolButton_resetInfra_clicked()
 {
-    spin_roadWidth->setValue(6.0);
+    spin_roofStore->setValue(10.0);
     checkBox_useDrums->setChecked(false);
 }
 
@@ -429,11 +429,14 @@ void MainWindow::on_checkBox_erosion_toggled(bool checked)
     erosionoptions->setEnabled(checked);
 }
 
-void MainWindow::on_checkBox_createRainfall_clicked(bool checked)
+
+void MainWindow::on_checkBox_Rain_clicked(bool checked)
 {
+    scrollArea_Rain->setEnabled(checked);
     groupBox_raindata->setEnabled(checked);
     groupBox_dailyraindata->setEnabled(checked);
 }
+
 
 void MainWindow::on_checkBox_createDams_clicked(bool checked)
 {
@@ -534,8 +537,8 @@ bool MainWindow::convertDailyPrecipitation()
 void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 {
     //toolButton_clear->setVisible(index < 3);
-    toolButton_stop->setVisible(index < 3);
-    pushButton_start->setVisible(index < 3);
+//    toolButton_stop->setVisible(index < 3);
+//    pushButton_start->setVisible(index < 3);
 }
 
 
@@ -608,6 +611,5 @@ void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
-
 
 

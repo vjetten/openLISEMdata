@@ -16,16 +16,18 @@ class InfrastructureMaps(StaticModel):
         StaticModel.__init__(self)
     def initial(self):
         mask = lg.mask_
+        sf = lg.shapeNr
+
+        ShapeName = ""
+        if sf == 1 :
+            ShapeName = lg.BaseDir+lg.buildingsSHPName
+        if sf == 2 :            
+            ShapeName = lg.BaseDir+lg.roadsSHPName
             
-        #shpname = lg.BaseDir+"gebouw_top10nl.shp"
-        #outname = lg.BaseDir+"housecover.map"
-        
-        shpname = lg.ShapeName
-        outname = lg.ShapetoMapName
         tifname = lg.BaseDir+"tempbuild.tif"
-        sf = lg.sizeFactor
-        
-        shape_vector = ogr.Open(shpname) #lg.shpName)
+        outnametif = lg.BaseDir+"rescale.tif"
+
+        shape_vector = ogr.Open(ShapeName) 
         shape_layer = shape_vector.GetLayer()
         
         #resolution of temp raster
@@ -47,16 +49,26 @@ class InfrastructureMaps(StaticModel):
         
         src = gdal.Open(tifname)
         #cutout and convert
-        dst = gdal.GetDriverByName('PCRaster').Create(outname, lg.nrCols, lg.nrRows, 1,
-                                    gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        # dst = gdal.GetDriverByName('PCRaster').Create(outname, lg.nrCols, lg.nrRows, 1,
+                                    # gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+        #PCRAster directly gives problems sometimes!
+        
+        dst = gdal.GetDriverByName('GTiff').Create(outnametif, lg.nrCols, lg.nrRows, 1, gdalconst.GDT_Float32)
         dst.SetGeoTransform( lg.maskgeotrans )
         dst.SetProjection( lg.maskproj )
         gdal.ReprojectImage(src, dst, lg.maskproj, lg.maskproj, gdalconst.GRA_Bilinear)
         dst = None
         src = None    
         
-        map_ = readmap(outname)
-        map_ = map_/mapmaximum(map_)*sf*mask
-        report(map_,outname)
+        map_ = readmap(outnametif)
+        map_ = map_/mapmaximum(map_)*mask
+        if sf == 1 :
+            report(map_,lg.housecovName)
+            roofstore = ifthenelse(map_ > 0, scalar(1), 0)*lg.mask_*lg.roofStore
+            report(roofstore,lg.roofstoreName)            
+        if sf == 2 :    
+            map_ = map_ * lg.dx
+            report(map_,lg.roadwidthName)
+
         
         

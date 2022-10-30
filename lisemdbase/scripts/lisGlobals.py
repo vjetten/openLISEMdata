@@ -54,6 +54,7 @@ def initialize():
     global maxSoildepth
     global useCorrOM
     global CorrOM_
+    global roofStore
     
     ### input maps ###
     global condaDir
@@ -78,7 +79,7 @@ def initialize():
     global roadsSHPName
     global buildingsSHPName
     global ShapetoMapName
-    global roadWidth
+    #global roadWidth
 
     global fillDEM
     global catchmentsize
@@ -250,7 +251,7 @@ def initialize():
     useCorrOM = 0
     CorrOM_ = 0.0
     sizeFactor = 1.0
-    roadWidth = 10.0
+    roofStore = 10.0
     optionSplash = 1
     
     ### input maps ###
@@ -362,12 +363,11 @@ def initialize():
     doProcessesInfrastructure = int(myvars["optionUseInfrastructure"])
     buildingsSHPName = myvars["buildingsSHPName"]
     roadsSHPName = myvars["roadsSHPName"]
-    roadWidth = float(myvars["roadWidth"])
+    roofStore = float(myvars["roofStore"])
 
     # main options determine the suboptions:
     if doProcessesInfil == 0 :
         useBulkdensity = 0
-       # useBulkdensity2 = 0
     if doProcessesErosion == 0 :
         optionD50 = 0
     if doProcessesDEM == 0:
@@ -381,7 +381,6 @@ def initialize():
     buffersinName = 'buffers0.map'         # in m, positive is barries, negative values is basin, added to the DEM
     maskinName = 'mask0.map'               # mask to the catchment , 1 and MV
     mainoutinName = 'mainout0.map'         # outlet of rivers, because of imperfect dem
-
 
     # placeholders for when shapefiles are not used
     housecoverinName = 'zero.map'          # housing density fraction (0-1)
@@ -536,7 +535,7 @@ def initialize():
     
     # read landuse maps and/or NDVI and cur to size    
     if doProcessesLULC == 1:
-        print('>>> creating PCRaster land use map for area: '+landuseName, flush=True)
+        print('>>> Creating PCRaster land use map for area: '+landuseName, flush=True)
         LULCmap = lulcTIF 
         src = gdal.Open(LULCmap)
         #cutout and convert

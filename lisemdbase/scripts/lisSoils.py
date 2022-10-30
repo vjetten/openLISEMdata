@@ -14,51 +14,51 @@ import lisGlobals as lg
 
 class GetSoilGridsLayer:
     "downbloading a SOILGRIDS layer from WCS service"
-    def __init__(self, mask, ESPG="",s="", i=1, j = 1):
-        self.mask = mask
-        self.varname = s
-        self.layer = i
-        self.outlayer = j
-        self.debug = 1 #Debug_
+    def __init__(
+    self, x = 0, i=1, j = 1):
+        varname = lg.SG_names_[x]
+        self.debug = 0 #Debug_
 
-        if self.layer == 1: ID='_0-5cm_mean'
-        if self.layer == 2: ID='_5-15cm_mean'
-        if self.layer == 3: ID='_15-30cm_mean'
-        if self.layer == 4: ID='_30-60cm_mean'
-        if self.layer == 5: ID='_60-100cm_mean'
-        if self.layer == 6: ID='_100-200cm_mean'
+        if i == 1: ID='_0-5cm_mean'
+        if i == 2: ID='_5-15cm_mean'
+        if i == 3: ID='_15-30cm_mean'
+        if i == 4: ID='_30-60cm_mean'
+        if i == 5: ID='_60-100cm_mean'
+        if i == 6: ID='_100-200cm_mean'
 
         #if self.debug == 1:
-        print("   => Downloading for soil layer "+str(self.outlayer)+": "+self.varname+ID, flush=True)
+        print("   => Downloading for soil layer "+str(i)+": "+varname+ID, flush=True)
 
-       # raster=gdal.Open(self.mask)
-        ESPG = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
-
-        if self.debug == 1:
-            print("Mask ESPG and bounding box:"+ESPG,lg.llx,lg.lly,lg.urx,lg.ury,lg.dx,lg.dy, flush=True)
+        ESPGs = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
 
         if self.debug == 1:
-            print("Open SOILGRIDS WCS", flush=True)
+            print("Mask ESPG and bounding box:"+ESPG,lg.maskbox,lg.dx,lg.dy, flush=True) 
 
-        url = "http://maps.isric.org/mapserv?map=/map/{}.map".format(self.varname)
+        if self.debug == 1:
+            print("Open SOILGRIDS WCS: "+varname, flush=True)
+
+        url = "http://maps.isric.org/mapserv?map=/map/{}.map".format(varname)
         wcs = WebCoverageService(url, version='1.0.0')
-        # show some info:
-        # cov_list = list(wcs.contents)
-        # mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
-        # print(mean_covs)
+        if self.debug == 1:
+            cov_list = list(wcs.contents)
+            mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
+            print(mean_covs, flush = True)
 
-        variable = self.varname+ID
-        varout = self.varname+str(self.outlayer)
+        variable = varname+ID
+        varout = varname+str(j)
         outputnametif = "{0}.tif".format(varout)
         outputnamemap = "{0}.map".format(varout)
 
         if self.debug == 1:
             print("Downloading "+variable, flush=True)
-
+        dx1 = lg.dx
         # get data as temp geotif and save to disk
-        response = wcs.getCoverage(identifier=variable,crs=lg.ESPG,bbox=lg.maskbox,resx=lg.dx,resy=lg.dx,format='GEOTIFF_INT16')
+        response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=lg.maskbox,resx=dx1,resy=dx1,format='GEOTIFF_INT16')
         with open(outputnametif, 'wb') as file:
              file.write(response.read())
+             
+             
+             
 
 ### ---------- class PedoTranfer() ---------- ###
 
@@ -150,14 +150,14 @@ class PedoTransfer(StaticModel):
             OMaddition =  lookupscalar(lg.LULCtable, 8, nominal(lun)) * mask
         
         CorrectionOM = 0.0
-        if lg.useCorrOM == 1 :
+        if lg.useCorrOM == 1 and x == 1:
             CorrectionOM = lg.CorrOM_            
         
         S = S1 
         C = C1 
         Si = Si1 
         OC = OC1*100  # conversion OC from fraction to percentage
-        OM = min(OC*1.73,5) +  OMaddition - CorrectionOM  #conversion org carbon to org matter factor 2
+        OM = min(OC*1.73,5) +  OMaddition + CorrectionOM  #conversion org carbon to org matter factor 2
         
         report(OM, om1)
 

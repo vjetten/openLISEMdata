@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1315</width>
-    <height>1025</height>
+    <width>1387</width>
+    <height>982</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -53,7 +53,7 @@
    <enum>QTabWidget::Triangular</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_22">
+   <layout class="QGridLayout" name="gridLayout_28">
     <item row="0" column="0">
      <widget class="QLabel" name="label_16">
       <property name="sizePolicy">
@@ -110,207 +110,19 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1">
+     <widget class="QToolButton" name="toolButton_help1">
+      <property name="text">
+       <string>...</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/lisemdbase.qrc">
+        <normaloff>:/2X/question-mark-button2x.png</normaloff>:/2X/question-mark-button2x.png</iconset>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout_15">
-      <item row="0" column="0">
-       <widget class="QFrame" name="frameBaseDirs">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>8</number>
-         </property>
-         <property name="topMargin">
-          <number>4</number>
-         </property>
-         <property name="rightMargin">
-          <number>8</number>
-         </property>
-         <property name="bottomMargin">
-          <number>4</number>
-         </property>
-         <property name="horizontalSpacing">
-          <number>8</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>2</number>
-         </property>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Conda Environment</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="lineEdit_Script">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Python dbase script</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="combo_iniName">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="combo_envs">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>Slect conda environment with PCRaster, GDAL and other libs installed</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="QToolButton" name="toolButton_script">
-           <property name="font">
-            <font>
-             <pointsize>7</pointsize>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QToolButton" name="toolButton_SaveIni">
-           <property name="toolTip">
-            <string>Save interface options to ini file</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="5">
-          <widget class="QToolButton" name="toolButton_saveas">
-           <property name="toolTip">
-            <string>Save as: save interface options to a new name</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/filesaveas2X.png</normaloff>:/2X/filesaveas2X.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="6">
-          <widget class="QToolButton" name="toolButton_deleteIni">
-           <property name="toolTip">
-            <string>Delte from list</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/File-Delete-icon.png</normaloff>:/2X/File-Delete-icon.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QToolButton" name="toolButton_openIni">
-           <property name="toolTip">
-            <string>Open a file with interface options</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources/lisemdbase.qrc">
-             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_23">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>LISEMDbase ini file list</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QGroupBox" name="wdiget_basefolder">
         <property name="sizePolicy">
@@ -510,7 +322,206 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="0" column="0">
+       <widget class="QFrame" name="frameBaseDirs">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <property name="topMargin">
+          <number>4</number>
+         </property>
+         <property name="rightMargin">
+          <number>8</number>
+         </property>
+         <property name="bottomMargin">
+          <number>4</number>
+         </property>
+         <property name="horizontalSpacing">
+          <number>8</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>2</number>
+         </property>
+         <item row="1" column="5">
+          <widget class="QToolButton" name="toolButton_saveas">
+           <property name="toolTip">
+            <string>Save as: save interface options to a new name</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/filesaveas2X.png</normaloff>:/2X/filesaveas2X.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="combo_iniName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="lineEdit_Script">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="combo_envs">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Slect conda environment with PCRaster, GDAL and other libs installed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Conda Environment</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QToolButton" name="toolButton_openIni">
+           <property name="toolTip">
+            <string>Open a file with interface options</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_23">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>LISEMDbase ini file list</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Python dbase script</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="6">
+          <widget class="QToolButton" name="toolButton_deleteIni">
+           <property name="toolTip">
+            <string>Delte from list</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/File-Delete-icon.png</normaloff>:/2X/File-Delete-icon.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QToolButton" name="toolButton_SaveIni">
+           <property name="toolTip">
+            <string>Save interface options to ini file</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/filesave2X.png</normaloff>:/2X/filesave2X.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QToolButton" name="toolButton_script">
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources/lisemdbase.qrc">
+             <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="0">
        <widget class="QSplitter" name="splitter">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -535,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>5</number>
          </property>
          <property name="iconSize">
           <size>
@@ -543,6 +554,302 @@
            <height>32</height>
           </size>
          </property>
+         <widget class="QWidget" name="tab_8">
+          <attribute name="icon">
+           <iconset resource="resources/lisemdbase.qrc">
+            <normaloff>:/2X/settings.png</normaloff>:/2X/settings.png</iconset>
+          </attribute>
+          <attribute name="title">
+           <string/>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_29">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_89">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>116</green>
+                   <blue>170</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Select the input maps you want to generate:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <layout class="QGridLayout" name="gridLayout_22">
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="checkBox_Channels">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Channel dimensions, culverts and dams</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_93">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>4. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_96">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>7. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_91">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>2. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_94">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>5. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QCheckBox" name="checkBox_Rain">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Rainfall from satellite data</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_92">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>3. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QCheckBox" name="checkBox_Infil">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Soil physical parameters for infiltration and soil water balance</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_90">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>1. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" rowspan="6">
+              <widget class="QFrame" name="frame">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::Box</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="label_97">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap>../../openlisem/resources/ITC logo.png</pixmap>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_95">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>6. </string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="checkBox_LULC">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Land use / land cover and surface parameters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QCheckBox" name="checkBox_UseInfrastructure">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Buildings and roads </string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="checkBox_DEM">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Dem and catchment derivatives, flow network</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="checkBox_erosion">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Erosion maps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <spacer name="verticalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0">
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>1259</width>
+               <height>17</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="tab_2">
           <attribute name="icon">
            <iconset resource="resources/lisemdbase.qrc">
@@ -608,8 +915,8 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-263</y>
-                <width>1099</width>
+                <y>0</y>
+                <width>1171</width>
                 <height>741</height>
                </rect>
               </property>
@@ -1993,7 +2300,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1120</width>
+                <width>1192</width>
                 <height>478</height>
                </rect>
               </property>
@@ -2655,13 +2962,6 @@
            <string/>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_27">
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="checkBox_erosion">
-             <property name="text">
-              <string>Include erosion maps</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_39">
              <property name="sizePolicy">
@@ -2964,13 +3264,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="checkBox_UseInfrastructure">
-             <property name="text">
-              <string>Include rasterizing buildings and infrastructure</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="1">
             <widget class="QFrame" name="optionsIS">
              <property name="enabled">
@@ -2998,50 +3291,11 @@
               <property name="verticalSpacing">
                <number>4</number>
               </property>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
-              </item>
               <item row="3" column="2">
                <widget class="QToolButton" name="toolButton_drumMap">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text">
-                 <string>...</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="resources/lisemdbase.qrc">
-                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="QToolButton" name="toolButton_roadsSHP">
-                <property name="text">
-                 <string>...</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="resources/lisemdbase.qrc">
-                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="3">
-               <widget class="QLabel" name="label_81">
-                <property name="text">
-                 <string>(cannot be larger than the pixel size)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_69">
-                <property name="text">
-                 <string>Road shape file</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QToolButton" name="toolButton_buildingsSHP">
                 <property name="text">
                  <string>...</string>
                 </property>
@@ -3058,10 +3312,73 @@
                 </property>
                </widget>
               </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
+              </item>
+              <item row="5" column="3">
+               <widget class="QLabel" name="label_79">
+                <property name="text">
+                 <string>(polygons, tarred roads)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLabel" name="label_78">
+                <property name="text">
+                 <string>(polygons)</string>
+                </property>
+               </widget>
+              </item>
               <item row="3" column="1">
                <widget class="QLineEdit" name="lineEdit_drumMap">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>Road shape file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>Building shape file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QToolButton" name="toolButton_roadsSHP">
+                <property name="text">
+                 <string>...</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources/lisemdbase.qrc">
+                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QToolButton" name="toolButton_buildingsSHP">
+                <property name="text">
+                 <string>...</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources/lisemdbase.qrc">
+                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="QLabel" name="label_81">
+                <property name="text">
+                 <string>(cannot be larger than the pixel size)</string>
                 </property>
                </widget>
               </item>
@@ -3078,27 +3395,6 @@
                 </property>
                </spacer>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_54">
-                <property name="text">
-                 <string>Building shape file</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_70">
-                <property name="text">
-                 <string>Average roadwidth (m)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="3">
-               <widget class="QLabel" name="label_78">
-                <property name="text">
-                 <string>(polygons)</string>
-                </property>
-               </widget>
-              </item>
               <item row="3" column="3">
                <widget class="QLabel" name="label_80">
                 <property name="enabled">
@@ -3109,11 +3405,8 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
-              </item>
-              <item row="5" column="1">
-               <widget class="QDoubleSpinBox" name="spin_roadWidth">
+              <item row="4" column="1">
+               <widget class="QDoubleSpinBox" name="spin_roofStore">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3127,7 +3420,7 @@
                  <double>0.100000000000000</double>
                 </property>
                 <property name="maximum">
-                 <double>50.000000000000000</double>
+                 <double>999.000000000000000</double>
                 </property>
                 <property name="singleStep">
                  <double>0.100000000000000</double>
@@ -3137,10 +3430,10 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="3">
-               <widget class="QLabel" name="label_79">
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_70">
                 <property name="text">
-                 <string>(polygons, tarred roads)</string>
+                 <string>Roof interception storage (mm)</string>
                 </property>
                </widget>
               </item>
@@ -3170,7 +3463,10 @@
             </widget>
            </item>
            <item row="0" column="0" rowspan="4" colspan="2">
-            <widget class="QScrollArea" name="scrollArea_3">
+            <widget class="QScrollArea" name="scrollArea_Rain">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -3179,7 +3475,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1099</width>
+                <width>1171</width>
                 <height>757</height>
                </rect>
               </property>
@@ -3977,7 +4273,7 @@
                <item row="3" column="0" colspan="5">
                 <widget class="QGroupBox" name="groupBox_raindata">
                  <property name="enabled">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -5074,17 +5370,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="0" column="1">
-     <widget class="QToolButton" name="toolButton_help1">
-      <property name="text">
-       <string>...</string>
-      </property>
-      <property name="icon">
-       <iconset resource="resources/lisemdbase.qrc">
-        <normaloff>:/2X/question-mark-button2x.png</normaloff>:/2X/question-mark-button2x.png</iconset>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

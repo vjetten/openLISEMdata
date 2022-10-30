@@ -33,7 +33,7 @@ class DEMderivatives(StaticModel):
         # fill in pits
         DEMc = DEM
         if lg.doCorrectDEM > 0 :            
-            print(">>> Filling in DEM depressions (see demcorr.map for filled in pixels)",flush=True)            
+            #print(">>> Filling in DEM depressions (see demcorr.map for filled in pixels)",flush=True)            
             DEMc = lddcreatedem(DEM, 1e20,1e20,9*cellarea(),1e20)
             DEMcorrect = DEMc - DEM
             DEMcorrect = ifthenelse(DEMcorrect < lg.fillDEM,0,DEMcorrect)
