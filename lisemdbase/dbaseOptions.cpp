@@ -186,7 +186,7 @@ void MainWindow::getIni(QString name)
     optionSGAverage = settings.value("SOIL/optionSGAverage").toInt();
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = 1;//settings.value("SOIL/optionUseBD").toInt();
-    optionUseCorrOM = settings.value("SOIL/optionUseCorrOM ").toInt();
+    optionUseCorrOM = settings.value("SOIL/optionUseCorrOM").toInt();
     corrOM = settings.value("SOIL/corrOM").toDouble();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();

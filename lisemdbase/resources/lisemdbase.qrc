@@ -57,6 +57,7 @@
         <file>../scripts/lisInfrastructure.py</file>
         <file>../scripts/lisSoils.py</file>
         <file>../scripts/lisSurface.py</file>
+        <file>2X/list.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

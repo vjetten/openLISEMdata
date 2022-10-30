@@ -546,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>0</number>
          </property>
          <property name="iconSize">
           <size>
@@ -557,7 +557,7 @@
          <widget class="QWidget" name="tab_8">
           <attribute name="icon">
            <iconset resource="resources/lisemdbase.qrc">
-            <normaloff>:/2X/settings.png</normaloff>:/2X/settings.png</iconset>
+            <normaloff>:/2X/list.png</normaloff>:/2X/list.png</iconset>
           </attribute>
           <attribute name="title">
            <string/>
