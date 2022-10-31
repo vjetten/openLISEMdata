@@ -35,6 +35,7 @@ import lisSoils
 import lisErosion
 import lisDams
 import lisInfrastructure
+import lisRainfall
 
 # PCRaster global options
 setglobaloption("lddin")

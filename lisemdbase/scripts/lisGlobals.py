@@ -78,7 +78,7 @@ def initialize():
     global roadinName
     global roadsSHPName
     global buildingsSHPName
-    global ShapetoMapName
+    #global ShapetoMapName
     #global roadWidth
 
     global fillDEM
@@ -86,7 +86,7 @@ def initialize():
     global ESPGnumber
     global layer_
     global mapnr_
-    global sizeFactor
+    global shapeNr
     global optionSplash
 
 
@@ -208,7 +208,19 @@ def initialize():
     global lun
     
     global SG_names_
-
+    
+    global conversionmmh
+    global timeinterval
+    global IPoption
+    global optionGaugeGPM
+    global rainInputdir 
+    global rainOutputdir 
+    global rainMaskmapnam
+    global rainfilename
+    global conversionmm
+    global timeinterval
+    global IPoption
+    global optionGaugeGPM
     
     #default values for interface options
     condaDir = "c:/"
@@ -250,11 +262,14 @@ def initialize():
     maxSoildepth = 5.0
     useCorrOM = 0
     CorrOM_ = 0.0
-    sizeFactor = 1.0
+    shapeNr = 1
     roofStore = 10.0
     optionSplash = 1
+    conversionmmh = 10
+    timeinterval = 30
+    IPoption = 1
+    optionGaugeGPM  = 0
     
-    ### input maps ###
     MapsDir = "/Maps"
     BaseDir = "/Base"
     #lulcDir = "/lulc"
@@ -294,7 +309,7 @@ def initialize():
             S0 = (line.split('='))[0].strip()
             S1 = (line.split('='))[1].strip()
             myvars[S0] = S1
-            #print(S0,S1)
+            
     condaDir =myvars["CondaDirectory"]
     BaseDir = myvars["BaseDirectory"]
     MapsDir = myvars["MapsDirectory"]
@@ -364,7 +379,20 @@ def initialize():
     buildingsSHPName = myvars["buildingsSHPName"]
     roadsSHPName = myvars["roadsSHPName"]
     roofStore = float(myvars["roofStore"])
-
+        
+    rainInputdir = myvars["RainBaseDirectory"]
+    rainOutputdir = myvars["RainDirectory"]
+    rainMaskmapname  = myvars["RainRefNameDEM"]
+    rainfilename = myvars["RainFilename"]
+    conversionmm = float(myvars["conversionmm"])
+    timeinterval = float(myvars["timeinterval"])
+    IPoption = float(myvars["interpolation"])
+    optionGaugeGPM = float(myvars["SelectPointfromGPM"])
+    
+    if optionGaugeGPM == 1:
+        rainPointmapname = myvars["RainGaugeFilename"]
+        rainPointnameIn = myvars["RainGaugeFilenameIn"]
+    
     # main options determine the suboptions:
     if doProcessesInfil == 0 :
         useBulkdensity = 0
