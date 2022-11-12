@@ -278,14 +278,6 @@ void MainWindow::on_toolButton_roadsSHP_clicked()
 
 
 //==============================================================================
-void MainWindow::on_toolButton_GPMpy_clicked()
-{
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    RainScriptFileName = getFileorDir(RainScriptFileName,"Select python script", filters, 2);
-    if (!RainScriptFileName.isEmpty())
-        lineEdit_GPMpy->setText(RainScriptFileName);
-}
-
 
 void MainWindow::on_toolButton_GPMGauge_clicked()
 {
@@ -325,34 +317,5 @@ void MainWindow::on_toolButton_dailyRain_clicked()
     IDMFilename = getFileorDir(IDMFilename,"Select IDM NetCDF map with daily rainfall", filters, 2);
     if (!IDMFilename.isEmpty())
         lineEdit_IDMFilename->setText(IDMFilename);
-}
-
-
-void MainWindow::on_IMDpy_clicked()
-{
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    IDMScriptFileName = getFileorDir(IDMScriptFileName,"Select python script", filters, 2);
-    if (!IDMScriptFileName.isEmpty())
-        lineEdit_IMDpy->setText(IDMScriptFileName);
-}
-
-
-
-void MainWindow::on_toolButtontoolButton_RainERA_clicked()
-{
-
-    QStringList filters({"NetCDF maps (*.nc)","Any files (*)"});
-    ERAFilename = getFileorDir(ERAFilename,"Select IDM NetCDF map with daily rainfall", filters, 2);
-    if (!ERAFilename.isEmpty())
-        lineEdit_ERAFilename->setText(ERAFilename);
-}
-
-
-void MainWindow::on_ERApy_clicked()
-{
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    ERAScriptFileName = getFileorDir(ERAScriptFileName,"Select python script", filters, 2);
-    if (!ERAScriptFileName.isEmpty())
-        lineEdit_ERApy->setText(ERAScriptFileName);
 }
 

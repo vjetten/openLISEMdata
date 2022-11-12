@@ -31,6 +31,7 @@ def initialize():
     global doProcessesSGInterpolation
     global doProcessesSGAverage
     global doProcessesInfrastructure
+    global doProcessesRain
     global optionD50
     global optionSG1
     global optionSG2
@@ -215,12 +216,11 @@ def initialize():
     global optionGaugeGPM
     global rainInputdir 
     global rainOutputdir 
-    global rainMaskmapnam
+    global rainMaskmapname
     global rainfilename
-    global conversionmm
-    global timeinterval
-    global IPoption
-    global optionGaugeGPM
+    global rainPointmapname
+    global rainPointnameIn 
+    
     
     #default values for interface options
     condaDir = "c:/"
@@ -237,6 +237,7 @@ def initialize():
     doProcessesSGInterpolation = 1
     doProcessesSGAverage = 0
     doProcessesInfrastructure = 0
+    doProcessesRain = 0
     optionD50 = 0
     optionSG1 = 2
     optionSG2 = 4    
@@ -280,6 +281,9 @@ def initialize():
     culvertsbaseName = "chanmaxq0.map"    
     damsbaseName = "dams0.map"
     masknamemap_ = "mask0.map"
+    rainMaskmapname = "dem0.map"
+    rainPointmapname = ""
+    rainPointnameIn = ""
     
     lulcTIF = "lulc.tif"
     NDVIinName = "ndvi.tif"
@@ -380,6 +384,7 @@ def initialize():
     roadsSHPName = myvars["roadsSHPName"]
     roofStore = float(myvars["roofStore"])
         
+    doProcessesRain = int(myvars["optionRain"])
     rainInputdir = myvars["RainBaseDirectory"]
     rainOutputdir = myvars["RainDirectory"]
     rainMaskmapname  = myvars["RainRefNameDEM"]

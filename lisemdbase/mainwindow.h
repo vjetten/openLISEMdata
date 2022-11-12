@@ -43,9 +43,9 @@ public:
 
     QString optionList;
 
-    QString RainScriptFileName;
-    QString IDMScriptFileName;
-    QString ERAScriptFileName;
+   // QString RainScriptFileName;
+   // QString IDMScriptFileName;
+   // QString ERAScriptFileName;
     QString RainRefNameDEM;
     QString RainBaseDirName;
     QString RainDirName;
@@ -235,8 +235,6 @@ private slots:
 
     void on_toolButton_userWatersheds_clicked();
 
-    void on_toolButton_GPMpy_clicked();
-
     void on_toolButton_GPMin_clicked();
 
     void on_toolButton_GPMout_clicked();
@@ -267,15 +265,9 @@ private slots:
 
     void on_toolButton_userOutpoints_clicked();
 
-    void on_IMDpy_clicked();
-
     void on_toolButton_stopIDM_clicked();
 
     void on_pushButton_start_clicked();
-
-    void on_toolButtontoolButton_RainERA_clicked();
-
-    void on_ERApy_clicked();
 
     void on_pushButton_generateERARain_clicked();
 

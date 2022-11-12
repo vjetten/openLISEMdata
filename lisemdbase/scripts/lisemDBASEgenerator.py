@@ -139,7 +139,14 @@ if __name__ == "__main__":
         obj = lisDams.DamsinRivers()
         staticModelDams = StaticFramework(obj)
         staticModelDams.run()
-      
+   
+
+    # adjust rivers for large dams
+    if lg.doProcessesRain == 1:   # add option if GPM later
+        print('>>> Process GPM rainfall', flush=True)
+        obj = lisRainfall.GPMRainfall()
+        staticModelDams = StaticFramework(obj)
+        staticModelDams.run()   
        
     print("Done")
 

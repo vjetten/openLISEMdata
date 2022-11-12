@@ -1,18 +1,11 @@
-##############################################################################
-# CWC project script for GPM IMERG to PCRaster rainfall conversion
+# lisemDBASEgenerator
+# global vraiables and initialisation
 #
-# - read all global IMERG GPM GTiff files in a directory (espg 4326)
-# - read a reference PCRaster map for the target area bounding box and dx
-# - provide ESPG target projection
-# - give input and output folders have to be given
-# - choose interpolation option
-# - a text file is produced for openLISEM that is the list for all rainfall
-#   maps with their time intervals
-# - a map with total rainfall is produced for reference
-# NOTE: ALL MAPS ARE DIVIDED BY 10 because GPM is stored in 0.1mm/h
-#
-#                                               auhtor: V.Jetten 20220620
-##############################################################################
+# author: V.G.Jetten @ 2022
+# University of Twente, Faculty ITC
+# this software has copyright model: GPLV3
+# this software has a disclaimer
+
 
 
 from osgeo import gdal, gdalconst, osr
@@ -23,30 +16,61 @@ from pcraster.framework import *
 import time
 import lisGlobals as lg
 
+    # global conversionmmh
+    # global timeinterval
+    # global IPoption
+    # global optionGaugeGPM
+    # global rainInputdir 
+    # global rainOutputdir 
+    # global rainMaskmapname
+    # global rainfilename
+    # global rainPointmapname
+    # global rainPointnameIn 
+
+
+
 # use unix style path delimiters: / instead of \
 # pathnames end with /
 
+# update_progress() : Displays or updates a console progress bar
 def update_progress(progress):
-    barLength = 50 
+    barLength = 50 # Modify this to change the length of the progress bar
     if progress >= 0.99:
         progress = 1
-    block = int((barLength*progress))
-    text = "\rProcessing: [{0}] {1:.2f}% ".format( '#'*block + '-'*(barLength-block), (progress)*100)
+    block = int(round(barLength*progress))
+    text = "\rProcessing: [{0}] {1:.3g}% ".format( "#"*block + "-"*(barLength-block), progress*100)
     sys.stdout.write(text)
-    sys.stdout.flush()    
+    sys.stdout.flush() 
+
 
 class GPMRainfall(StaticModel):
     def __init__(self):
         StaticModel.__init__(self)
     def initial(self):
+    # faster to copy global vars
         mask = lg.mask_
-        ESPG = lg.ESPG
+        # nrRows = lg.nrRows
+        # nrCols = lg.nrCols
+        # maskgeotrans = lg.maskgeotrans
+        # maskproj = lg.maskproj
+        rainOutputdir = lg.rainOutputdir
+        rainfilename = lg.rainfilename 
+        conversionmmh = lg.conversionmmh
+        timeinterval  = lg.timeinterval
         
         #rainMaskmapname = lg.BaseDir+lg.rainMaskmapname
         
-        if not os.path.exists(lg.rainOutputdir):
-            print('>>> Creating output dir: '+lg.rainOutputdir, flush=True)
-            os.makedirs(lg.rainOutputdir)
+        
+        maskgdal=gdal.Open(lg.BaseDir+lg.rainMaskmapname) # get mask details
+        maskproj = maskgdal.GetProjection()
+        maskgeotrans = maskgdal.GetGeoTransform()
+        nrRows = maskgdal.RasterYSize
+        nrCols = maskgdal.RasterXSize
+        
+        
+        if not os.path.exists(rainOutputdir):
+            print('>>> Creating output dir: '+rainOutputdir, flush=True)
+            os.makedirs(rainOutputdir)
             # if you don't do this you get an error later
 
         # 0 =  nearest neighbour, 1 = bilinear interpolation while resampling, 2 =  cubic interpolation
@@ -54,22 +78,6 @@ class GPMRainfall(StaticModel):
 
         # set clone for pcraster operations
         setclone(lg.rainMaskmapname)
-
-        # destination boundingbox
-        # maskgdal = gdal.Open(rainMaskmapname)
-        # maskproj = maskgdal.GetProjection()
-        # nrRows = maskgdal.RasterYSize
-        # nrCols = maskgdal.RasterXSize
-        # masktrans = maskgdal.GetGeoTransform()
-        # dx = maskgdal.GetGeoTransform()[1]
-        # dy = maskgdal.GetGeoTransform()[5]
-        # llx = maskgdal.GetGeoTransform()[0]
-        # ury = maskgdal.GetGeoTransform()[3]
-        # urx = llx + nrCols*dx
-        # lly = ury + dy*nrRows
-        # maskbox = [llx,lly,urx,ury]
-        # print("rows,cols,dx: ",nrRows,nrCols,dx)
-        # print("Bounding box: ",maskbox)
 
         # resample options
         if (lg.IPoption == 0):
@@ -83,14 +91,14 @@ class GPMRainfall(StaticModel):
             print('>>> Using Cubic Interpolation', flush=True)
 
 
-        print('>>> Deleting previous GPM files in folder: {0} '.format(outputdir), flush=True)
-        # for root, dirs, files in os.walk(outputdir):
+        print('>>> Deleting previous GPM files in folder: {0} '.format(rainOutputdir), flush=True)
+        # for root, dirs, files in os.walk(rainOutputdir):
             # for file in files:
                 # os.remove(os.path.join(root, file))
-        for file_name in listdir(lg.rainOutputdir):
+        for file_name in listdir(rainOutputdir):
             if "3B-HHR-L.MS.MRG.3IMERG" in file_name :
-                #print(outputdir + '/' + file_name,flush=True)
-                os.remove(lg.rainOutputdir + '/' + file_name)
+                #print(rainOutputdir + '/' + file_name,flush=True)
+                os.remove(rainOutputdir + '/' + file_name)
 
         print('>>> Converting GTiff to PCRaster ', flush=True)
 
@@ -122,10 +130,10 @@ class GPMRainfall(StaticModel):
                     src.SetProjection(wkt1)
 
                     filename = link[:-4]+".map"
-                    gpmoutName = lg.rainOutputdir+filename
-                    dst = gdal.GetDriverByName('PCRaster').Create(gpmoutName, lg.nrCols, lg.nrRows, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
-                    dst.SetGeoTransform( lg.masktrans )
-                    dst.SetProjection( lg.maskproj )
+                    gpmoutName = rainOutputdir+filename
+                    dst = gdal.GetDriverByName('PCRaster').Create(gpmoutName, nrCols, nrRows, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+                    dst.SetGeoTransform( maskgeotrans )
+                    dst.SetProjection( maskproj )
 
                     if start == 0 :
                         prj2 = osr.SpatialReference()
@@ -139,8 +147,9 @@ class GPMRainfall(StaticModel):
                     count += 1            
                     update_progress(count/(totalcount))
 
-                    #del dst, Flush
+
                     dst = None
+                    src = None
 
         print("\nreprojection done.",flush = True)        
 
@@ -170,17 +179,16 @@ class GPMRainfall(StaticModel):
         print(">>> Making lisem rainfall txt file", flush=True)
         print(">>> and calculating sum of all rainfall in sumrainfall.map\n", flush=True)
 
-        os.chdir(outputdir)
-        raintxtname = rainfilename
-        with open(raintxtname, 'w') as f:
+        os.chdir(rainOutputdir)
+        with open(lg.rainfilename, 'w') as f:
             f.write('# GPM data \n')
             f.write('2\n')
             f.write('time (ddd:mmmm)\n')
-            f.write('filename\n')
+            f.write('GPM filename\n')
             f.close()
 
         # read all maps in folder
-        DEM = readmap(maskmapname)
+        DEM = readmap(lg.BaseDir + lg.rainMaskmapname)
         mask = (DEM*0) + scalar(1)
         sum = 0 * mask
         j = 0
@@ -193,13 +201,13 @@ class GPMRainfall(StaticModel):
                 #print(' => '+link)
                 #print(j)
                 # write the times and filenames in the lisem input file
-                with open(raintxtname, 'a') as f:
+                with open(rainfilename, 'a') as f:
                     f.write('{0}  {1}\n'.format(dddmmmm[j],link))
 
                 # calculate the total rainfall
                 raina = readmap(link)
                 #if (option > -1) :
-                rain = max(0,(60/timeinterval)*raina/conversionmm)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+                rain = max(0,(60/timeinterval)*raina/conversionmmh)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
 
                 report(rain,link)
                 sum=sum+rain/(60/timeinterval)    # assumning the value is intensity in mm/h the rianfall is p/2
@@ -207,9 +215,9 @@ class GPMRainfall(StaticModel):
                 j+=1
 
         f.close()
-        report(sum,outputdir+'sumrainfall.map')
+        report(sum,rainOutputdir+'sumrainfall.map')
 
-        if optionGaugeGPM == 1:
+        if lg.optionGaugeGPM == 1:
 
             print(">>> Making rainfall point file \n")
 
@@ -217,7 +225,8 @@ class GPMRainfall(StaticModel):
             colpoint = []
             valpoint = []
             # read pcraster map with single point = 1
-            pointmap = readmap(BaseDir+pointmapname)
+            pointmap = readmap(lg.rainPointmapname) #BaseDir+pointmapname)
+          
             pm = pcr2numpy(pointmap, -9999)
 
             i = 0
@@ -231,11 +240,11 @@ class GPMRainfall(StaticModel):
             pointlen = len(valpoint)
                     
             if len(rowpoint) == 0 :
-                print('no point found in file {0}'.format(pointmapname), flush = True)
+                print('no point found in file {0}'.format(lg.rainPointmapname), flush = True)
                 exit()
             else :
                 for i in range(pointlen) :
-                    print('point(s) found in file {0}: {1} {2} - {3}'.format(pointmapname,rowpoint[i],colpoint[i],valpoint[i]), flush = True)
+                    print('point(s) found in file {0}: {1} {2} - {3}'.format(lg.rainPointmapname,rowpoint[i],colpoint[i],valpoint[i]), flush = True)
 
             nr = 0
             raintxtname = []
@@ -245,7 +254,7 @@ class GPMRainfall(StaticModel):
             
             for i in range(pointlen) :
                 number = "p{0}_".format(valpoint[i])
-                raintxtname.append(outputdir + number + pointnameIn)
+                raintxtname.append(rainOutputdir + number + lg.rainPointnameIn)
                 print(raintxtname[i],flush=True)
                 with open(raintxtname[i], 'w') as f:
                     f.write("# GPM point data for point{0}\n".format(valpoint[i]))
@@ -276,8 +285,8 @@ class GPMRainfall(StaticModel):
                     
             #f.close()  # with "with open" you don't need to close!
                     
-        for i in range(pointlen) :            
-            sumvalue[i] /= 2.0  # from intensity to amount
-            print("\nTotal rainfall for point {0}: {1} mm".format(valpoint[i],sumvalue[i]), flush=True)
+            for i in range(pointlen) :            
+                sumvalue[i] /= 2.0  # from intensity to amount
+                print("\nTotal rainfall for point {0}: {1} mm".format(valpoint[i],sumvalue[i]), flush=True)
 
         print(">>> Done.", flush=True)
