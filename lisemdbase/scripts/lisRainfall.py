@@ -150,7 +150,8 @@ class GPMRainfall(StaticModel):
 
                     dst = None
                     src = None
-
+        update_progress(1)   
+        
         print("\nreprojection done.",flush = True)        
 
         # covert date into ddd:mmmm and add to stringlist dddmmmm
@@ -282,6 +283,7 @@ class GPMRainfall(StaticModel):
 
                     update_progress(nr/totalnr)                 
                     nr+=1
+            update_progress(1)   
                     
             #f.close()  # with "with open" you don't need to close!
                     

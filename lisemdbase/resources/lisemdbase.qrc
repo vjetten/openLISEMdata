@@ -58,6 +58,7 @@
         <file>../scripts/lisSoils.py</file>
         <file>../scripts/lisSurface.py</file>
         <file>2X/list.png</file>
+        <file>ITC logo.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

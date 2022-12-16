@@ -31,14 +31,21 @@ MainWindow::MainWindow(QWidget *parent)
 
     getIniStart();
 
+
     QString s = combo_iniName->currentText();
-    if (QFileInfo(s).exists())
-    {
+    if (QFileInfo(s).exists()) {
         getIni(s);
 
         writeValuestoUI();
         readValuesfromUI();
     }
+
+
+    s = qApp->applicationDirPath()+"/scripts/lisemDBASEgenerator.py";
+    if (QFileInfo(s).exists()) {
+        lineEdit_Script->setText(s);
+    }
+
 
     for (int i = 0; i < combo_envs->count(); i++){
         if (combo_envs->itemText(i) == CondaBaseDirName)
@@ -62,6 +69,9 @@ MainWindow::MainWindow(QWidget *parent)
     groupBox_ERAdata->setVisible(false);
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
+
+
+
 
 }
 

@@ -1,21 +1,20 @@
 <p><strong>openLISEM database generator</strong></p>
-<p>This program generates a database for openLISEM by calling python scripts.</p>
-<p>A temporary configuration file (lisemdbaseoptions.cfg) is generated automatically combining all options in the interface in your temp directory that is used by the python scripts.</p>
+<p>This program generates a database from a few baseline PCRaster and GTiff maps for the openLISEM model, using a series of python scripts.</p>
+<p>A temporary configuration file (lisemdbaseoptions.cfg) is generated automatically by this interface, combining all options in your temp directory. This configuration fiel is used by the the python scripts to create the database.</p>
 <p><strong>Ini project files</strong></p>
-<p>The database also saves the options in a "ini" file, and ini files can be saved for each project in a folder of your choice. The list of ini files is checked when opening the dbase generator. Any missing ini files sare deleted from the list.</p>
-<p>You can save the current interface configuration (save button), or save the current config under a new name (save as) and open the explorer to load a previous ini file. These are added to the dropdown list at the top.</p>
+<p>You can save the current interface configuration (save button), or save the current config under a new name (save as) as an "ini" file, in a folder of your choice (usually the project folder). You can also load previous ini files. These are added to the dropdown list at the top.</p>
+<p>The list of ini files is checked when opening the dbase generator. Any missing ini files sare deleted from the list.</p>
 <p><strong>CONDA environment</strong></p>
-<p>It is assumed that python, PCRaster, GDAL and other software is installed using Miniconda or Anaconda. In order to work, a conda environment must be created with the following commands:</p>
+<p>The python scripts use GDAL and PCRaster libraries. It is assumed that python, PCRaster, GDAL and other software is installed using <em>Miniconda</em> or <em>Anaconda.</em> In order to work, a conda environment must be created with the following commands:</p>
 <ul>
 <li class="code"><em>conda create --name lisem python</em></li>
 <li class="code"><em>conda activate lisem</em></li>
 <li class="code"><em>conda install -c conda-forge pcraster owslib scipy gdal</em></li>
 </ul>
-<p>If an environment is visible, it has PCRaster, GDAL and Python libraries and in principle the dbase generator can be executed.</p>
+<p>If an environment exists, and it has a valid installation of PCRaster, GDAL and Python libraries it becomes visible in the dbase generator and should work.</p>
 <p><strong>LISEM Base and Map folders<br /></strong></p>
-<p>In principle it is easiest to create the following folder structure for LISEM:</p>
-<p>[your folder]/Base<br />[your folder]/Maps<br />[your folder]/Rain<br />[your folder]/res <br />[your folder]/run</p>
-<p>These names are not compulsory. However, separate folders are needed for the Base forlder that stores the basic data (maps and tables) and the Maps folder that contains all input maps for LISEM. The rainfall data is stored in the "Rain" folder and the the LISEM run fikles in the run folder.</p>
-<p>In the DBase generator you have to point to the "Base" and "Maps" folders.</p>
-<p>The <strong>python script</strong> compiles all PCRaster and GDAL operations to create the LISEM input database.</p>
-<p>The <strong>ESPG number</strong> is needed to ensure the right cartograohic projection in maps transformations.</p>
+<p>In principle it is easiest to create the following folder structure for a LISEM database:</p>
+<p>[your folder]/Base&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; (folder with base data not directly used by LISEM, DEM, downloaded soil data, land use map etc)<br />[your folder]/Maps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; =&gt; (the generated database for LISEM, this folder you use in the model itself)<br />[your folder]/Rain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rainfall data <br />[your folder]/res&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; model results form simulations<br />[your folder]/run&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; run files for LISEM</p>
+<p>These names are not compulsory but do not use the same folder for the base data and input maps. In the DBase generator you have to point to the "Base" and "Maps" folders.</p>
+<p>The <strong>python scripts</strong> compiles all PCRaster and GDAL operations to create the LISEM input database. The main python script is "lisemDBASEgenerator.py" which should eb present in a folder claled 'scripts' that is created when you unzip this package. A series of python script for thhe different map ccategories are called by this main script.</p>
+<p>The <strong>ESPG number</strong> is needed to ensure the right cartograohic projection in map transformations. Unfortunately, PCRaster maps do not store this information, so you have to procvide it.</p>

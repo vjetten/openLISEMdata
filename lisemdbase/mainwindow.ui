@@ -28,7 +28,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string notr="true"/>
+   <string notr="true">LISEM dbase generator</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -106,7 +106,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.0 - 221028)</string>
+       <string>openLISEM database generator (version 4.1 - 221212)</string>
       </property>
      </widget>
     </item>
@@ -546,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>6</number>
+          <number>0</number>
          </property>
          <property name="iconSize">
           <size>
@@ -747,7 +747,7 @@
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap>../../openlisem/resources/ITC logo.png</pixmap>
+                   <pixmap resource="resources/lisemdbase.qrc">:/ITC logo.png</pixmap>
                   </property>
                  </widget>
                 </item>
@@ -779,7 +779,7 @@
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QCheckBox" name="checkBox_rain">
+              <widget class="QCheckBox" name="checkBox_useInfrastructure">
                <property name="font">
                 <font>
                  <pointsize>10</pointsize>
@@ -5429,7 +5429,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_rain</sender>
+   <sender>checkBox_useInfrastructure</sender>
    <signal>toggled(bool)</signal>
    <receiver>optionsIS</receiver>
    <slot>setEnabled(bool)</slot>

@@ -307,7 +307,7 @@ void MainWindow::readValuesfromUI()
     optionSplash = spin_Splash->value();
     optionChannelsNoEros = checkBox_ChannelsNoErosion->isChecked() ? 1 : 0;
 
-    optionUseInfrastructure = checkBox_UseInfrastructure->isChecked() ? 1 : 0;
+    optionUseInfrastructure = checkBox_useInfrastructure->isChecked() ? 1 : 0;
     buildingsSHPName = lineEdit_buildingsSHP->text();
     optionUseDrums = checkBox_useDrums->isChecked() ? 1 : 0;
     drummapName = lineEdit_drumMap->text();
@@ -413,7 +413,7 @@ void MainWindow::writeValuestoUI()
         on_radioButton_OutletSIngle_toggled(false);
     }    
 
-    checkBox_UseInfrastructure->setChecked(optionUseInfrastructure > 0);
+    checkBox_useInfrastructure->setChecked(optionUseInfrastructure > 0);
     lineEdit_buildingsSHP->setText(buildingsSHPName);
     checkBox_useDrums->setChecked(optionUseDrums > 0);
     lineEdit_drumMap->setText(drummapName);
