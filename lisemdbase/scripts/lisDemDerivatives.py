@@ -16,8 +16,8 @@ class DEMderivatives(StaticModel):
     def initial(self):
         DEM = lg.DEM_
         mask = lg.mask_
-        if lg.doCatchment == 0 :
-            lg.catchmentsize_ = 1e20
+        if lg.doCatchment == 0 :      # always 0, obsolete
+            lg.catchmentsize_ = 1e20  # always
 
         size = lg.catchmentsize_   #????
         

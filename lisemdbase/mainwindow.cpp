@@ -15,6 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
     sss << "0 - 5 cm" << "5 - 15 cm" << "15 - 30 cm" << "30 - 60 cm" << "60 - 120 cm" << "120 - 200 cm";
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
+
+    sss.clear();
+    sss << "Nearest Neighbourhood" << "Bilinear" << "Cubic";
+    comboBox_Resample->addItems(sss);
+
     dailyA = 0.14;
     dailyB = -0.374;
     day0 = 1;
@@ -24,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
 
-    setupModel();
+    setupModel(); // read standard output etc
 
     combo_iniName->clear();
     combo_iniName->setDuplicatesEnabled(false);
@@ -39,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
         writeValuestoUI();
         readValuesfromUI();
     }
-
 
     s = qApp->applicationDirPath()+"/scripts/lisemDBASEgenerator.py";
     if (QFileInfo(s).exists()) {
@@ -69,9 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
     groupBox_ERAdata->setVisible(false);
     //groupBox_ETdata1->setVisible(false);
     //groupBox_NDVIdata->setVisible(false);
-
-
-
 
 }
 
@@ -228,7 +229,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
     QFileDialog dialog;
     QString dirout = inputdir;
     QString startdir = QFileInfo(inputdir).absoluteDir().absolutePath();
-    qDebug() <<"dir" << inputdir<< startdir ;
+  //  qDebug() <<"dir" << inputdir<< startdir ;
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
@@ -252,7 +253,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
             dirout = QFileInfo(dirout).fileName();
         if (doFile == 2)
             dirout = QFileInfo(dirout).absoluteFilePath();
-        qDebug() << dirout;
+        //qDebug() << dirout;
     } else {
         QString S = dialog.selectedUrls().at(0).path();
         S.remove(0,1);
@@ -266,6 +267,12 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 }
 
 //====================================================================================
+
+
+void MainWindow::on_comboBox_Resample_currentIndexChanged(int index)
+{
+    optionResample = index;
+}
 
 
 void MainWindow::on_toolButton_clear_clicked()
@@ -288,7 +295,7 @@ void MainWindow::on_checkBox_Infil_toggled(bool checked)
     infiloptions->setEnabled(checked);
     SGoptions->setEnabled(checked);
     checkBox_SGInterpolation->setEnabled(checked);
-    checkBox_SGAverage->setEnabled(checked);
+    //checkBox_SGAverage->setEnabled(checked);
     checkBox_Soilgrids->setEnabled(checked);
 }
 
@@ -357,6 +364,7 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
     tableViewOutlets->setModel(modelOutlets);
 
     fillOutletsTable();
+
 }
 
 void MainWindow::on_toolButton_resetRain_clicked()
@@ -378,7 +386,7 @@ void MainWindow::on_toolButton_resetsoil_clicked()
     spin_initmoist->setValue(0);
 
     checkBox_SGInterpolation->setChecked(false);
-    checkBox_SGAverage->setChecked(false);
+    //checkBox_SGAverage->setChecked(false);
     checkBox_noGravel->setChecked(true);
     checkBox_Soilgrids->setChecked(false);
     checkBox_useLUdensity->setChecked(true);
@@ -480,7 +488,7 @@ bool MainWindow::convertDailyPrecipitation()
     else
         fno = RainDirName+RainFilenameHourIDM;
     QFile fileout(fno);
-    qDebug() << fno;
+    //qDebug() << fno;
     fileout.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream eout(&fileout);
     eout.setRealNumberPrecision(2);
@@ -552,74 +560,76 @@ void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 }
 
 
-void MainWindow::on_toolButton_stopGPM_clicked()
-{
-    Process->kill();
-    text_out->appendPlainText("User interrupt");
-}
+//void MainWindow::on_toolButton_stopGPM_clicked()
+//{
+//    Process->kill();
+//    text_out->appendPlainText("User interrupt");
+//}
 
 
 
-void MainWindow::on_toolButton_stopIDM_clicked()
-{
-    Process->kill();
-    text_out->appendPlainText("User interrupt");
-}
+//void MainWindow::on_toolButton_stopIDM_clicked()
+//{
+//    Process->kill();
+//    text_out->appendPlainText("User interrupt");
+//}
 
 
 void MainWindow::on_pushButton_start_clicked()
 {
-    runGPMscript =false;
-    runIDMscript = false;
+  //  runGPMscript =false;
+  //  runIDMscript = false;
     runOptionsscript = true;
-    runERAscript = false;
+ //   runERAscript = false;
 
     runModel();
 }
 
 
-void MainWindow::on_pushButton_generateGPMRain_clicked()
-{
-    runGPMscript = true;
-    runERAscript = false;
-    runIDMscript = false;
-    runOptionsscript = false;
-    runModel();
-}
+//void MainWindow::on_pushButton_generateGPMRain_clicked()
+//{
+//    runGPMscript = true;
+//    runERAscript = false;
+//    runIDMscript = false;
+//    runOptionsscript = false;
+//    runModel();
+//}
 
 
-void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
-{
-    runERAscript = false;
-    runGPMscript =false;
-    runIDMscript = true;
-    runOptionsscript = false;
+//void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
+//{
+//    runERAscript = false;
+//    runGPMscript =false;
+//    runIDMscript = true;
+//    runOptionsscript = false;
 
-    runModel();
-}
-
-
-
-void MainWindow::on_pushButton_generateERARain_clicked()
-{
-    runERAscript = true;
-    runGPMscript =false;
-    runIDMscript = false;
-    runOptionsscript = false;
-
-    runModel();
-}
+//    runModel();
+//}
 
 
-void MainWindow::on_toolButton_stopERA_clicked()
-{
-    Process->kill();
-    text_out->appendPlainText("User interrupt");
-}
+
+//void MainWindow::on_pushButton_generateERARain_clicked()
+//{
+//    runERAscript = true;
+//    runGPMscript =false;
+//    runIDMscript = false;
+//    runOptionsscript = false;
+
+//    runModel();
+//}
+
+
+//void MainWindow::on_toolButton_stopERA_clicked()
+//{
+//    Process->kill();
+//    text_out->appendPlainText("User interrupt");
+//}
 
 void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
+
+
 
 

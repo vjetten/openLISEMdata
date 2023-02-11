@@ -10,6 +10,7 @@ from pcraster import *
 from pcraster.framework import *
 from owslib.wcs import WebCoverageService
 import lisGlobals as lg
+from osgeo import gdal, gdalconst, osr
 
 
 class GetSoilGridsLayer:
@@ -27,7 +28,7 @@ class GetSoilGridsLayer:
         if i == 6: ID='_100-200cm_mean'
 
         #if self.debug == 1:
-        print("   => Downloading for soil layer "+str(i)+": "+varname+ID, flush=True)
+        print("   => Downloading SOILGRIDS layer "+str(i)+" as LISEM soil layer "+str(j)+": "+varname+ID, flush=True)
 
         ESPGs = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
 
@@ -47,17 +48,25 @@ class GetSoilGridsLayer:
         variable = varname+ID
         varout = varname+str(j)
         outputnametif = "{0}.tif".format(varout)
-        outputnamemap = "{0}.map".format(varout)
+        nt = "{0}_.tif".format(varout)
 
         if self.debug == 1:
             print("Downloading "+variable, flush=True)
-        dx1 = lg.dx
+        dx1 = 250
+        dy1 = 250
+
+        # make a tif but the nrrows and nrcols are related to 250m now
+        # force maskbox but this is not exact
+
         # get data as temp geotif and save to disk
-        response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=lg.maskbox,resx=dx1,resy=dx1,format='GEOTIFF_INT16')
+        response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=lg.maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
         with open(outputnametif, 'wb') as file:
              file.write(response.read())
-             
-             
+
+        #src = gdal.Warp(nt,outputnametif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg ='bilinear' )
+        #src = None
+
+
              
 
 ### ---------- class PedoTranfer() ---------- ###
@@ -84,23 +93,37 @@ class SoilGridsTransform(StaticModel):
         nametif = name+".tif"
         namemap2 = name+".map"
         nt = name+"_.tif"
-        
-        # open the tif and create PCRaster copy      
-        map_ = scalar(readmap(nametif))
+
+        # create a high res resampled version of the downloaded tif, using maskbox
+        resa = 'near'
+        if lg.optionResample == 1 :
+            resa = 'bilinear'
+        if lg.optionResample == 2 :
+            resa = 'cubic'
+
+        src = gdal.Warp(nt,nametif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa )
+
+                #open the tif and create PCRaster copy
+        map_ = scalar(readmap(nt))
         # give the missing areas the value nominal 1, the rest 0
-        mapmask = ifthenelse(map_ > 1e-5,0,nominal(1))
+        mapmask = ifthenelse(cover(map_,0) > 1e-5,0,nominal(1))
         # isolate the pixels arounf the missing value, 1 cell thick
-        edge = ifthen(spread(mapmask,0,1) == 3*celllength(), map_)
+        sedge = ifthen(spread(mapmask,0,1) <= 25*celllength(), scalar(1))
+
+        xc = xcoordinate(boolean(mask))
+        yc = ycoordinate(boolean(mask))
+        dist = 3*lg.dx
+        radius = min(lg.nrRows/2,lg.nrCols/2)
+        edge = sedge*ifthen((xc % dist <= lg.dx) & (yc % dist <= lg.dx),map_)
+
         # interpolate into the missing areas with the edge cell values, ID weight 1
-        map1 = inversedistance(boolean(mapmask),edge,1,0,0)                
+        report(edge,'edge.map')
+        map1 = inversedistance(boolean(mapmask),edge,1,0,lg.nrRows/2)
         # combine the original and the ID map into one and save
         map2 = cover(ifthen(map_ > 1e-5,map_),map1)*factor
-        
-        if lg.doProcessesSGAverage == 1 :
-            map2 = windowaverage(map2, 250) #3*celllength())
-                
         report(map2,namemap2)
-        
+
+
 
 ### ---------- class PedoTranfer() ---------- ###
 
@@ -120,6 +143,8 @@ class PedoTransfer(StaticModel):
         DEM = lg.DEM_
         xs = str(x)
  
+        print(">>> Creating infiltration parameters for layer "+xs, flush=True)
+
         S1 = readmap("sand{0}.map".format(xs))  # sand g/kg
         Si1 = readmap("silt{0}.map".format(xs)) # silt g/kg
         C1 = readmap("clay{0}.map".format(xs))  # clay g/kg
@@ -142,8 +167,6 @@ class PedoTransfer(StaticModel):
         
         BDdf = "bddf1_{0}.map".format(xs) 
 
-        print(">>> Creating infiltration parameters for layer "+xs, flush=True)
-
         lun = readmap(lg.landuseName)
         OMaddition = scalar(0.0)*mask
         if lg.useLUdensity == 1 and x == 1:
@@ -157,7 +180,7 @@ class PedoTransfer(StaticModel):
         C = C1 
         Si = Si1 
         OC = OC1*100  # conversion OC from fraction to percentage
-        OM = min(OC*1.73,5) +  OMaddition + CorrectionOM  #conversion org carbon to org matter factor 2
+        OM = min(OC*1.73,10) +  OMaddition + CorrectionOM  #conversion org carbon to org matter factor 2
         
         report(OM, om1)
 

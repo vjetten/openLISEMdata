@@ -46,6 +46,7 @@ def initialize():
     global doCorrectDEM
     global doUserOutlets
     global doPruneBranch
+    global optionResample
     global useBulkdensity
     global useLUdensity
     global useNoGravel
@@ -241,6 +242,7 @@ def initialize():
     optionD50 = 0
     optionSG1 = 2
     optionSG2 = 4    
+    optionResample = 1
     chWidth = 500.0
     chWidthS = 2.0
     chB = 0.459  #=1/2.18
@@ -327,7 +329,7 @@ def initialize():
     doUseCulverts = int(myvars["optionUseCulverts"])
 
     doProcessesDEM = int(myvars["optionDEM"])
-    doCatchment = int(myvars["optionCatchments"])
+    #doCatchment = int(myvars["optionCatchments"])
     #catchmentsize_ = float(myvars["CatchmentSize"]) 
     doCorrectDEM = int(myvars["optionFillDEM"])
     fillDEM = float(myvars["DEMfill"])
@@ -360,7 +362,8 @@ def initialize():
     optionSG1 = int(myvars["optionSG1"])+1
     optionSG2 = int(myvars["optionSG2"])+1
     doProcessesSGInterpolation = int(myvars["optionSGInterpolation"])
-    doProcessesSGAverage = int(myvars["optionSGAverage"])
+    #doProcessesSGAverage = int(myvars["optionSGAverage"])
+    optionResample = int(myvars["optionResample"])
     #useBulkdensity = int(myvars["optionUseBD"])
     #useBulkdensity2 = int(myvars["optionUseBD2"])
     useLUdensity = int(myvars["optionUseDensity"])
@@ -372,7 +375,6 @@ def initialize():
     initmoisture_ = float(myvars["initmoist"])  
     useCorrOM = int(myvars["optionUseCorrOM"])
     CorrOM_ = float(myvars["corrOM"])  
-
     
     doProcessesErosion = int(myvars["optionErosion"])
     doChannelsNoEros = int(myvars["optionChannelsNoEros"])

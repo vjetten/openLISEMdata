@@ -8,7 +8,7 @@
 
 
 # In conda make sure the following libs are installed:
-#     conda create --name lisem python
+#     conda create --name lisem
 #     conda activate lisem
 #     conda install -c conda-forge pcraster owslib scipy gdal
 
@@ -101,11 +101,12 @@ if __name__ == "__main__":
             staticModel.run()
             update_progress((x+1)/12)
         for x in range(0,6):
-            layer_ = 2
-            mapnr_ = x
+            lg.layer_ = 2
+            lg.mapnr_ = x
             staticModel.run()        
             update_progress((x+7)/12)
         #update_progress(1)    
+        print("\n");
 
     
     if lg.doProcessesInfil == 1:

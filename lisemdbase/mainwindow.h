@@ -104,6 +104,7 @@ public:
     int optionUseInfrastructure;
     int optionSpLash;
     int optionUseDrums;
+    int optionResample;
     double chB;
     double chC;
     double chWidth;
@@ -116,15 +117,17 @@ public:
     double refMaxSoildepth;
     double corrOM;
     double roofStore;
-    bool runGPMscript;
-    bool runIDMscript;
+   // bool runGPMscript;
+   // bool runIDMscript;
     bool runOptionsscript;
-    bool runERAscript;
+  //  bool runERAscript;
 
     int genfontsize;
 
     QStringList LULCspare;
 
+    int checkNameandOption(QString name, bool option, QString message);
+    bool checkAllNames();
     void setupModel();
     bool GetCondaAllEnvs(int cda);
     bool GetCondaEnvs();
@@ -140,6 +143,7 @@ public:
     void setIniStart();
     void getIniStart();
     void setIni(QString sss, bool yes);
+    QString checkName(int i, QString name);
     void getIni(QString name);
     void readValuesfromUI();
     void writeValuestoUI();
@@ -251,13 +255,13 @@ private slots:
 
     void on_toolButton_dailyRain_clicked();
 
-    void on_pushButton_generateGPMRain_clicked();
+  //  void on_pushButton_generateGPMRain_clicked();
 
-    void on_pushButton_gennerateSyntheticRain_clicked();
+ //  void on_pushButton_gennerateSyntheticRain_clicked();
 
     void on_tabWidgetOptions_currentChanged(int index);
 
-    void on_toolButton_stopGPM_clicked();
+ //   void on_toolButton_stopGPM_clicked();
 
     void on_toolButton_resetsoil_clicked();
 
@@ -265,13 +269,13 @@ private slots:
 
     void on_toolButton_userOutpoints_clicked();
 
-    void on_toolButton_stopIDM_clicked();
+  //  void on_toolButton_stopIDM_clicked();
 
     void on_pushButton_start_clicked();
 
-    void on_pushButton_generateERARain_clicked();
+ //   void on_pushButton_generateERARain_clicked();
 
-    void on_toolButton_stopERA_clicked();
+ //   void on_toolButton_stopERA_clicked();
 
     void on_toolButton_GPMGauge_clicked();
 
@@ -297,6 +301,8 @@ private slots:
 
 
     void on_checkBox_Rain_clicked(bool checked);
+
+    void on_comboBox_Resample_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;

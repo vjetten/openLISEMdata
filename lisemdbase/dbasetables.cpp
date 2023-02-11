@@ -47,7 +47,6 @@ void MainWindow::fillLULCTable()
         int r = 0;
         while(!in.atEnd()) {
             QString line = in.readLine().simplified();
-
             if (!line.contains("=")) {
                 //warning old format here
                 return;
@@ -57,9 +56,10 @@ void MainWindow::fillLULCTable()
                 QStringList names = line.split(QRegExp("="));
                 QString s = names.at(1).simplified();
                 QStringList fields = s.split(QRegExp("\\s+"));
+                fields << "0.0" << "0.0";
 
                 model->setVerticalHeaderItem(r-1,new QStandardItem(names.at(0).simplified()));
-                for (int i = 0; i < fields.count(); i++){
+                for (int i = 0; i < 9; i++){ //fields.count(); i++){
                     QStandardItem *Input = new QStandardItem(fields.at(i));
                     model->setItem(r-1,i,Input);
                 }
@@ -97,7 +97,7 @@ void MainWindow::on_toolButton_saveLULC_clicked()
             for (int j=0; j<m; j++)
             {
                 lll << model->item(i,j)->text();
-               // qDebug() << model->item(i,j)->text();
+                //qDebug() << model->item(i,j)->text();
             }
             QString sss = lll.join("\t")+"\n";
            // qDebug() << sss;
@@ -116,6 +116,7 @@ void MainWindow::on_toolButton_resetLULC_clicked()
 void MainWindow::createNNLULCTable()
 {
     QFile file(LULCNNtableName);
+
     if(file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream stream(&file);
@@ -128,9 +129,13 @@ void MainWindow::createNNLULCTable()
         for (int i=0; i<n; ++i) {
             QStringList lll;
             for (int j=0; j<m; j++) {
-                lll << model->item(i,j)->text();
+                if(!model->item(i,j)->text().isEmpty())
+                    lll << model->item(i,j)->text();
+                else
+                    lll << "0";
             }
             QString sss = lll.join("\t")+"\n";
+          //  qDebug() << sss;
             stream << sss;
         }
         file.close();

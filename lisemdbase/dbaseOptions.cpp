@@ -79,7 +79,9 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/optionSG1", QString::number(SG1));
     settings.setValue("SOIL/optionSG2", QString::number(SG2));
     settings.setValue("SOIL/optionSGInterpolation", QString::number(optionSGInterpolation)); // do soilgrids
-    settings.setValue("SOIL/optionSGAverage", QString::number(optionSGAverage)); // do soilgrids
+    settings.setValue("SOIL/optionResample", QString::number(optionResample)); // do soilgrids
+
+    //settings.setValue("SOIL/optionSGAverage", QString::number(optionSGAverage)); // do soilgrids
     settings.setValue("SOIL/optionNoGravel", QString::number(optionNoGravel)); // do soilgrids
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
     settings.setValue("SOIL/optionUseCorrOM", QString::number(optionUseCorrOM));
@@ -106,7 +108,7 @@ void MainWindow::setIni(QString sss, bool yes)
 
     settings.setValue("RAINFALL/optionRain", QString::number(optionRain));
   //  settings.setValue("RAINFALL/RainScript", RainScriptFileName);
-    settings.setValue("RAINFALL/RainRefNameDEM", RainRefNameDEM);
+    settings.setValue("RAINFALL/RainRefNameDEM", BaseDEMName);//RainRefNameDEM);
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
@@ -131,22 +133,38 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.sync();
 }
 
+QString MainWindow::checkName(int i, QString name)
+{
+    QString s = BaseDirName;
+    if (i == 0) s = "";
+    if (name.isEmpty())
+        return("");
+
+    //qDebug() << s+name;
+
+    if (!QFileInfo(s+name).exists())
+        return("");
+
+    return(name);
+}
+
 void MainWindow::getIni(QString name)
 {
     QSettings settings(name,QSettings::IniFormat);
     settings.sync();
 
-    CondaBaseDirName = settings.value("CondaDirectory").toString();
-    ScriptFileName = settings.value("Script").toString();
+    CondaBaseDirName = checkName(0,settings.value("CondaDirectory").toString());
 
-    BaseDirName = settings.value("BaseDirectory").toString();
-    MapsDirName = settings.value("MapsDirectory").toString();
+    ScriptFileName = checkName(0,settings.value("Script").toString());
+
+    BaseDirName = checkName(0,settings.value("BaseDirectory").toString());
+    MapsDirName = checkName(0,settings.value("MapsDirectory").toString());
     ESPGnumber = settings.value("ESPGnumber").toString();
 
-    BaseDEMName = settings.value("BaseDEM").toString();
-    BaseChannelName = settings.value("BaseChannel").toString();
-    BaseOutletsName = settings.value("BaseOutlets").toString();
-    BaseOutpointsName = settings.value("BaseOutpoints").toString();
+    BaseDEMName = checkName(1,settings.value("BaseDEM").toString());
+    BaseChannelName = checkName(1,settings.value("BaseChannel").toString());
+    BaseOutletsName = checkName(1,settings.value("BaseOutlets").toString());
+    BaseOutpointsName = checkName(1,settings.value("BaseOutpoints").toString());
 
     optionDEM = settings.value("DEM/optionDEM").toInt();
     optionCatchments = settings.value("DEM/optionCatchments").toInt();
@@ -155,11 +173,11 @@ void MainWindow::getIni(QString name)
     DEMfill = settings.value("DEM/DEMfill").toDouble();
 
     optionChannels = settings.value("CHANNEL/optionChannels").toInt();
-    BaseCulvertsName = settings.value("CHANNEL/BaseCulverts").toString();
+    BaseCulvertsName = checkName(1,settings.value("CHANNEL/BaseCulverts").toString());
     optionUseCulverts = settings.value("CHANNEL/optionUseCulverts").toInt();
     optionPruneBranch = settings.value("CHANNEL/optionPruneBranch").toInt();
     optionIncludeDams = settings.value("CHANNEL/optionIncludeDams").toInt();
-    BaseDamsName = settings.value("CHANNEL/BaseDams").toString();
+    BaseDamsName = checkName(1,settings.value("CHANNEL/BaseDams").toString());
     optionUserOutlets = settings.value("CHANNEL/optionUserOutlets").toInt();
     chWidth = settings.value("CHANNEL/chWidth").toDouble();
     chWidthS = settings.value("CHANNEL/chWidthS").toDouble();
@@ -173,9 +191,9 @@ void MainWindow::getIni(QString name)
     WatershedsName = settings.value("CHANNEL/Watersheds").toString();
 
     optionLULC = settings.value("LULC/optionLULC").toInt();
-    LULCmapName = settings.value("LULC/LULCmap").toString();
-    LULCtableName = settings.value("LULC/LULCtable").toString();
-    NDVImapName = settings.value("LULC/NDVImap").toString();
+    LULCmapName = checkName(0,settings.value("LULC/LULCmap").toString());
+    LULCtableName = checkName(0,settings.value("LULC/LULCtable").toString());
+    NDVImapName = checkName(1,settings.value("LULC/NDVImap").toString());
     optionUseNDVI = settings.value("LULC/optionUseNDVI").toInt();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
@@ -183,7 +201,8 @@ void MainWindow::getIni(QString name)
     SG1 = settings.value("SOIL/optionSG1").toInt();
     SG2 = settings.value("SOIL/optionSG2").toInt();
     optionSGInterpolation = settings.value("SOIL/optionSGInterpolation").toInt();
-    optionSGAverage = settings.value("SOIL/optionSGAverage").toInt();
+    optionResample = settings.value("SOIL/optionResample").toInt();
+    //optionSGAverage = settings.value("SOIL/optionSGAverage").toInt();
     optionNoGravel = settings.value("SOIL/optionNoGravel").toInt();
     optionUseBD = 1;//settings.value("SOIL/optionUseBD").toInt();
     optionUseCorrOM = settings.value("SOIL/optionUseCorrOM").toInt();
@@ -202,27 +221,27 @@ void MainWindow::getIni(QString name)
     optionChannelsNoEros = settings.value("EROSION/optionChannelsNoEros").toInt();
 
     optionUseInfrastructure = settings.value("INFRA/optionUseInfrastructure").toInt();
-    buildingsSHPName = settings.value("INFRA/buildingsSHPName").toString();
+    buildingsSHPName = checkName(1,settings.value("INFRA/buildingsSHPName").toString());
     optionUseDrums = settings.value("INFRA/optionUseDrums").toInt();
     drummapName = settings.value("INFRA/drumMap").toString();
-    roadsSHPName = settings.value("INFRA/roadsSHPName").toString();
+    roadsSHPName = checkName(1,settings.value("INFRA/roadsSHPName").toString());
     roofStore = settings.value("INFRA/roofStore").toDouble();
 
     optionRain = settings.value("RAINFALL/optionRain").toInt();
     //RainScriptFileName = settings.value("RAINFALL/RainScript").toString();
-    RainRefNameDEM = settings.value("RAINFALL/RainRefNameDEM").toString();
-    RainBaseDirName = settings.value("RAINFALL/RainBaseDirectory").toString();
-    RainDirName = settings.value("RAINFALL/RainDirectory").toString();
-    RainFilename = settings.value("RAINFALL/RainFilename").toString();
+    //RainRefNameDEM = checkName(1,settings.value("RAINFALL/RainRefNameDEM").toString());
+    RainBaseDirName = checkName(0,settings.value("RAINFALL/RainBaseDirectory").toString());
+    RainDirName = checkName(0,settings.value("RAINFALL/RainDirectory").toString());
+    RainFilename = checkName(0,settings.value("RAINFALL/RainFilename").toString());
     optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
-    RainGaugeFilename = settings.value("RAINFALL/RainGaugeFilename").toString();
-    RainGaugeFilenameIn = settings.value("RAINFALL/RainGaugeFilenameIn").toString();
+    RainGaugeFilename = checkName(0,settings.value("RAINFALL/RainGaugeFilename").toString());
+    RainGaugeFilenameIn = checkName(0,settings.value("RAINFALL/RainGaugeFilenameIn").toString());
   //  IDMScriptFileName = settings.value("RAINFALL/IDMScript").toString();
-    IDMFilename = settings.value("RAINFALL/IDMFilename").toString();
-    RainFilenameHourIDM = settings.value("RAINFALL/RainFilenameHourIDM").toString();
+    IDMFilename = checkName(0,settings.value("RAINFALL/IDMFilename").toString());
+    RainFilenameHourIDM = checkName(0,settings.value("RAINFALL/RainFilenameHourIDM").toString());
   //  ERAScriptFileName = settings.value("RAINFALL/ERAScript").toString();
-    ERAFilename = settings.value("RAINFALL/ERAFilename").toString();
-    RainFilenameHourERA = settings.value("RAINFALL/RainFilenameHourERA").toString();
+    ERAFilename = checkName(0,settings.value("RAINFALL/ERAFilename").toString());
+    RainFilenameHourERA = checkName(0,settings.value("RAINFALL/RainFilenameHourERA").toString());
     dailyA = settings.value("RAINFALL/dailyA").toDouble();
     dailyB = settings.value("RAINFALL/dailyB").toDouble();
     day0 = settings.value("RAINFALL/day0").toInt();
@@ -246,15 +265,6 @@ void MainWindow::readValuesfromUI()
     BaseChannelName = lineEdit_baseChannel->text();
     BaseOutletsName = lineEdit_userOutlets->text();    
     BaseOutpointsName = lineEdit_userOutpoints->text();
-
-//    optionlist = QString("%1,%2,%3,%4,%5,%6,%7,%8")
-//            .arg(optionDEM)
-//            .arg(optionChannels)
-//            .arg(optionLULC)
-//            .arg(optionInfil)
-//            .arg(optionErosion)
-//            .arg(optionUseInfrastructure)
-//            .arg(optionRain);
 
     optionDEM = checkBox_DEM->isChecked() ? 1 : 0;
     optionFillDEM = checkBox_correctDEM->isChecked() ? 1 : 0;
@@ -289,7 +299,8 @@ void MainWindow::readValuesfromUI()
     SG1 = comboBox_SGlayer1->currentIndex();
     SG2 = comboBox_SGlayer2->currentIndex();
     optionSGInterpolation = checkBox_SGInterpolation->isChecked() ? 1 : 0;
-    optionSGAverage = checkBox_SGAverage->isChecked() ? 1 : 0;
+    optionResample = comboBox_Resample->currentIndex();
+  //  optionSGAverage = checkBox_SGAverage->isChecked() ? 1 : 0;
     optionNoGravel = checkBox_noGravel->isChecked() ? 1 : 0;
     optionUseBD = 1; //checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseCorrOM  = checkBox_useCorrOM->isChecked() ? 1 : 0;
@@ -318,7 +329,7 @@ void MainWindow::readValuesfromUI()
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
     //RainScriptFileName= lineEdit_GPMpy->text();
-    RainRefNameDEM = lineEdit_GPMrefmap->text();
+    RainRefNameDEM = BaseDEMName;//lineEdit_GPMrefmap->text();
     RainFilename = lineEdit_RainFilenameGPM->text();
     RainGaugeFilename = lineEdit_RainGaugeFilenameGPM->text();
     RainGaugeFilenameIn = lineEdit_RainGaugeFilenameGPMin->text();
@@ -386,7 +397,8 @@ void MainWindow::writeValuestoUI()
     comboBox_SGlayer1->setCurrentIndex(SG1);
     comboBox_SGlayer2->setCurrentIndex(SG2);
     checkBox_SGInterpolation->setChecked(optionSGInterpolation > 0);
-    checkBox_SGAverage->setChecked(optionSGAverage > 0);
+    //checkBox_SGAverage->setChecked(optionSGAverage > 0);
+    comboBox_Resample->setCurrentIndex(optionResample);
     checkBox_noGravel->setChecked(optionNoGravel > 0);
     //checkBox_userefBD->setChecked(optionUseBD > 0);
     //checkBox_userefBD2->setChecked(optionUseBD2 > 0);
@@ -422,7 +434,7 @@ void MainWindow::writeValuestoUI()
 
     checkBox_Rain->setChecked(optionRain > 0);
    // lineEdit_GPMpy->setText(RainScriptFileName);
-    lineEdit_GPMrefmap->setText(RainRefNameDEM);
+    lineEdit_GPMrefmap->setText(BaseDEMName);//RainRefNameDEM);
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilenameGPM->setText(RainFilename);

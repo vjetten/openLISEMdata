@@ -59,6 +59,7 @@
         <file>../scripts/lisSurface.py</file>
         <file>2X/list.png</file>
         <file>ITC logo.png</file>
+        <file>../scripts/lisRainfall.py</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
