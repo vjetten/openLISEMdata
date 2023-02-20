@@ -239,7 +239,7 @@ void MainWindow::getIni(QString name)
     RainBaseDirName = checkName(0,settings.value("RAINFALL/RainBaseDirectory").toString());
     RainDirName = checkName(0,settings.value("RAINFALL/RainDirectory").toString());
     RainFilename = checkName(0,settings.value("RAINFALL/RainFilename").toString());
-    RainEPSG = checkName(0,settings.value("RAINFALL/RainEPSG").toString());
+    RainEPSG = settings.value("RAINFALL/RainEPSG").toString();
     RainString = checkName(0,settings.value("RAINFALL/RainString").toString());
     optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
     RainGaugeFilename = checkName(0,settings.value("RAINFALL/RainGaugeFilename").toString());

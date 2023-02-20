@@ -294,7 +294,7 @@ void MainWindow::on_toolButton_GPMin_clicked()
     if (!QFileInfo(tmp).exists())
         tmp = ProjectDirName;
     QStringList filters;
-    RainBaseDirName = getFileorDir(tmp,"Select image data folder", filters, 2);
+    RainBaseDirName = getFileorDir(tmp,"Select image data folder", filters, 0);
     if (!RainBaseDirName.isEmpty())
         lineEdit_GPMdir->setText(RainBaseDirName);
 

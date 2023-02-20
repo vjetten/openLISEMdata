@@ -97,7 +97,9 @@ class GPMRainfall(StaticModel):
                     src = gdal.Open(link, gdal.GA_ReadOnly)
                     if start == 0 :
                         prj1 = osr.SpatialReference()
-                        prj1.ImportFromEPSG(lg.RainEPSG)
+                        prj1.ImportFromEPSG(int(lg.rainEPSG))
+                        #print(prj1, flush = True)
+
                         wkt1 = prj1.ExportToWkt()
                         
                     src.SetProjection(wkt1)
@@ -181,10 +183,10 @@ class GPMRainfall(StaticModel):
                 # calculate the total rainfall
                 raina = readmap(link)
                 #if (option > -1) :
-                rain = max(0,(60/lg.timeinterval)*raina/lg.conversionmmh)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+                rain = max(0,(60/lg.timeinterval)*raina*lg.conversionmmh)
 
                 report(rain,link)
-                sum=sum+rain/(60/lg.timeinterval)    # assumning the value is intensity in mm/h the rianfall is p/2
+                sum=sum+rain/(60/lg.timeinterval)    # assumning the value is intensity in mm/h the rainfall is p/(60/interval)
                 update_progress(j/totalnr)
                 j+=1
 
