@@ -50,6 +50,8 @@ public:
     QString RainBaseDirName;
     QString RainDirName;
     QString RainFilename;
+    QString RainEPSG;
+    QString RainString;
     QString RainGaugeFilename;
     QString RainGaugeFilenameIn;
     QString RainFilenameHourIDM;

@@ -112,6 +112,12 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainBaseDirectory", RainBaseDirName);
     settings.setValue("RAINFALL/RainDirectory", RainDirName);
     settings.setValue("RAINFALL/RainFilename", RainFilename);
+    settings.setValue("RAINFALL/RainEPSG", RainEPSG);
+    for (int i=0; i < comboBox_rainString->count(); i++) {
+        RainString = comboBox_rainString->itemText(i);
+        settings.setValue(QString("RAINFALL/RainString_%1").arg(i), RainString);
+    }
+    settings.setValue("RAINFALL/RainString", RainString);
     settings.setValue("RAINFALL/SelectPointfromGPM", QString::number(optionGaugeGPM));
     settings.setValue("RAINFALL/RainGaugeFilename", RainGaugeFilename);
     settings.setValue("RAINFALL/RainGaugeFilenameIn", RainGaugeFilenameIn);
@@ -233,6 +239,8 @@ void MainWindow::getIni(QString name)
     RainBaseDirName = checkName(0,settings.value("RAINFALL/RainBaseDirectory").toString());
     RainDirName = checkName(0,settings.value("RAINFALL/RainDirectory").toString());
     RainFilename = checkName(0,settings.value("RAINFALL/RainFilename").toString());
+    RainEPSG = checkName(0,settings.value("RAINFALL/RainEPSG").toString());
+    RainString = checkName(0,settings.value("RAINFALL/RainString").toString());
     optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
     RainGaugeFilename = checkName(0,settings.value("RAINFALL/RainGaugeFilename").toString());
     RainGaugeFilenameIn = checkName(0,settings.value("RAINFALL/RainGaugeFilenameIn").toString());
@@ -331,6 +339,8 @@ void MainWindow::readValuesfromUI()
     //RainScriptFileName= lineEdit_GPMpy->text();
     RainRefNameDEM = BaseDEMName;//lineEdit_GPMrefmap->text();
     RainFilename = lineEdit_RainFilenameGPM->text();
+    RainEPSG = lineEdit_RainEPSG->text();
+ //   RainString = lineEdit_RainString->text();
     RainGaugeFilename = lineEdit_RainGaugeFilenameGPM->text();
     RainGaugeFilenameIn = lineEdit_RainGaugeFilenameGPMin->text();
     optionGaugeGPM = checkBox_writeGaugeData->isChecked() ? 1 : 0;
@@ -433,11 +443,17 @@ void MainWindow::writeValuestoUI()
     spin_roofStore->setValue(roofStore);
 
     checkBox_Rain->setChecked(optionRain > 0);
+    scrollArea_Rain->setEnabled(optionRain > 0);
+    groupBox_raindata->setEnabled(optionRain > 0);
+    groupBox_dailyraindata->setEnabled(optionRain > 0);
+
    // lineEdit_GPMpy->setText(RainScriptFileName);
     lineEdit_GPMrefmap->setText(BaseDEMName);//RainRefNameDEM);
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
     lineEdit_RainFilenameGPM->setText(RainFilename);
+    lineEdit_RainEPSG->setText(RainEPSG);
+    //lineEdit_RainString->setText(RainString);
     lineEdit_RainGaugeFilenameGPM->setText(RainGaugeFilename);
     lineEdit_RainGaugeFilenameGPMin->setText(RainGaugeFilenameIn);
     checkBox_writeGaugeData->setChecked(optionGaugeGPM > 0);

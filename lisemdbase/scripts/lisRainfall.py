@@ -16,19 +16,6 @@ from pcraster.framework import *
 import time
 import lisGlobals as lg
 
-    # global conversionmmh
-    # global timeinterval
-    # global IPoption
-    # global optionGaugeGPM
-    # global rainInputdir 
-    # global rainOutputdir 
-    # global rainMaskmapname
-    # global rainfilename
-    # global rainPointmapname
-    # global rainPointnameIn 
-
-
-
 # use unix style path delimiters: / instead of \
 # pathnames end with /
 
@@ -49,24 +36,10 @@ class GPMRainfall(StaticModel):
     def initial(self):
     # faster to copy global vars
         mask = lg.mask_
-        # nrRows = lg.nrRows
-        # nrCols = lg.nrCols
-        # maskgeotrans = lg.maskgeotrans
-        # maskproj = lg.maskproj
         rainOutputdir = lg.rainOutputdir
         rainfilename = lg.rainfilename 
-        conversionmmh = lg.conversionmmh
-        timeinterval  = lg.timeinterval
-        
-        #rainMaskmapname = lg.BaseDir+lg.rainMaskmapname
-        
-        
-        maskgdal=gdal.Open(lg.BaseDir+lg.rainMaskmapname) # get mask details
-        maskproj = maskgdal.GetProjection()
-        maskgeotrans = maskgdal.GetGeoTransform()
-        nrRows = maskgdal.RasterYSize
-        nrCols = maskgdal.RasterXSize
-        
+        #conversionmmh = lg.conversionmmh
+        #timeinterval  = lg.timeinterval
         
         if not os.path.exists(rainOutputdir):
             print('>>> Creating output dir: '+rainOutputdir, flush=True)
@@ -91,12 +64,12 @@ class GPMRainfall(StaticModel):
             print('>>> Using Cubic Interpolation', flush=True)
 
 
-        print('>>> Deleting previous GPM files in folder: {0} '.format(rainOutputdir), flush=True)
+        print('>>> Deleting previous rainfall maps in folder: {0} '.format(rainOutputdir), flush=True)
         # for root, dirs, files in os.walk(rainOutputdir):
             # for file in files:
                 # os.remove(os.path.join(root, file))
         for file_name in listdir(rainOutputdir):
-            if "3B-HHR-L.MS.MRG.3IMERG" in file_name :
+            if lg.rainString in file_name :
                 #print(rainOutputdir + '/' + file_name,flush=True)
                 os.remove(rainOutputdir + '/' + file_name)
 
@@ -124,16 +97,16 @@ class GPMRainfall(StaticModel):
                     src = gdal.Open(link, gdal.GA_ReadOnly)
                     if start == 0 :
                         prj1 = osr.SpatialReference()
-                        prj1.ImportFromEPSG(4326)
+                        prj1.ImportFromEPSG(lg.RainEPSG)
                         wkt1 = prj1.ExportToWkt()
                         
                     src.SetProjection(wkt1)
 
                     filename = link[:-4]+".map"
                     gpmoutName = rainOutputdir+filename
-                    dst = gdal.GetDriverByName('PCRaster').Create(gpmoutName, nrCols, nrRows, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
-                    dst.SetGeoTransform( maskgeotrans )
-                    dst.SetProjection( maskproj )
+                    dst = gdal.GetDriverByName('PCRaster').Create(gpmoutName, lg.nrCols, lg.nrRows, 1,gdalconst.GDT_Float32,["PCRASTER_VALUESCALE=VS_SCALAR"])
+                    dst.SetGeoTransform( lg.maskgeotrans )
+                    dst.SetProjection( lg.maskproj )
 
                     if start == 0 :
                         prj2 = osr.SpatialReference()
@@ -208,10 +181,10 @@ class GPMRainfall(StaticModel):
                 # calculate the total rainfall
                 raina = readmap(link)
                 #if (option > -1) :
-                rain = max(0,(60/timeinterval)*raina/conversionmmh)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
+                rain = max(0,(60/lg.timeinterval)*raina/lg.conversionmmh)   # data is stored in factor 10, 4.0 means 0.4 mm/h)
 
                 report(rain,link)
-                sum=sum+rain/(60/timeinterval)    # assumning the value is intensity in mm/h the rianfall is p/2
+                sum=sum+rain/(60/lg.timeinterval)    # assumning the value is intensity in mm/h the rianfall is p/2
                 update_progress(j/totalnr)
                 j+=1
 
@@ -231,8 +204,8 @@ class GPMRainfall(StaticModel):
             pm = pcr2numpy(pointmap, -9999)
 
             i = 0
-            for row in range(1,nrRows) :
-                for col in range(1,nrCols) :
+            for row in range(1,lg.nrRows) :
+                for col in range(1,lg.nrCols) :
                     value = int(pm[row][col])
                     if (value > 0) :
                         rowpoint.append(row)

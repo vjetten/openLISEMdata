@@ -16,6 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
 
+    qDebug() << comboBox_rainString->currentText() << comboBox_rainString->count();
+    if (comboBox_rainString->count() == 0)
+        comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+
     sss.clear();
     sss << "Nearest Neighbourhood" << "Bilinear" << "Cubic";
     comboBox_Resample->addItems(sss);
@@ -35,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     combo_iniName->setDuplicatesEnabled(false);
 
     getIniStart();
-
 
     QString s = combo_iniName->currentText();
     if (QFileInfo(s).exists()) {
