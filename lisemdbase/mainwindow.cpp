@@ -17,8 +17,10 @@ MainWindow::MainWindow(QWidget *parent)
     comboBox_SGlayer2->addItems(sss);
 
     qDebug() << comboBox_rainString->currentText() << comboBox_rainString->count();
-    if (comboBox_rainString->count() == 0)
+    if (comboBox_rainString->count() == 0) {
         comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+        comboBox_rainString->addItem("YW_2017.002_");
+    }
 
     sss.clear();
     sss << "Nearest Neighbourhood" << "Bilinear" << "Cubic";

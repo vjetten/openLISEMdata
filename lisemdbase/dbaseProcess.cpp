@@ -82,7 +82,7 @@ bool MainWindow::checkAllNames()
 void MainWindow::runModel()
 {
     text_out->clear();
-
+    text_out->insertPlainText(">>> Preparing python libraries\n");
 
 
     // add the env path names, copied from Spyder. Maybe overkill but it works

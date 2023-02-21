@@ -63,7 +63,6 @@ class GPMRainfall(StaticModel):
             GDO = gdalconst.GRA_Cubic
             print('>>> Using Cubic Interpolation', flush=True)
 
-
         print('>>> Deleting previous rainfall maps in folder: {0} '.format(rainOutputdir), flush=True)
         # for root, dirs, files in os.walk(rainOutputdir):
             # for file in files:
@@ -72,6 +71,31 @@ class GPMRainfall(StaticModel):
             if lg.rainString in file_name :
                 #print(rainOutputdir + '/' + file_name,flush=True)
                 os.remove(rainOutputdir + '/' + file_name)
+        optionRainASC = 1
+        if (optionRainASC == 1) :
+            count = 0
+            #update_progress(0)
+            print('>>> Converting ASC to GTiff ', flush=True)
+            drv = gdal.GetDriverByName('GTiff')
+            os.chdir(lg.rainInputdir)
+            totallinks = os.listdir(os.getcwd())
+            hdflinks = []
+            for link in totallinks:
+                if link[-3:] == 'asc':
+                    hdflinks.append(link)
+            totalcount = len(hdflinks)
+            print(">>> nr ASC files to be processed: {0}".format(totalcount),flush = True)
+            for link in hdflinks:
+                ds_in = gdal.Open(link)
+                filename = link[:-4]+".tif"
+                ds_out = drv.CreateCopy(filename, ds_in)
+                srs = osr.SpatialReference()
+                srs.ImportFromEPSG(int(lg.rainEPSG))
+                ds_out.SetProjection(srs.ExportToWkt())
+                count += 1
+                update_progress(count/totalcount)
+            ds_in = None
+            ds_out = None
 
         print('>>> Converting GTiff to PCRaster ', flush=True)
 
@@ -98,8 +122,6 @@ class GPMRainfall(StaticModel):
                     if start == 0 :
                         prj1 = osr.SpatialReference()
                         prj1.ImportFromEPSG(int(lg.rainEPSG))
-                        #print(prj1, flush = True)
-
                         wkt1 = prj1.ExportToWkt()
                         
                     src.SetProjection(wkt1)
@@ -120,7 +142,7 @@ class GPMRainfall(StaticModel):
                     gdal.ReprojectImage(src, dst, wkt1, wkt2, GDO)
                     
                     count += 1            
-                    update_progress(count/(totalcount))
+                    update_progress(count/totalcount)
 
 
                     dst = None
