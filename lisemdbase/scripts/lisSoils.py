@@ -1,10 +1,11 @@
 # lisemDBASEgenerator
 # global vraiables and initialisation
 #
-# author: V.G.Jetten @ 2022
+# author: V.G.Jetten @ 2022, 2023
 # University of Twente, Faculty ITC
 # this software has copyright model: GPLV3
 # this software has a disclaimer
+# last edit: 28 mar 2023
 
 from pcraster import *
 from pcraster.framework import *
@@ -19,6 +20,7 @@ class GetSoilGridsLayer:
     self, x = 0, i=1, j = 1):
         varname = lg.SG_names_[x]
         self.debug = 0 #Debug_
+        vname = varname
 
         if i == 1: ID='_0-5cm_mean'
         if i == 2: ID='_5-15cm_mean'
@@ -26,9 +28,14 @@ class GetSoilGridsLayer:
         if i == 4: ID='_30-60cm_mean'
         if i == 5: ID='_60-100cm_mean'
         if i == 6: ID='_100-200cm_mean'
+        
+        if x == 3: vname='Soil Org Carbon' 
+        if x == 4: vname='Gravel' 
+        if x == 5: vname='Bulk Density' 
 
         #if self.debug == 1:
-        print("   => Downloading SOILGRIDS layer "+str(i)+" as LISEM soil layer "+str(j)+": "+varname+ID, flush=True)
+        #print("   => Downloading SOILGRIDS layer "+str(i)+" as LISEM soil layer "+str(j)+": "+varname+ID, flush=True)
+        print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(j)+": "+vname+" content", flush=True)
 
         ESPGs = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
 
@@ -69,10 +76,10 @@ class GetSoilGridsLayer:
 
              
 
-### ---------- class PedoTranfer() ---------- ###
-
+### ---------- class SoilGridsTransform() ---------- ###
 
 class SoilGridsTransform(StaticModel):
+    # convert tif to map and do inverse distance interpolation to fill missing values
     def __init__(self, mask=0, mapnr=1, layer=1):
         StaticModel.__init__(self)
     def initial(self):
@@ -88,24 +95,24 @@ class SoilGridsTransform(StaticModel):
         if mapnr == 2: name = "silt{0}".format(xs); factor = 0.001  # fraction clay, server gives g/kg
         if mapnr == 3: name = "soc{0}".format(xs);  factor = 0.0001 # fraction SOC, server give dg/kg
         if mapnr == 4: name = "cfvo{0}".format(xs); factor = 0.001  # fraction gravel, server gives cm3/dm3
-        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10     # bulk density kg/m3, server gives cg/cm3 
+        if mapnr == 5: name = "bdod{0}".format(xs); factor = 10.0     # bulk density kg/m3, server gives cg/cm3 
 
         nametif = name+".tif"
         namemap2 = name+".map"
-        nt = name+"_.tif"
+        nt = name+"res.tif"
 
-        # create a high res resampled version of the downloaded tif, using maskbox
+        # create a high res resampled version of the downloaded tif, using maskbox, forcing float64
         resa = 'near'
         if lg.optionResample == 1 :
             resa = 'bilinear'
         if lg.optionResample == 2 :
-            resa = 'cubic'
+            resa = 'cubic'        
+        src = gdal.Warp(nt,nametif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa, outputType = gdal.GDT_Float64 )
 
-        src = gdal.Warp(nt,nametif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa )
-
-                #open the tif and create PCRaster copy
+        #open the tif and create PCRaster copy
         map_ = scalar(readmap(nt))
-        # give the missing areas the value nominal 1, the rest 0
+        
+        # mask with missing value areas nominal 1, the rest 0
         mapmask = ifthenelse(cover(map_,0) > 1e-5,0,nominal(1))
         # isolate the pixels arounf the missing value, 1 cell thick
         sedge = ifthen(spread(mapmask,0,1) <= 25*celllength(), scalar(1))
@@ -142,12 +149,12 @@ class PedoTransfer(StaticModel):
         mask = lg.mask_
         DEM = lg.DEM_
         xs = str(x)
- 
+         
         print(">>> Creating infiltration parameters for layer "+xs, flush=True)
 
-        S1 = readmap("sand{0}.map".format(xs))  # sand g/kg
-        Si1 = readmap("silt{0}.map".format(xs)) # silt g/kg
-        C1 = readmap("clay{0}.map".format(xs))  # clay g/kg
+        S1 = readmap("sand{0}.map".format(xs))  # sand fraction
+        Si1 = readmap("silt{0}.map".format(xs)) # silt fraction 
+        C1 = readmap("clay{0}.map".format(xs))  # clay fraction
         OC1 = readmap("soc{0}.map".format(xs))  # organic carbon in dg/kg
         Grv = readmap("cfvo{0}.map".format(xs)) # coarse fragments cm3/dm3,
         bdod = readmap("bdod{0}.map".format(xs)) # bulk density in cg/m3 so kg/m3 = *0.1
@@ -167,18 +174,19 @@ class PedoTransfer(StaticModel):
         
         BDdf = "bddf1_{0}.map".format(xs) 
 
-        lun = readmap(lg.landuseName)
         OMaddition = scalar(0.0)*mask
-        if lg.useLUdensity == 1 and x == 1:
-            OMaddition =  lookupscalar(lg.LULCtable, 8, nominal(lun)) * mask
+        if (lg.doProcessesLULC) :
+            lun = readmap(lg.landuseName)
+            if lg.useLUdensity == 1 and x == 1:
+                OMaddition =  lookupscalar(lg.LULCtable, 8, nominal(lun)) * mask
         
         CorrectionOM = 0.0
         if lg.useCorrOM == 1 and x == 1:
             CorrectionOM = lg.CorrOM_            
         
-        S = S1 
-        C = C1 
-        Si = Si1 
+        S = S1 #  * 0.1/areaaverage(S1,area)
+        C = C1 # * 0.16/areaaverage(C1,area)
+        Si = Si1 #1-S-C #Si1 
         OC = OC1*100  # conversion OC from fraction to percentage
         OM = min(OC*1.73,10) +  OMaddition + CorrectionOM  #conversion org carbon to org matter factor 2
         
@@ -207,29 +215,27 @@ class PedoTransfer(StaticModel):
         SadjSat = SatPM33  + SatSadj  #AE18) =AC18+AD18
         Dens_om = (1-SadjSat)*2.65  #AF18) =(1-AE18)*2.65
         poredf1 = (1-Dens_om/2.65)  # pore with dens factor 1.0        
-      #  bddf = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
-        
-        #------ this part does not consider density factor        
-        Densityfactor = scalar(1.0)*mask
-        Densityfactor2 = scalar(1.0)*mask
-                              
-        if lg.useLUdensity == 1 and x == 1:
-            Densityfactor2 =  lookupscalar(lg.LULCtable, 5, nominal(lg.lun)) * mask
+        bddf = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
+               
 
-            # Densityfactor = (2*Densityfactor2+Densityfactor)/3.0
-            # minv = mapminimum(Densityfactor)
-            # maxv = mapmaximum(Densityfactor)
-            # Densityfactor = minv + (maxv-minv)*(Densityfactor-0.9)/(1.1-0.9)
-        #Densityfactor = min(Densityfactor,Densityfactor2)*standardBD/bddf*mask  
-        Densityfactor = min(Densityfactor,Densityfactor2)*standardBD/bdod*mask
+        bdodscaled = bdod/areaaverage(bdod,boolean(bdod))-1.0  #scale around 0
+        
+        Densityfactor = standardBD/1350+bdodscaled 
+        report(Densityfactor,DF1)
+        DensityfactorLU = 1.0
+        # average between the interface bulk density and the bdod from soilgrids
+        
+        if lg.useLUdensity == 1 and x == 1:
+            DensityfactorLU =  lookupscalar(lg.LULCtable, 5, nominal(lg.lun)) * mask
+            Densityfactor = ifthenelse(DensityfactorLU == 1.0, Densityfactor, 0.5*(Densityfactor + DensityfactorLU))#- 1.0)
+        
         Densityfactor = max(0.9,min(1.2,Densityfactor))            
         # limit between 0.9 and 1.2 else can generate missing values         
-        report(Densityfactor,DF1)
         
         Dens_comp = Dens_om * Densityfactor  #AG18) =AF18*(I18)
         PORE_comp =(1-Dens_om/2.65)-(1-Dens_comp/2.65)  #AI18) =(1-AG18/2.65)-(1-AF18/2.65)
         M33comp = M33adj + 0.2*PORE_comp  #AJ18)  =Z18+0.2*AI18
-      #  report(Dens_comp,BDdf)
+        report(Dens_comp,BDdf)
         #output maps
         POROSITY = (1-Dens_comp/2.65)*mask  #AH18)               
         
@@ -276,9 +282,16 @@ class PedoTransfer(StaticModel):
         SS = S**2
         CC = C**2
         PP = POROSITY**2
-        Psi1 =10*exp(6.53-7.326*POROSITY+15.8*CC+3.809*PP+3.44*S*C-4.989*S*POROSITY+16*SS*PP+16*CC*PP-13.6*SS*C-34.8*CC*POROSITY-7.99*SS*POROSITY)
-        Psi1 = Psi1 * max(0.1,1-fractionmoisture)
+        # 10.2 is from kPa to cm!
+        # I cannot find where this comes from!!!
+        #Psi1 =10.2*exp(6.53-7.326*POROSITY+15.8*CC+3.809*PP+3.44*S*C-4.989*S*POROSITY+16*SS*PP+16*CC*PP-13.6*SS*C-34.8*CC*POROSITY-7.99*SS*POROSITY)
+        #Psi1 = Psi1 * max(0.1,1-fractionmoisture)
         # correct psi slightly for initmoisture, where psi1 is assumed to corrspond to FC
+        bB = (ln(1500)-ln(33))/(ln(FC)-ln(WP))
+        aA = exp(ln(33)+bB*ln(FC))
+        Psi1= aA * initmoist**-bB * 10.2
+        # 10.2 is from kPa to cm
+        
         report(Psi1,psi1)
         report(initmoist/POROSITY,"se1.map")
         
@@ -314,3 +327,35 @@ class PedoTransfer(StaticModel):
             soildepth2 = mask*cover(soildepth1+soildb,mapavg)     
             report(soildepth2,lg.soildep2Name)
         
+
+
+class CorrectTextures(StaticModel):
+    # correct soilgrids textures to field values and make sure sum = 1
+    def __init__(self,mask=0):
+        StaticModel.__init__(self)
+    def initial(self):
+        mask = lg.mask_
+ 
+        S = readmap("sand1.map") 
+        Si = readmap("silt1.map")
+        C = readmap("clay1.map") 
+        
+        S = S * 0.1/areaaverage(S,boolean(S+1))
+        C = C * 0.16/areaaverage(C,boolean(C+1))
+       
+        Si = 1 - S - C
+        report(S, "sand1.map");
+        report(C, "clay1.map");
+        report(Si,"silt1.map");
+
+        S = readmap("sand2.map") 
+        Si = readmap("silt2.map")
+        C = readmap("clay2.map") 
+        
+        S = S * 0.1/areaaverage(S,boolean(S+1))
+        C = C * 0.16/areaaverage(C,boolean(C+1))
+       
+        Si = 1 - S - C
+        report(S, "sand2.map");
+        report(C, "clay2.map");
+        report(Si,"silt2.map");

@@ -16,12 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     comboBox_SGlayer1->addItems(sss);
     comboBox_SGlayer2->addItems(sss);
 
-    qDebug() << comboBox_rainString->currentText() << comboBox_rainString->count();
-    if (comboBox_rainString->count() == 0) {
-        comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
-        comboBox_rainString->addItem("YW_2017.002_");
-    }
-
     sss.clear();
     sss << "Nearest Neighbourhood" << "Bilinear" << "Cubic";
     comboBox_Resample->addItems(sss);
@@ -46,6 +40,11 @@ MainWindow::MainWindow(QWidget *parent)
     if (QFileInfo(s).exists()) {
         getIni(s);
 
+        if (comboBox_rainString->count() == 0) {
+            comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+            comboBox_rainString->addItem("YW_2017.002_");
+        }
+        comboBox_rainString->setCurrentIndex(0);//Text(RainString);
         writeValuestoUI();
         readValuesfromUI();
     }
@@ -374,7 +373,7 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
 
 void MainWindow::on_toolButton_resetRain_clicked()
 {
-    spin_conversionmm->setValue(10);
+    spin_conversionmm->setValue(0.1);
     spin_timeinterval->setValue(30);
     spin_interpolation->setValue(1);
     spin_dailyA->setValue(0.14);
@@ -634,7 +633,4 @@ void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
 }
-
-
-
 

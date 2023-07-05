@@ -319,3 +319,12 @@ void MainWindow::on_toolButton_dailyRain_clicked()
         lineEdit_IDMFilename->setText(IDMFilename);
 }
 
+
+void MainWindow::on_toolButton_RainFilename_clicked()
+{
+    QString tmp = RainDirName+lineEdit_RainFilename->text();
+    QStringList filters({"Text file (*.txt)","Any files (*)"});
+    RainFilename = getFileorDir(tmp,"Select input ranfall file for openLisem", filters, 1);
+    if (!RainFilename.isEmpty())
+        lineEdit_RainFilename->setText(RainFilename);
+}

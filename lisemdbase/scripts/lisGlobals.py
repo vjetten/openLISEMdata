@@ -157,6 +157,7 @@ def initialize():
     # surface maps
     global rrName
     global mannName
+    global plantHeightName
     global stoneName
     global crustName
     global compName
@@ -270,7 +271,7 @@ def initialize():
     shapeNr = 1
     roofStore = 10.0
     optionSplash = 1
-    conversionmmh = 10
+    conversionmmh = 0.1
     timeinterval = 30
     IPoption = 1
     optionGaugeGPM  = 0
@@ -397,7 +398,7 @@ def initialize():
     rainEPSG = myvars["RainEPSG"]
     rainString = myvars["RainString"]
     rainfilename = myvars["RainFilename"]
-    conversionmm = float(myvars["conversionmm"])
+    conversionmmh = float(myvars["conversionmm"])
     timeinterval = float(myvars["timeinterval"])
     IPoption = float(myvars["interpolation"])
     optionGaugeGPM = float(myvars["SelectPointfromGPM"])
@@ -492,15 +493,16 @@ def initialize():
     mannName= MapsDir+'n.map'               # mannings n ()
     stoneName= MapsDir+'stonefrc.map'       # stone fraction on surface (-)
     crustName= MapsDir+'crustfrc.map'       # crusted soil (-), not present
-    compName= MapsDir+'compfrc.map'         # compacted soil (-), murrum roads
+    compName= MapsDir+'compfrc.map'         # compacted soil (-), compacted roads
 
-    # erosion maps , not used
+    # erosion maps
     cohsoilName= MapsDir+'coh.map'          # cohesion (kPa)
     cohplantName= MapsDir+'cohadd.map'      # added root cohesion (kPa)
     D50Name= MapsDir+'d50.map'              # median of texture for suspended (mu)
     D90Name= MapsDir+'d90.map'			    # 90% quantile of texture for bedload (mu)
     aggrstabName= MapsDir+'aggrstab.map'    # aggregate stability number (-)
-    landunitName= MapsDir+'landunit.map'     # landuse/landcover for RR and manning
+    landunitName= MapsDir+'landunit.map'    # landuse/landcover for RR and manning
+    plantHeightName=MapsDir+'ch.map'        # plant height (m)
 
     # channel maps
     lddchanName= MapsDir+'lddchan.map'      # channel 1D network

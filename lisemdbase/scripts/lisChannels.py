@@ -89,6 +89,7 @@ class ChannelMaps(StaticModel):
         #chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
 
         chanwidth = (chanlen)**(lg.chB)   #Hydro1K allen and pavelsky page 399
+        #chanwidth = 0.1861*(chanlen)**(0.6046) #Sean Taiwan
         maxw = areamaximum(chanlen,ws)*chanmask
         lenrel = (1-(maxw-chanlen)/(maxw-dx)) 
         # make a relative channel width increase from 0 to 1 for every subcatchment
@@ -98,6 +99,7 @@ class ChannelMaps(StaticModel):
         
         # do the same for depth
         chandepth = max(1.0,chanwidth**lg.chC)**chanmask
+        #chandepth = max(1.0,-2.666*ln(chanwidth)+15.76)*chanmask #Sean Taiwan
         chandepth = lenrel*(chDepthmap-lg.chDepthS)+lg.chDepthS
         report(chandepth,lg.chandepthName)
 

@@ -13,6 +13,7 @@ void MainWindow::setupModel()
 
 int MainWindow::checkNameandOption(QString name, bool option, QString message)
 {
+    //qDebug() << name;
     if (option && !QFileInfo(name).exists()) {
         QMessageBox::warning(this,"", message);
         return 1;
@@ -42,9 +43,11 @@ bool MainWindow::checkAllNames()
     quit += checkNameandOption(BaseDirName+BaseDamsName    ,optionIncludeDams == 1 && optionDEM == 1,"2. Channels: Dams map not found.");
     quit += checkNameandOption(BaseDirName+WatershedsName  ,optionUserOutlets == 1 && optionDEM == 1,"2. Channels: Watersheds map not found.");
     quit += checkNameandOption(BaseDirName+OutletstableName,optionUserOutlets == 1 && optionDEM == 1,"2. Channels: Outlets map not found.");
+    // vegetation stuff is not assumed to be in base dir so full pathnames already
     quit += checkNameandOption(LULCmapName  ,optionLULC == 1,"3. Land use: LULC map not found.");
     quit += checkNameandOption(LULCtableName,optionLULC == 1,"3. Land use: LULC table not found.");
-    quit += checkNameandOption(BaseDirName+NDVImapName  ,optionUseNDVI == 1 && optionLULC == 1,"3. Land use: NDVI map not found.");
+    //qDebug() << NDVImapName << optionUseNDVI << optionLULC;
+    quit += checkNameandOption(NDVImapName  ,optionUseNDVI == 1 && optionLULC == 1,"3. Land use: NDVI map not found.");
     quit += checkNameandOption(BaseDirName+buildingsSHPName,optionUseInfrastructure == 1,"7. Buildings: buildings shapefile not found.");
     quit += checkNameandOption(BaseDirName+roadsSHPName,optionUseInfrastructure == 1,"7. Buildings: roads shapefile not found.");
 
@@ -78,7 +81,30 @@ bool MainWindow::checkAllNames()
     //if (!QFileInfo(RainFilenameHourERA).exists() && optionRain == 1)
 }
 
+/*
+ *
+CONDA_DEFAULT_ENV=lisem
+CONDA_EXE=C:\Users\vjett\miniconda3\Scripts\conda.exe
+CONDA_PREFIX=C:\Users\vjett\miniconda3\envs\lisem
+CONDA_PREFIX_1=C:\Users\vjett\miniconda3
+CONDA_PYTHON_EXE=C:\Users\vjett\miniconda3\python.exe
+CONDA_SHLVL=2
+GDAL_DATA=C:\Users\vjett\miniconda3\envs\lisem\Library\share\gdal
+GDAL_DRIVER_PATH=C:\Users\vjett\miniconda3\envs\lisem\Library\lib\gdalplugins
+GEOTIFF_CSV=C:\Users\vjett\miniconda3\envs\lisem\Library\share\epsg_csv
 
+path +
+C:\Users\vjett\miniconda3\envs\lisem;
+C:\Users\vjett\miniconda3\envs\lisem\Library\mingw-w64\bin;
+C:\Users\vjett\miniconda3\envs\lisem\Library\usr\bin;
+C:\Users\vjett\miniconda3\envs\lisem\Library\bin;
+C:\Users\vjett\miniconda3\envs\lisem\Scripts;
+C:\Users\vjett\miniconda3\envs\lisem\bin;
+C:\Users\vjett\miniconda3\condabin;
+
+PROJ_DATA=C:\Users\vjett\miniconda3\envs\lisem\Library\share\proj
+PROJ_NETWORK=ON
+ */
 void MainWindow::runModel()
 {
     text_out->clear();
@@ -87,22 +113,48 @@ void MainWindow::runModel()
 
     // add the env path names, copied from Spyder. Maybe overkill but it works
     QString condaenv = combo_envs->currentText();
-    QString condascripts = QDir(condaenv+"/../Scripts").absolutePath();
+    QStringList Sn = condaenv.split('/');
+    QString envname = Sn.at(Sn.count()-2);
+
     QString condabase = QDir(condaenv+"/../..").absolutePath();
+    QString condascripts = QDir(condabase+"/Scripts").absolutePath();
+
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("CONDA_DEAFULT_ENV",envname);
+    env.insert("CONDA_EXE",condascripts+"conda.exe");
+    env.insert("CONDA_PREFIX", condaenv);
+    env.insert("CONDA_PREFIX_1", condabase);
+    env.insert("CONDA_PYTHON_EXE",condabase+"/python.exe");
+    env.insert("CONDA_SHLVL","2"); // 1 ?
+
     env.insert("USE_PATH_FOR_GDAL_PYTHON","YES");
     env.insert("CONDA_ACTIVATE_SCRIPT",condascripts+"/activate");
     env.insert("CONDA_ENV_PATH",condaenv);
-    env.insert("CONDA_ENV_PYTHON",condaenv+"/python.exe");
-    env.insert("CONDA_EXE",condascripts+"/conda.exe");
-    env.insert("CONDA_PREFIX",condaenv);
-    env.insert("CONDA_PYTHON_EXE",condabase+"/python.exe");
-    env.insert("CONDA_SHLVL","1");
-    env.insert("GDAL_DATA",condaenv+"/Library/share/gdal");
-    env.insert("GEOTIFF_CSV",condaenv+"/Library/share/epsg_csv");
-    QString addpath = condaenv+";"+condaenv+"/Library/bin;"+condaenv+"/Scripts;";
+    env.insert("CONDA_ENV_PYTHON",condaenv+"python.exe");
+
+    env.insert("GDAL_DATA",condaenv+"Library/share/gdal");
+    env.insert("GDAL_DRIVER",condaenv+"Library/share/gdal");
+    env.insert("GDAL_DRIVER_PATH",condaenv+ "Library/lib/gdalplugins");
+    env.insert("GEOTIFF_CSV",condaenv+"Library/share/epsg_csv");
+    QString addpath = condaenv+";"
+            +condaenv+"Library/bin/minw-w64/bin;"
+            +condaenv+"Library/usr/bin;"
+            +condaenv+"Library/bin;"
+            +condaenv+"Scripts;"
+            +condaenv+"bin;"
+            +condaenv+"condabin;"
+            +condaenv+"/Scripts;";
+
     env.insert("PATH", addpath + env.value("Path"));
     Process->setProcessEnvironment(env);
+
+//    qDebug() << condabase ;
+//    qDebug() << condascripts+ "/activate";
+//    qDebug() << condaenv+"python.exe";
+//    qDebug() << condabase+"/python.exe";
+//    qDebug() << condaenv+"Library/share/gdal";
+
+
 
     if (runOptionsscript)
         createNNLULCTable();

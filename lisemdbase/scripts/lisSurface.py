@@ -32,6 +32,9 @@ class SurfaceMaps(StaticModel):
         Cover = lookupscalar(lg.LULCtable, 4, unitmap) * mask
         Cover = max(0,min(1.0,Cover))
 
+        plantHeight = lookupscalar(lg.LULCtable, 3, unitmap) * mask
+        plantHeight = max(0,plantHeight)
+
         if lg.doProcessesNDVI == 1:               
             NDVI = readmap(lg.NDVIName)
             NDVI += 0.2
@@ -50,6 +53,7 @@ class SurfaceMaps(StaticModel):
         report(Cover,lg.LitterName)                
         report(mann,lg.mannName)
         report(LAI, lg.laiName)
+        report(plantHeight, lg.plantHeightName)
                         
 
         # NOTE: this is valid for the Indian LULC map as provided

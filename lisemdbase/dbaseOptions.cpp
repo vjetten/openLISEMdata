@@ -114,8 +114,7 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("RAINFALL/RainFilename", RainFilename);
     settings.setValue("RAINFALL/RainEPSG", RainEPSG);
     for (int i=0; i < comboBox_rainString->count(); i++) {
-        RainString = comboBox_rainString->itemText(i);
-        settings.setValue(QString("RAINFALL/RainString_%1").arg(i), RainString);
+        settings.setValue(QString("RAINFALL/RainString_%1").arg(i), comboBox_rainString->itemText(i));
     }
     settings.setValue("RAINFALL/RainString", RainString);
     settings.setValue("RAINFALL/SelectPointfromGPM", QString::number(optionGaugeGPM));
@@ -142,11 +141,10 @@ void MainWindow::setIni(QString sss, bool yes)
 QString MainWindow::checkName(int i, QString name)
 {
     QString s = BaseDirName;
-    if (i == 0) s = "";
+    if (i == 0)
+        s = "";
     if (name.isEmpty())
         return("");
-
-    //qDebug() << s+name;
 
     if (!QFileInfo(s+name).exists())
         return("");
@@ -199,7 +197,7 @@ void MainWindow::getIni(QString name)
     optionLULC = settings.value("LULC/optionLULC").toInt();
     LULCmapName = checkName(0,settings.value("LULC/LULCmap").toString());
     LULCtableName = checkName(0,settings.value("LULC/LULCtable").toString());
-    NDVImapName = checkName(1,settings.value("LULC/NDVImap").toString());
+    NDVImapName = checkName(0,settings.value("LULC/NDVImap").toString());
     optionUseNDVI = settings.value("LULC/optionUseNDVI").toInt();
 
     optionInfil = settings.value("SOIL/optionInfil").toInt();
@@ -238,9 +236,16 @@ void MainWindow::getIni(QString name)
     //RainRefNameDEM = checkName(1,settings.value("RAINFALL/RainRefNameDEM").toString());
     RainBaseDirName = checkName(0,settings.value("RAINFALL/RainBaseDirectory").toString());
     RainDirName = checkName(0,settings.value("RAINFALL/RainDirectory").toString());
-    RainFilename = checkName(0,settings.value("RAINFALL/RainFilename").toString());
+    RainFilename =  settings.value("RAINFALL/RainFilename").toString();
     RainEPSG = settings.value("RAINFALL/RainEPSG").toString();
-    RainString = checkName(0,settings.value("RAINFALL/RainString").toString());
+    //RainString = settings.value("RAINFALL/RainString").toString();
+    comboBox_rainString->clear();
+    for (int i=0; i < 10; i++) {
+        QString s = settings.value(QString("RAINFALL/RainString_%1").arg(i)).toString();
+        if (!s.isEmpty())
+            comboBox_rainString->addItem(s);
+    }
+
     optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
     RainGaugeFilename = checkName(0,settings.value("RAINFALL/RainGaugeFilename").toString());
     RainGaugeFilenameIn = checkName(0,settings.value("RAINFALL/RainGaugeFilenameIn").toString());
@@ -337,10 +342,10 @@ void MainWindow::readValuesfromUI()
     RainBaseDirName = lineEdit_GPMdir->text();
     RainDirName = lineEdit_RainfallDir->text();
     //RainScriptFileName= lineEdit_GPMpy->text();
-    RainRefNameDEM = BaseDEMName;//lineEdit_GPMrefmap->text();
-    RainFilename = lineEdit_RainFilenameGPM->text();
+    RainRefNameDEM = BaseDEMName;//lineEdit_GPMrefmap->text();    
+    RainFilename = lineEdit_RainFilename->text();
     RainEPSG = lineEdit_RainEPSG->text();
- //   RainString = lineEdit_RainString->text();
+    RainString = comboBox_rainString->currentText();
     RainGaugeFilename = lineEdit_RainGaugeFilenameGPM->text();
     RainGaugeFilenameIn = lineEdit_RainGaugeFilenameGPMin->text();
     optionGaugeGPM = checkBox_writeGaugeData->isChecked() ? 1 : 0;
@@ -451,9 +456,9 @@ void MainWindow::writeValuestoUI()
     lineEdit_GPMrefmap->setText(BaseDEMName);//RainRefNameDEM);
     lineEdit_GPMdir->setText(RainBaseDirName);
     lineEdit_RainfallDir->setText(RainDirName);
-    lineEdit_RainFilenameGPM->setText(RainFilename);
+    lineEdit_RainFilename->setText(RainFilename);
     lineEdit_RainEPSG->setText(RainEPSG);
-    //lineEdit_RainString->setText(RainString);
+
     lineEdit_RainGaugeFilenameGPM->setText(RainGaugeFilename);
     lineEdit_RainGaugeFilenameGPMin->setText(RainGaugeFilenameIn);
     checkBox_writeGaugeData->setChecked(optionGaugeGPM > 0);

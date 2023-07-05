@@ -306,6 +306,8 @@ private slots:
 
     void on_comboBox_Resample_currentIndexChanged(int index);
 
+    void on_toolButton_RainFilename_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -71,7 +71,8 @@ class GPMRainfall(StaticModel):
             if lg.rainString in file_name :
                 #print(rainOutputdir + '/' + file_name,flush=True)
                 os.remove(rainOutputdir + '/' + file_name)
-        optionRainASC = 1
+        
+        optionRainASC = 0
         if (optionRainASC == 1) :
             count = 0
             #update_progress(0)
@@ -110,6 +111,7 @@ class GPMRainfall(StaticModel):
         totalcount = len(hdflinks)
         count = 0
         print(">>> nr GTiff files to be processed: {0}".format(totalcount),flush = True)
+        print(">>> conversion from input value to mm/h: {0}".format(lg.conversionmmh * 60.0/lg.timeinterval), flush=True)
 
         start = 0
         update_progress(0)
@@ -119,11 +121,10 @@ class GPMRainfall(StaticModel):
                 if link[-3:] == 'tif':
                     #print(' => '+link, flush=True)
                     src = gdal.Open(link, gdal.GA_ReadOnly)
-                    if start == 0 :
-                        prj1 = osr.SpatialReference()
-                        prj1.ImportFromEPSG(int(lg.rainEPSG))
-                        wkt1 = prj1.ExportToWkt()
-                        
+                    #if start == 0 :
+                    prj1 = osr.SpatialReference()
+                    prj1.ImportFromEPSG(int(lg.rainEPSG))
+                    wkt1 = prj1.ExportToWkt()
                     src.SetProjection(wkt1)
 
                     filename = link[:-4]+".map"
@@ -132,11 +133,11 @@ class GPMRainfall(StaticModel):
                     dst.SetGeoTransform( lg.maskgeotrans )
                     dst.SetProjection( lg.maskproj )
 
-                    if start == 0 :
-                        prj2 = osr.SpatialReference()
-                        prj2.ImportFromEPSG(int(lg.ESPG))
-                        wkt2 = prj2.ExportToWkt()
-                        start = 1
+                    #if start == 0 :
+                    prj2 = osr.SpatialReference()
+                    prj2.ImportFromEPSG(int(lg.ESPG))
+                    wkt2 = prj2.ExportToWkt()
+                    #start = 1
                     dst.SetProjection(wkt2)
 
                     gdal.ReprojectImage(src, dst, wkt1, wkt2, GDO)
@@ -175,7 +176,7 @@ class GPMRainfall(StaticModel):
 
         # make raintext file and convert files division by 10
         print(">>> Making lisem rainfall txt file", flush=True)
-        print(">>> and calculating sum of all rainfall in sumrainfall.map\n", flush=True)
+        print(">>> and calculating sum of all rainfall in _sumrainfall.map\n", flush=True)
 
         os.chdir(rainOutputdir)
         with open(lg.rainfilename, 'w') as f:
@@ -205,15 +206,15 @@ class GPMRainfall(StaticModel):
                 # calculate the total rainfall
                 raina = readmap(link)
                 #if (option > -1) :
-                rain = max(0,(60/lg.timeinterval)*raina*lg.conversionmmh)
+                rain = max(0,(60.0/lg.timeinterval)*raina*lg.conversionmmh)
 
                 report(rain,link)
-                sum=sum+rain/(60/lg.timeinterval)    # assumning the value is intensity in mm/h the rainfall is p/(60/interval)
+                sum=sum+ raina*lg.conversionmmh # e.g. *0.1 for imerg
                 update_progress(j/totalnr)
                 j+=1
 
         f.close()
-        report(sum,rainOutputdir+'sumrainfall.map')
+        report(sum,rainOutputdir+'_sumrainfall.map')
 
         if lg.optionGaugeGPM == 1:
 

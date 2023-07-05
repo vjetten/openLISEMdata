@@ -107,9 +107,11 @@ if __name__ == "__main__":
             update_progress((x+7)/12)
         #update_progress(1)    
         print("\n");
-
-    
+     
     if lg.doProcessesInfil == 1:
+        obj = lisSoils.CorrectTextures()
+        staticModel = StaticFramework(obj)
+        staticModel.run()
         print(">>> Creating soil physical maps for infiltration", flush=True)
         obj = lisSoils.PedoTransfer()
         staticModel = StaticFramework(obj)
