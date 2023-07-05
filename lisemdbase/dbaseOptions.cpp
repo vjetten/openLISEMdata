@@ -86,6 +86,10 @@ void MainWindow::setIni(QString sss, bool yes)
     settings.setValue("SOIL/optionUseBD", QString::number(optionUseBD));
     settings.setValue("SOIL/optionUseCorrOM", QString::number(optionUseCorrOM));
     settings.setValue("SOIL/corrOM", QString::number(corrOM, 'f', 2));
+    settings.setValue("SOIL/optionUseCorrTexture", QString::number(optionUseCorrTexture));
+    settings.setValue("SOIL/corrClay", QString::number(corrClay, 'f', 2));
+    settings.setValue("SOIL/corrSilt", QString::number(corrSilt, 'f', 2));
+    settings.setValue("SOIL/corrSand", QString::number(corrSand, 'f', 2));
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
     //settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
@@ -211,6 +215,10 @@ void MainWindow::getIni(QString name)
     optionUseBD = 1;//settings.value("SOIL/optionUseBD").toInt();
     optionUseCorrOM = settings.value("SOIL/optionUseCorrOM").toInt();
     corrOM = settings.value("SOIL/corrOM").toDouble();
+    optionUseCorrTexture = settings.value("SOIL/optionUseCorrTexture").toInt();
+    corrClay = settings.value("SOIL/corrClay").toDouble();
+    corrSilt = settings.value("SOIL/corrSilt").toDouble();
+    corrSand = settings.value("SOIL/corrSand").toDouble();
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
     //optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
@@ -318,6 +326,10 @@ void MainWindow::readValuesfromUI()
     optionUseBD = 1; //checkBox_userefBD->isChecked() ? 1 : 0;
     optionUseCorrOM  = checkBox_useCorrOM->isChecked() ? 1 : 0;
     corrOM = spin_corrOM->value();
+    optionUseCorrTexture  = checkBox_useCorrTexture->isChecked() ? 1 : 0;
+    corrClay = spin_corrClay->value();
+    corrSilt = spin_corrSilt->value();
+    corrSand = spin_corrSand->value();
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
     // optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
@@ -419,6 +431,10 @@ void MainWindow::writeValuestoUI()
     //checkBox_userefBD2->setChecked(optionUseBD2 > 0);
     checkBox_useCorrOM->setChecked(optionUseCorrOM > 0);
     spin_corrOM->setValue(corrOM);
+    checkBox_useCorrTexture->setChecked(optionUseCorrTexture > 0);
+    spin_corrClay->setValue(corrSand);
+    spin_corrSilt->setValue(corrSilt);
+    spin_corrSand->setValue(corrSand);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
     //spin_refBD2->setValue(refBulkDens2);

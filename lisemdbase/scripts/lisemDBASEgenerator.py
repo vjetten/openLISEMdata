@@ -108,10 +108,13 @@ if __name__ == "__main__":
         #update_progress(1)    
         print("\n");
      
-    if lg.doProcessesInfil == 1:
+    if lg.doProcessesInfil == 1 and lg.useCorrOM:
+        print(">>> Correcting texture to area guide values", flush=True)
         obj = lisSoils.CorrectTextures()
         staticModel = StaticFramework(obj)
         staticModel.run()
+
+    if lg.doProcessesInfil == 1:
         print(">>> Creating soil physical maps for infiltration", flush=True)
         obj = lisSoils.PedoTransfer()
         staticModel = StaticFramework(obj)

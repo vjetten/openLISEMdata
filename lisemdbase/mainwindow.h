@@ -92,6 +92,7 @@ public:
     int optionUseBD;
     int optionUseBD2;
     int optionUseCorrOM;
+    int optionUseCorrTexture;
     int optionUseDensity;
     int optionFillDEM;
     int optionCatchments;
@@ -118,6 +119,9 @@ public:
     double refRootzone;
     double refMaxSoildepth;
     double corrOM;
+    double corrClay;
+    double corrSilt;
+    double corrSand;
     double roofStore;
    // bool runGPMscript;
    // bool runIDMscript;

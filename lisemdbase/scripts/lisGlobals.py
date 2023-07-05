@@ -55,8 +55,12 @@ def initialize():
     global rootzone
     global maxSoildepth
     global useCorrOM
-    global CorrOM_
+    global CorrOM
     global roofStore
+    global useCorrText
+    global CorrClay
+    global CorrSilt
+    global CorrSand
     
     ### input maps ###
     global condaDir
@@ -267,7 +271,11 @@ def initialize():
     rootzone = 0.6
     maxSoildepth = 5.0
     useCorrOM = 0
-    CorrOM_ = 0.0
+    CorrOM = 0.0
+    useCorrText = 0
+    CorrClay = 0.0
+    CorrSilt = 0.0
+    CorrSand = 0.0
     shapeNr = 1
     roofStore = 10.0
     optionSplash = 1
@@ -379,7 +387,11 @@ def initialize():
     maxSoildepth = float(myvars["refMaxSoildepth"]) 
     initmoisture_ = float(myvars["initmoist"])  
     useCorrOM = int(myvars["optionUseCorrOM"])
-    CorrOM_ = float(myvars["corrOM"])  
+    CorrOM = float(myvars["corrOM"])  
+    useCorrOM = int(myvars["optionUseCorrTexture"])
+    CorrClay = float(myvars["corrClay"])  
+    CorrSilt = float(myvars["corrSilt"])  
+    CorrSand = float(myvars["corrSand"])  
     
     doProcessesErosion = int(myvars["optionErosion"])
     doChannelsNoEros = int(myvars["optionChannelsNoEros"])

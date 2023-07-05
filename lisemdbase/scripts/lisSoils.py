@@ -182,7 +182,7 @@ class PedoTransfer(StaticModel):
         
         CorrectionOM = 0.0
         if lg.useCorrOM == 1 and x == 1:
-            CorrectionOM = lg.CorrOM_            
+            CorrectionOM = lg.CorrOM            
         
         S = S1 #  * 0.1/areaaverage(S1,area)
         C = C1 # * 0.16/areaaverage(C1,area)
@@ -327,7 +327,7 @@ class PedoTransfer(StaticModel):
             soildepth2 = mask*cover(soildepth1+soildb,mapavg)     
             report(soildepth2,lg.soildep2Name)
         
-
+### ---------- class CorrectTextures() ---------- ###
 
 class CorrectTextures(StaticModel):
     # correct soilgrids textures to field values and make sure sum = 1
@@ -340,8 +340,8 @@ class CorrectTextures(StaticModel):
         Si = readmap("silt1.map")
         C = readmap("clay1.map") 
         
-        S = S * 0.1/areaaverage(S,boolean(S+1))
-        C = C * 0.16/areaaverage(C,boolean(C+1))
+        S = S * lg.CorrSand/areaaverage(S,boolean(S+1))
+        C = C * lg.CorrClay/areaaverage(C,boolean(C+1))
        
         Si = 1 - S - C
         report(S, "sand1.map");
@@ -352,8 +352,8 @@ class CorrectTextures(StaticModel):
         Si = readmap("silt2.map")
         C = readmap("clay2.map") 
         
-        S = S * 0.1/areaaverage(S,boolean(S+1))
-        C = C * 0.16/areaaverage(C,boolean(C+1))
+        S = S * lg.CorrSand/areaaverage(S,boolean(S+1))
+        C = C * lg.CorrClay/areaaverage(C,boolean(C+1))
        
         Si = 1 - S - C
         report(S, "sand2.map");
