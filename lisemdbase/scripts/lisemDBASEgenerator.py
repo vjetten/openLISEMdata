@@ -84,10 +84,10 @@ if __name__ == "__main__":
 
     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
-        print(">>> Downloading SOILGRIDS layers from web server ISRIC", flush=True)        
-        for x in range(0,6):
+        print(">>> Downloading SOILGRIDS layers from web server https://maps.isric.org", flush=True)        
+        for x in range(0,5):
             lisSoils.GetSoilGridsLayer(x, lg.optionSG1, 1)
-        for x in range(0,6):
+        for x in range(0,5):
             lisSoils.GetSoilGridsLayer(x, lg.optionSG2, 2)
 
     if lg.doProcessesInfil == 1 and lg.doProcessesSGInterpolation == 1:
@@ -95,12 +95,12 @@ if __name__ == "__main__":
         obj = lisSoils.SoilGridsTransform()
         staticModel = StaticFramework(obj)
         update_progress(0)
-        for x in range(0,6):
+        for x in range(0,5):
             lg.layer_ = 1
             lg.mapnr_ = x
             staticModel.run()
             update_progress((x+1)/12)
-        for x in range(0,6):
+        for x in range(0,5):
             lg.layer_ = 2
             lg.mapnr_ = x
             staticModel.run()        
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         #update_progress(1)    
         print("\n");
      
-    if lg.doProcessesInfil == 1 and lg.useCorrOM:
+    if lg.doProcessesInfil == 1 and lg.useCorrText == 1:
         print(">>> Correcting texture to area guide values", flush=True)
         obj = lisSoils.CorrectTextures()
         staticModel = StaticFramework(obj)

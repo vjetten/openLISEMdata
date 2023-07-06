@@ -432,7 +432,7 @@ void MainWindow::writeValuestoUI()
     checkBox_useCorrOM->setChecked(optionUseCorrOM > 0);
     spin_corrOM->setValue(corrOM);
     checkBox_useCorrTexture->setChecked(optionUseCorrTexture > 0);
-    spin_corrClay->setValue(corrSand);
+    spin_corrClay->setValue(corrClay);
     spin_corrSilt->setValue(corrSilt);
     spin_corrSand->setValue(corrSand);
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);

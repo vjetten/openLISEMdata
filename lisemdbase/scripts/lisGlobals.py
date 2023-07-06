@@ -388,7 +388,7 @@ def initialize():
     initmoisture_ = float(myvars["initmoist"])  
     useCorrOM = int(myvars["optionUseCorrOM"])
     CorrOM = float(myvars["corrOM"])  
-    useCorrOM = int(myvars["optionUseCorrTexture"])
+    useCorrText = int(myvars["optionUseCorrTexture"])
     CorrClay = float(myvars["corrClay"])  
     CorrSilt = float(myvars["corrSilt"])  
     CorrSand = float(myvars["corrSand"])  

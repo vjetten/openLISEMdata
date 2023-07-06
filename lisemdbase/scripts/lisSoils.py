@@ -21,6 +21,8 @@ class GetSoilGridsLayer:
         varname = lg.SG_names_[x]
         self.debug = 0 #Debug_
         vname = varname
+        if (x==4):
+            x = 5
 
         if i == 1: ID='_0-5cm_mean'
         if i == 2: ID='_5-15cm_mean'
@@ -89,6 +91,9 @@ class SoilGridsTransform(StaticModel):
         mapnr = lg.mapnr_
         name = ""
         factor = 1.0
+        if (mapnr == 4):
+            mapnr = 5
+        
 
         if mapnr == 0: name = "sand{0}".format(xs); factor = 0.001  # fraction sand, server gives g/kg
         if mapnr == 1: name = "clay{0}".format(xs); factor = 0.001  # fraction silt, server gives g/kg
@@ -148,6 +153,8 @@ class PedoTransfer(StaticModel):
         x = lg.layer_
         mask = lg.mask_
         DEM = lg.DEM_
+        if (x == 4) :
+           x = 5
         xs = str(x)
          
         print(">>> Creating infiltration parameters for layer "+xs, flush=True)
@@ -193,8 +200,8 @@ class PedoTransfer(StaticModel):
         report(OM, om1)
 
         Gravel = 0 #fGrv
-        if lg.useNoGravel == 1 :
-            Gravel *= 0.2
+        #if lg.useNoGravel == 1 :
+        #    Gravel *= 0.2
 
         #------ this part does not consider density factor
         # wilting point stuff
@@ -219,18 +226,19 @@ class PedoTransfer(StaticModel):
                
 
         bdodscaled = bdod/areaaverage(bdod,boolean(bdod))-1.0  #scale around 0
-        
-        Densityfactor = standardBD/1350+bdodscaled 
-        report(Densityfactor,DF1)
+        Densityfactor = standardBD/1350+0.5*bdodscaled 
         DensityfactorLU = 1.0
         # average between the interface bulk density and the bdod from soilgrids
         
         if lg.useLUdensity == 1 and x == 1:
             DensityfactorLU =  lookupscalar(lg.LULCtable, 5, nominal(lg.lun)) * mask
-            Densityfactor = ifthenelse(DensityfactorLU == 1.0, Densityfactor, 0.5*(Densityfactor + DensityfactorLU))#- 1.0)
+            Densityfactor += (DensityfactorLU - 1.0)
+            #ifthenelse(DensityfactorLU == 1.0, Densityfactor, 0.5*(Densityfactor + DensityfactorLU))#- 1.0)
+        #Densityfactor = min(Densityfactor,DensityfactorLU)*standardBD/bdod*mask
         
         Densityfactor = max(0.9,min(1.2,Densityfactor))            
         # limit between 0.9 and 1.2 else can generate missing values         
+        report(Densityfactor,DF1)
         
         Dens_comp = Dens_om * Densityfactor  #AG18) =AF18*(I18)
         PORE_comp =(1-Dens_om/2.65)-(1-Dens_comp/2.65)  #AI18) =(1-AG18/2.65)-(1-AF18/2.65)

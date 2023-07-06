@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     tableViewLULC->setFont(codeFont);
     tableViewOutlets->setFont(codeFont);
     text_out->setFont(codeFont);
-
+    checkBox_noGravel->setVisible(false);
     findDPIscale();
 
     groupBox_dailyraindata->setVisible(false);
