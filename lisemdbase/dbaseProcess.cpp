@@ -57,9 +57,9 @@ bool MainWindow::checkAllNames()
    // quit += checkNameandOption(RainFilename       ,optionRain == 1,"8. Rainfall: reference DEM for rainfall not found.");
     quit += checkNameandOption(RainGaugeFilename  ,optionRain == 1 && optionGaugeGPM == 1,"8. Rainfall: map with location(s) for GPM point output not found.");
    // quit += checkNameandOption(RainGaugeFilenameIn,optionRain == 1 && optionGaugeGPM == 1,"8. Rainfall: reference DEM for rainfall not found.");
-
-    if(!QFileInfo(BaseDirName+"sand1.tif").exists()) {
-         QMessageBox::warning(this,"", "4. Infiltration: Cannot find SOILGRIDS downloaded maps (sand1.tif etc.), make sure to check dowload.");
+    qDebug() << checkBox_Infil->isChecked() << checkBox_Soilgrids->isChecked() << QFileInfo(BaseDirName+"sand1.tif").exists();
+    if(checkBox_Infil->isChecked() && !checkBox_Soilgrids->isChecked() && !QFileInfo(BaseDirName+"sand1.tif").exists()) {
+         QMessageBox::warning(this,"", "4. Infiltration: WARNING Cannot find SOILGRIDS downloaded maps (sand1.tif etc.), make sure to check the dowload option.");
     }
 
     if (quit > 0)
