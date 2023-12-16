@@ -26,8 +26,11 @@ class InfrastructureMaps(StaticModel):
         ShapeName = ""
         if sf == 1 :
             ShapeName = lg.BaseDir+lg.buildingsSHPName
+            print("Creating building map.", flush=True);
+
         if sf == 2 :            
             ShapeName = lg.BaseDir+lg.roadsSHPName
+            print("Creating roads map.", flush=True);
             
         tifname = lg.BaseDir+"tempbuild.tif"
         outnametif = lg.BaseDir+"rescale.tif"
@@ -66,7 +69,7 @@ class InfrastructureMaps(StaticModel):
         src = None    
         
         map_ = readmap(outnametif)
-        report(map_,"try.map")
+
         if maptotal(map_) > 0 :
             map_ = map_/mapmaximum(map_)*mask
         else :
@@ -82,7 +85,40 @@ class InfrastructureMaps(StaticModel):
         if sf == 2 :    
             map_ = map_ * lg.dx
             report(map_,lg.roadwidthName)
+            if lg.doProcessesStormdrain == 1:
+                print("Creating storm drain maps.", flush=True);
+                tilemask = ifthen(map_ > 1, scalar(1))
+                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                #tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                #lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                
+                tilesink = scalar(accuflux(lddtile, celllength()) % lg.drainInletDistance < celllength()) * lg.drainInletSize
+                tilesink = ifthenelse(accuflux(lddtile, 1) == 1,lg.drainInletSize,tilesink)  
+                tilediameter = tilemask*lg.tileDiameter
+                tilewidth = tilemask*lg.tileWidth
+                tileheight = tilemask*lg.tileHeight
+                tilegrad = sin(atan(slope(lg.DEM_*tilemask)))
+                tileman  = tilemask * 0.012
+                
+                report(tilemask,lg.tilemaskName)
+                report(lddtile ,lg.lddtileName) 
+                report(tilegrad,lg.tilegradName) 
+                report(tileman ,lg.tilemanName)  
+                report(tilediameter,lg.tilediameterName) 
+                report(tileheight ,lg.tileheightName)  
+                report(tilewidth ,lg.tilewidthName)  
+                report(tilesink,lg.tileinletName)
 
         os.remove(tifname)
         os.remove(outnametif)
+        
+        
+        
+        
         

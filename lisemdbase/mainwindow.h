@@ -106,8 +106,10 @@ public:
     int optionUseNDVI;
     int optionUseInfrastructure;
     int optionSpLash;
-    int optionUseDrums;
     int optionResample;
+    int optionUseDrums;
+    int optionUseStormDrain;
+    int optionDrainShape;
     double chB;
     double chC;
     double chWidth;
@@ -123,6 +125,11 @@ public:
     double corrSilt;
     double corrSand;
     double roofStore;
+    double drainWidth;
+    double drainHeight;
+    double drainDiameter;
+    double drainInletDistance;
+    double drainInletSize;
    // bool runGPMscript;
    // bool runIDMscript;
     bool runOptionsscript;

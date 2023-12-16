@@ -117,7 +117,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.6 - 230705)</string>
+       <string>openLISEM database generator (version 4.7 - 231216)</string>
       </property>
      </widget>
     </item>
@@ -546,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>5</number>
          </property>
          <property name="iconSize">
           <size>
@@ -3262,27 +3262,10 @@
            <string/>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_24">
-           <item row="3" column="1">
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="1" column="2">
-            <widget class="QToolButton" name="toolButton_resetInfra">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_83">
              <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources/lisemdbase.qrc">
-               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
+              <string/>
              </property>
             </widget>
            </item>
@@ -3347,10 +3330,27 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_83">
+           <item row="3" column="1">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="2">
+            <widget class="QToolButton" name="toolButton_resetInfra">
              <property name="text">
-              <string/>
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources/lisemdbase.qrc">
+               <normaloff>:/2X/reset.png</normaloff>:/2X/reset.png</iconset>
              </property>
             </widget>
            </item>
@@ -3381,17 +3381,13 @@
               <property name="verticalSpacing">
                <number>4</number>
               </property>
-              <item row="3" column="2">
-               <widget class="QToolButton" name="toolButton_drumMap">
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="lineEdit_drumMap">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>...</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="resources/lisemdbase.qrc">
-                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3402,15 +3398,43 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
-              </item>
-              <item row="5" column="3">
-               <widget class="QLabel" name="label_79">
+              <item row="2" column="2">
+               <widget class="QToolButton" name="toolButton_buildingsSHP">
                 <property name="text">
-                 <string>(polygons, tarred roads)</string>
+                 <string>...</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources/lisemdbase.qrc">
+                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
                 </property>
                </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_70">
+                <property name="text">
+                 <string>Roof interception storage (mm)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QCheckBox" name="checkBox_useStormDrain">
+                <property name="text">
+                 <string>Roads have storm drain (sewage) system</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="8">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
               <item row="2" column="3">
                <widget class="QLabel" name="label_78">
@@ -3419,15 +3443,125 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="lineEdit_drumMap">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
+              <item row="7" column="1" colspan="2">
+               <widget class="QWidget" name="widget_2" native="true">
+                <layout class="QGridLayout" name="gridLayout_25">
+                 <property name="leftMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>8</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>4</number>
+                 </property>
+                 <item row="1" column="4">
+                  <widget class="QDoubleSpinBox" name="spinDrainHeight">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.500000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QRadioButton" name="radioStormdrainRect">
+                   <property name="text">
+                    <string>Rectangular:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_101">
+                   <property name="text">
+                    <string>Width</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QRadioButton" name="radioStormdrainCirc">
+                   <property name="text">
+                    <string>Circular:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QDoubleSpinBox" name="spinDrainDiameter">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.650000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="label_81">
+                   <property name="text">
+                    <string>Diameter</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QDoubleSpinBox" name="spinDrainWidth">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.500000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QLabel" name="label_102">
+                   <property name="text">
+                    <string>Height</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
-              <item row="5" column="1">
-               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
+              <item row="7" column="3">
+               <widget class="QLabel" name="label_103">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Inlets: distance</string>
+                </property>
+               </widget>
               </item>
               <item row="5" column="0">
                <widget class="QLabel" name="label_69">
@@ -3454,46 +3588,8 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
-               <widget class="QToolButton" name="toolButton_buildingsSHP">
-                <property name="text">
-                 <string>...</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="resources/lisemdbase.qrc">
-                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="3">
-               <widget class="QLabel" name="label_81">
-                <property name="text">
-                 <string>(cannot be larger than the pixel size)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="4">
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="3" column="3">
-               <widget class="QLabel" name="label_80">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>(pixels that have rain water drums in m3)</string>
-                </property>
-               </widget>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
               </item>
               <item row="4" column="1">
                <widget class="QDoubleSpinBox" name="spin_roofStore">
@@ -3520,10 +3616,67 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_70">
+              <item row="3" column="2">
+               <widget class="QToolButton" name="toolButton_drumMap">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
-                 <string>Roof interception storage (mm)</string>
+                 <string>...</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources/lisemdbase.qrc">
+                  <normaloff>:/2X/Folder-Open-icon2.png</normaloff>:/2X/Folder-Open-icon2.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="4">
+               <widget class="QSpinBox" name="spinDrainInletDistance">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>30</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="6">
+               <widget class="QLabel" name="label_104">
+                <property name="text">
+                 <string>size (m2)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="7">
+               <widget class="QDoubleSpinBox" name="spinDrainInletSize">
+                <property name="minimum">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3" colspan="5">
+               <widget class="QLabel" name="label_79">
+                <property name="text">
+                 <string>(polygons, tarred roads)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3" colspan="5">
+               <widget class="QLabel" name="label_80">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>(pixels that have rain water drums in m3)</string>
                 </property>
                </widget>
               </item>

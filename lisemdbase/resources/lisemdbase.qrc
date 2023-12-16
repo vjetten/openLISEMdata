@@ -48,18 +48,8 @@
         <file>help4.html</file>
         <file>help5.html</file>
         <file>2X/house.png</file>
-        <file>../scripts/lisChannels.py</file>
-        <file>../scripts/lisDams.py</file>
-        <file>../scripts/lisDemDerivatives.py</file>
-        <file>../scripts/lisemDBASEgenerator.py</file>
-        <file>../scripts/lisErosion.py</file>
-        <file>../scripts/lisGlobals.py</file>
-        <file>../scripts/lisInfrastructure.py</file>
-        <file>../scripts/lisSoils.py</file>
-        <file>../scripts/lisSurface.py</file>
         <file>2X/list.png</file>
         <file>ITC logo.png</file>
-        <file>../scripts/lisRainfall.py</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

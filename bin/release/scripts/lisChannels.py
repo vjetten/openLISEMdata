@@ -82,12 +82,11 @@ class ChannelMaps(StaticModel):
 
         #af = accuflux(Ldd, (dx)/1e6)/3.22e4
         #chanwidth = min(0.95*dx, max(2.0, af**(1.18)))*chanmask
-        chanlen = accuflux(lddchan, dx)
-
         #chanwidth = (af**(1.18))*chanmask
         #chanwidth = 20000*(chanlen/3.67e10)**(1.0/2.64)   #Hydro1K allen and pavelsky page 399
         #chanwidth = (chanlen)**(1.0/2.18)   #Hydro1K allen and pavelsky page 399
 
+        chanlen = accuflux(lddchan, dx)
         chanwidth = (chanlen)**(lg.chB)   #Hydro1K allen and pavelsky page 399
         #chanwidth = 0.1861*(chanlen)**(0.6046) #Sean Taiwan
         maxw = areamaximum(chanlen,ws)*chanmask

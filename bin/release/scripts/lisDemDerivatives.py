@@ -16,10 +16,10 @@ class DEMderivatives(StaticModel):
     def initial(self):
         DEM = lg.DEM_
         mask = lg.mask_
-        if lg.doCatchment == 0 :      # always 0, obsolete
-            lg.catchmentsize_ = 1e20  # always
+        #if lg.doCatchment == 0 :      # always 0, obsolete
+           # lg.catchmentsize_ = 1e20  # always
 
-        size = lg.catchmentsize_   #????
+        size = 1e20 #lg.catchmentsize_   #????
         
         ID = mask
         report(ID,lg.IDName)
@@ -34,7 +34,7 @@ class DEMderivatives(StaticModel):
         DEMc = DEM
         if lg.doCorrectDEM > 0 :            
             #print(">>> Filling in DEM depressions (see demcorr.map for filled in pixels)",flush=True)            
-            DEMc = lddcreatedem(DEM, 1e20,1e20,9*cellarea(),1e20)
+            DEMc = lddcreatedem(DEM, size,size,9*cellarea(),size)
             DEMcorrect = DEMc - DEM
             DEMcorrect = ifthenelse(DEMcorrect < lg.fillDEM,0,DEMcorrect)
             DEMc = DEM+DEMcorrect
@@ -52,7 +52,8 @@ class DEMderivatives(StaticModel):
         #mainout_ can be sero, then endpoint must be used
 
         thr = 100
-        Ldd = lddcreate (DEMc-chanm*thr-mainout*thr, thr, size, size, size)
+        #Ldd = lddcreate (DEMc-chanm*thr-mainout*thr, thr, size, size, size)
+        Ldd = lddcreate (DEMc-chanm*thr-mainout*thr, size, size, size, size)
         report(Ldd, lg.LddName)
         Ldd_ = Ldd
 

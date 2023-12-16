@@ -405,8 +405,18 @@ void MainWindow::on_toolButton_resetEros_clicked()
 
 void MainWindow::on_toolButton_resetInfra_clicked()
 {
-    spin_roofStore->setValue(10.0);
+    spin_roofStore->setValue(1.0);
     checkBox_useDrums->setChecked(false);
+
+    radioStormdrainCirc->setChecked(false);
+    radioStormdrainRect->setChecked(true);
+    spinDrainDiameter->setValue(0.65);
+    spinDrainHeight->setValue(0.5);
+    spinDrainWidth->setValue(0.5);
+    spinDrainInletDistance->setValue(30);
+    spinDrainInletSize->setValue(0.5);
+
+
 }
 
 void MainWindow::on_toolButton_CheckAll_clicked()

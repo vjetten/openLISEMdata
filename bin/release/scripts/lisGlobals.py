@@ -31,7 +31,8 @@ def initialize():
     global doProcessesSGInterpolation
     global doProcessesSGAverage
     global doProcessesInfrastructure
-    global doProcessesRain
+    global doProcessesStormdrain
+    global doProcessesRain    
     global optionD50
     global optionSG1
     global optionSG2
@@ -61,6 +62,11 @@ def initialize():
     global CorrClay
     global CorrSilt
     global CorrSand
+    global tileDiameter
+    global tileHeight
+    global tileWidth
+    global drainInletDistance
+    global drainInletSize
     
     ### input maps ###
     global condaDir
@@ -84,9 +90,7 @@ def initialize():
     global roadinName
     global roadsSHPName
     global buildingsSHPName
-    #global ShapetoMapName
-    #global roadWidth
-
+    
     global fillDEM
     global catchmentsize
     global ESPGnumber
@@ -188,6 +192,16 @@ def initialize():
     global chanksatName
     global baseflowName
     
+    global lddtileName
+    global tilemaskName
+    global tilemanName
+    global tilediameterName
+    global tilegradName
+    global tileinletName
+    global tileheightName
+    global tilewidthName
+
+    
     global DEM_
     global mask_
     global rivers_
@@ -231,8 +245,8 @@ def initialize():
     global rainPointnameIn 
     global rainEPSG
     global rainString
-
     
+   
     #default values for interface options
     condaDir = "c:/"
     doProcessesDEM = 1
@@ -248,6 +262,7 @@ def initialize():
     doProcessesSGInterpolation = 1
     doProcessesSGAverage = 0
     doProcessesInfrastructure = 0
+    doProcessesStormdrain = 0
     doProcessesRain = 0
     optionD50 = 0
     optionSG1 = 2
@@ -260,7 +275,7 @@ def initialize():
     chN = 0.05
     chDepth = 5.0
     chDepthS = 1.0
-    chBaseflow = 0
+    chBaseflow = 0.0
     doCorrectDEM = 0
     doUserOutlets = 0  ## VJ 210523  added options user defined outlets that are forced in the DEM
     doPruneBranch = 0
@@ -280,7 +295,14 @@ def initialize():
     CorrSilt = 0.0
     CorrSand = 0.0
     shapeNr = 1
-    roofStore = 10.0
+    roofStore = 1.0
+    tileDiameter = 0.65
+    tileHeight = 0.5
+    tileWidth = 0.5
+    drainInletDistance = 30
+    drainInletSize = 0.5
+    
+    
     optionSplash = 1
     conversionmmh = 0.1
     timeinterval = 30
@@ -403,8 +425,15 @@ def initialize():
 
     doProcessesInfrastructure = int(myvars["optionUseInfrastructure"])
     buildingsSHPName = myvars["buildingsSHPName"]
-    roadsSHPName = myvars["roadsSHPName"]
     roofStore = float(myvars["roofStore"])
+    roadsSHPName = myvars["roadsSHPName"]
+    doProcessesStormdrain = int(myvars["optionUseStormDrain"])    
+    tileDiameter= float(myvars["DrainDiameter"])
+    tileHeight= float(myvars["DrainHeight"])
+    tileWidth= float(myvars["DrainWidth"])
+    drainInletDistance= float(myvars["DrainInletDistance"])
+    drainInletSize= float(myvars["DrainInletSize"])
+    
         
     doProcessesRain = int(myvars["optionRain"])
     rainInputdir = myvars["RainBaseDirectory"]
@@ -473,6 +502,14 @@ def initialize():
     roofstoreName= MapsDir+'roofstore.map'  # roof interception (mm) \
     raindrumsizeName= MapsDir+'raindrum.map'# raindrum size (m3)
     drumstoreName= MapsDir+'drumstore.map'  # locations of rainwater harvesting in drums (0/1)
+    lddtileName     = MapsDir+'lddtile.map'     
+    tilemaskName    = MapsDir+'tilemask.map'
+    tilemanName     = MapsDir+'tileman.map'
+    tilediameterName= MapsDir+'tilediameter.map'
+    tilegradName    = MapsDir+'tilegrad.map'
+    tileinletName   = MapsDir+'tileinlet.map' 
+    tileheightName   = MapsDir+'tileheight.map' 
+    tilewidthName   = MapsDir+'tilewidth.map' 
 
     # vegetation maps
     coverName= MapsDir+'per.map'           # cover fraction (-)
@@ -540,7 +577,7 @@ def initialize():
     os.chdir(BaseDir)  # change to base directory, not needed?
 
     print(">>> Reading base maps from {0}".format(BaseDir),flush=True)
-    print(">>> Reading base maps from {0}".format(useCorrText),flush=True)
+    #print(">>> Reading base maps from {0}".format(useCorrText),flush=True)
 
     setclone(BaseDir+DEMbaseName) # set the overall mask for PCRaster operations
     # now we can do map = scalar(v) and other pcrcalc stuff
