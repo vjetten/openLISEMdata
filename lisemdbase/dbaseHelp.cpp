@@ -46,12 +46,13 @@ void MainWindow::ShowHelp(int i)
     QTextStream stream(&file);
     QTextEdit *helptxt = new QTextEdit;
     helptxt->setHtml(stream.readAll());
+    helptxt->setStyleSheet(QString("font-size: 12pt"));
 
     QTextEdit *view = new QTextEdit(helptxt->toHtml());
     view->createStandardContextMenu();
     view->setWindowTitle("Option help");
-    view->setMinimumWidth(800);
-    view->setMinimumHeight(600);
+    view->setMinimumWidth(1200);
+    view->setMinimumHeight(700);
     view->setAttribute(Qt::WA_DeleteOnClose);
 
     view->show();

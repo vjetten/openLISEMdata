@@ -1,6 +1,6 @@
 <p><strong>openLISEM database generator</strong></p>
 <p>This program generates a database from a few baseline PCRaster and GTiff maps for the openLISEM model, using a series of python scripts.</p>
-<p>A temporary configuration file (lisemdbaseoptions.cfg) is generated automatically by this interface, combining all options in your temp directory. This configuration fiel is used by the the python scripts to create the database.</p>
+<p>A temporary configuration file (lisemdbaseoptions.cfg) is generated automatically by this interface, combining all options in your temp directory. This configuration file is used by the the python scripts to create the database. </p>
 <p><strong>Ini project files</strong></p>
 <p>You can save the current interface configuration (save button), or save the current config under a new name (save as) as an "ini" file, in a folder of your choice (usually the project folder). You can also load previous ini files. These are added to the dropdown list at the top.</p>
 <p>The list of ini files is checked when opening the dbase generator. Any missing ini files sare deleted from the list.</p>
@@ -18,3 +18,14 @@
 <p>These names are not compulsory but do not use the same folder for the base data and input maps. In the DBase generator you have to point to the "Base" and "Maps" folders.</p>
 <p>The <strong>python scripts</strong> compiles all PCRaster and GDAL operations to create the LISEM input database. The main python script is "lisemDBASEgenerator.py" which should eb present in a folder claled 'scripts' that is created when you unzip this package. A series of python script for thhe different map ccategories are called by this main script.</p>
 <p>The <strong>ESPG number</strong> is needed to ensure the right cartograohic projection in map transformations. Unfortunately, PCRaster maps do not store this information, so you have to procvide it.</p>
+<p><strong>Options</strong></p>
+<p>The first time you have to check at least the firat four groups:</p>
+<ol>
+<li>DEM related data (gradient, flow network for kinematic wave etc.)</li>
+<li>CHANNEL related data: channel dimensions and network, multiple channels can exist. NOTE: if your area does not have a channel leave the channel name blank and do not select channel options.</li>
+<li>LANDUSE related data: for vegetation interceptiopn annd surface parameters influenced by landuse. if an NDVI map is used, certain surface properties will be determined by the NDVI</li>
+<li>SOILS related data: soil property maps are downloaded form SOILGRIDS.ORG and translated to input data using pedotransfer fuctiuons of Saxton and Rawls,2006.</li>
+<li>INFRASTRUCTURE related data based on shape files of buoldings and roads.</li>
+<li>RAINFALL related data in case you use satellite images for rainfall.</li>
+</ol>
+<p>After you have run this once you can also run each option seperately if you want to alter parameters and re-run the generator.</p>
