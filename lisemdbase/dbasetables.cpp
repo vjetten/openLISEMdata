@@ -36,6 +36,10 @@ void MainWindow::copyLULCTable()
 void MainWindow::fillLULCTable()
 {
     LULCNNtableName = QFileInfo(lineEdit_Base->text()).absolutePath() + "/NN" + QFileInfo(LULCtableName).fileName();
+    if (LULCtableName == "") {
+        LULCNNtableName.clear();
+        return;
+    }
     //qDebug() << "new table"<<LULCNNtableName << LULCtableName;
 
     QFile file(LULCtableName);
@@ -115,6 +119,11 @@ void MainWindow::on_toolButton_resetLULC_clicked()
 
 void MainWindow::createNNLULCTable()
 {
+    LULCNNtableName = QFileInfo(lineEdit_Base->text()).absolutePath() + "/NN" + QFileInfo(LULCtableName).fileName();
+    if (LULCtableName == "") {
+        LULCNNtableName.clear();
+        return;
+    }
     QFile file(LULCNNtableName);
 
     if(file.open(QIODevice::WriteOnly | QIODevice::Text))

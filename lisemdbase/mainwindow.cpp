@@ -593,7 +593,7 @@ void MainWindow::on_pushButton_start_clicked()
 {
   //  runGPMscript =false;
   //  runIDMscript = false;
-    runOptionsscript = true;
+ //   runOptionsscript = true;
  //   runERAscript = false;
 
     runModel();

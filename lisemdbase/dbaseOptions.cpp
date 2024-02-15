@@ -24,7 +24,7 @@ void MainWindow::getIniStart()
     combo_iniName->addItems(skeys);
 }
 
-void MainWindow::setIni(QString sss, bool yes)
+void MainWindow::setIni(QString sss)
 {
     QSettings settings(sss,QSettings::IniFormat);
     settings.clear();
@@ -67,10 +67,8 @@ void MainWindow::setIni(QString sss, bool yes)
 
     settings.setValue("LULC/optionLULC", QString::number(optionLULC));
     settings.setValue("LULC/LULCmap", LULCmapName);
-    if (yes)
-        settings.setValue("LULC/LULCNNtable", LULCNNtableName);
-    else
-        settings.setValue("LULC/LULCtable", LULCtableName);
+    settings.setValue("LULC/LULCtable", LULCtableName);
+    settings.setValue("LULC/LULCNNtable", LULCNNtableName);
     settings.setValue("LULC/NDVImap", NDVImapName);
     settings.setValue("LULC/optionUseNDVI", QString::number(optionUseNDVI));
 

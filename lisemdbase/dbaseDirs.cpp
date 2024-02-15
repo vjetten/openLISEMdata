@@ -21,8 +21,8 @@ void MainWindow::on_toolButton_SaveIni_clicked()
     if (combo_iniName->currentText().isEmpty())
         on_toolButton_saveas_clicked();
         //combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
-
-    setIni(combo_iniName->currentText(), false);
+    createNNLULCTable();
+    setIni(combo_iniName->currentText());
 }
 
 
@@ -35,7 +35,8 @@ void MainWindow::on_toolButton_saveas_clicked()
                                "*.ini");
     if (!fileName.isEmpty()) {
         readValuesfromUI();
-        setIni(fileName, false);
+        createNNLULCTable();
+        setIni(fileName);
         combo_iniName->insertItem(0, fileName);
         combo_iniName->setCurrentIndex(0);
     }

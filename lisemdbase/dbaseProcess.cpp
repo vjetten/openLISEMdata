@@ -155,16 +155,15 @@ void MainWindow::runModel()
 //    qDebug() << condaenv+"Library/share/gdal";
 
 
-
-    if (runOptionsscript)
-        createNNLULCTable();
+  //  if (runOptionsscript)
+    createNNLULCTable();
 
     readValuesfromUI();
 
     if (!checkAllNames())
         return;
 
-    setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg", true);
+    setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg");
 
 
     QStringList pythonCommandArguments;

@@ -155,7 +155,7 @@ public:
 
     void setIniStart();
     void getIniStart();
-    void setIni(QString sss, bool yes);
+    void setIni(QString sss);
     QString checkName(int i, QString name);
     void getIni(QString name);
     void readValuesfromUI();

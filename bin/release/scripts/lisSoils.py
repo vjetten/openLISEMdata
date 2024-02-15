@@ -60,65 +60,6 @@ def interpolate_tiff(input_tiff, output_tiff, power=2, smoothing=0):
     dst_ds = None
 
 
-
-class GetSoilGridsLayer:
-    "downbloading a SOILGRIDS layer from WCS service"
-    def __init__(self, x = 0):
-          
-        varname = lg.SG_names_[x]
-        # depth string
-        if lg.SG_horizon_ == 1 :
-            ID = lg.SG_layers_[lg.optionSG1-1] 
-        if lg.SG_horizon_ == 2 :
-            ID = lg.SG_layers_[lg.optionSG2-1]             
-            
-        self.debug = 0 #Debug_
-        vname = varname  # filename for display
-               
-        # make a readable name for output to screen       
-        if x == 3: vname='Soil Org Carbon' 
-        if x == 4: vname='Gravel' 
-        if x == 5: vname='Bulk Density' 
-
-        print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
-
-        ESPGs = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
-
-        if self.debug == 1:
-            print("Open SOILGRIDS WCS: "+varname+ID, flush=True)
-
-        url = "http://maps.isric.org/mapserv?map=/map/{}.map".format(varname)
-        wcs = WebCoverageService(url, version='1.0.0')
-        if self.debug == 1:
-            cov_list = list(wcs.contents)
-            mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
-            print(mean_covs, flush = True)
-
-        variable = varname+ID
-        varout = varname+str(lg.SG_horizon_)
-        outputnametif = "{0}.tif".format(varout)
-        nt = "{0}_.tif".format(varout)
-
-        if self.debug == 1:
-            print("Downloading "+variable, flush=True)
-        dx1 = 250
-        dy1 = 250
-
-        # make a tif but the nrrows and nrcols are related to 250m now
-        # force maskbox but this is not exact
-
-        # get data as temp geotif and save to disk
-        response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=lg.maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
-        with open('temp1.tif', 'wb') as file:
-             file.write(response.read())
-
-        src = gdal.Warp('temp.tif',outputnametif, srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=lg.maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
-        src = None
-        
-        os.remove('temp.tif')
-
-
-
 class GetSoilGridsLayer:
     "downbloading a SOILGRIDS layer from WCS service"
     def __init__(self, x = 0):
@@ -164,13 +105,13 @@ class GetSoilGridsLayer:
         Maskbox = [lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
         # get data as temp geotif and save to disk
         response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
-        with open('temp.tif', 'wb') as file:
+        with open('__temp.tif', 'wb') as file:
              file.write(response.read())
 
-        src = gdal.Warp(outputnametif, 'temp.tif', srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
+        src = gdal.Warp(outputnametif, '__temp.tif', srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
         src = None
         
-        os.remove('temp.tif')
+        #os.remove('__temp.tif')
 
 
              
