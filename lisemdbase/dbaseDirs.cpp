@@ -56,25 +56,27 @@ void MainWindow::on_toolButton_deleteIni_clicked()
 
 void MainWindow::on_toolButton_script_clicked()
 {
-    QStringList filters({"Python (*.py)","Any files (*)"});
-    ScriptFileName = getFileorDir(ScriptFileName,"Select python script", filters, 2);
-    if (!ScriptFileName.isEmpty())
-        lineEdit_Script->setText(ScriptFileName);
+    QStringList filters({"Python (*.py)"});
+
+    QString s = getFileorDir(ScriptDirName,"Select python script folder", filters, -1);
+    if (!s.isEmpty())
+        lineEdit_Script->setText(s+ScriptFileName);
 }
 
 //==============================================================================
 void MainWindow::on_toolButton_base_clicked()
 {
     QStringList filters;
-    QString S = lineEdit_Base->text();
-    BaseDirName = getFileorDir(lineEdit_Base->text(),"Select Base folder", filters, 0);
-    if (!BaseDirName.isEmpty())
+    QString S = QFileInfo(BaseDirName).exists() ? BaseDirName : ProjectDirName;// lineEdit_Base->text();
+    BaseDirName = getFileorDir(S,"Select Base folder", filters, 0);
+    if (!BaseDirName.isEmpty()) {
         lineEdit_Base->setText(BaseDirName);
+        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
+    }
     else
         lineEdit_Base->setText(S);
 
-    if (!QFileInfo(ProjectDirName).exists())
-        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
+   // if (!QFileInfo(ProjectDirName).exists())
 }
 
 
@@ -87,9 +89,6 @@ void MainWindow::on_toolButton_maps_clicked()
     MapsDirName = getFileorDir(tmp,"Select Maps folder", filters, 0);
     if (!MapsDirName.isEmpty())
         lineEdit_Maps->setText(MapsDirName);
-
-    if (!QFileInfo(ProjectDirName).exists())
-        ProjectDirName = QDir(QDir(MapsDirName).absolutePath()+"/..").absolutePath()+"/";
 }
 
 
@@ -97,22 +96,19 @@ void MainWindow::on_toolButton_GPMout_clicked()
 {
     QString tmp = lineEdit_RainfallDir->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = ProjectDirName; // parent of base
 
     QStringList filters;
     RainDirName = getFileorDir(tmp,"Select Rain folder", filters, 0);
     if (!RainDirName.isEmpty())
         lineEdit_RainfallDir->setText(RainDirName);
-
-    if (!QFileInfo(ProjectDirName).exists())
-        ProjectDirName = QDir(QDir(RainDirName).absolutePath()+"/..").absolutePath()+"/";
 }
 
 
 //==============================================================================
 void MainWindow::on_toolButton_baseDEM_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_baseDEM->text();
+    QString tmp = BaseDirName;//+lineEdit_baseDEM->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseDEMName = getFileorDir(tmp,"Select Base DEM", filters, 1);
     if (!BaseDEMName.isEmpty())
@@ -122,7 +118,7 @@ void MainWindow::on_toolButton_baseDEM_clicked()
 
 void MainWindow::on_toolButton_baseChannel_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_baseChannel->text();
+    QString tmp = BaseDirName;//+lineEdit_baseChannel->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseChannelName = getFileorDir(tmp,"Select Channel mask", filters, 1);
     if (!BaseChannelName.isEmpty())
@@ -132,7 +128,7 @@ void MainWindow::on_toolButton_baseChannel_clicked()
 
 void MainWindow::on_toolButton_userOutlets_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userOutlets->text();
+    QString tmp = BaseDirName;//+lineEdit_userOutlets->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseOutletsName = getFileorDir(tmp,"Select outlet(s) map", filters, 1);
     if (!BaseOutletsName.isEmpty())
@@ -142,7 +138,7 @@ void MainWindow::on_toolButton_userOutlets_clicked()
 
 void MainWindow::on_toolButton_userOutpoints_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userOutpoints->text();
+    QString tmp = BaseDirName;//+lineEdit_userOutpoints->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseOutpointsName = getFileorDir(tmp,"Select outpoints map", filters, 1);
     if (!BaseOutpointsName.isEmpty())
@@ -152,7 +148,7 @@ void MainWindow::on_toolButton_userOutpoints_clicked()
 
 void MainWindow::on_toolButton_userCulverts_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userCulverts->text();
+    QString tmp = BaseDirName;//+lineEdit_userCulverts->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseCulvertsName = getFileorDir(tmp,"Select culverts map", filters, 1);
     if (!BaseCulvertsName.isEmpty())
@@ -162,7 +158,7 @@ void MainWindow::on_toolButton_userCulverts_clicked()
 
 void MainWindow::on_toolButton_OutletsTable_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userOutlets->text();
+    QString tmp = BaseDirName;//+lineEdit_userOutlets->text();
     QStringList filters({"Text table (*.tbl)","Any files (*)"});
     OutletstableName = getFileorDir(tmp,"Select outlet table", filters, 2);
     if (!OutletstableName.isEmpty())
@@ -174,7 +170,7 @@ void MainWindow::on_toolButton_OutletsTable_clicked()
 
 void MainWindow::on_toolButton_Dams_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_Dams->text();
+    QString tmp = BaseDirName;//+lineEdit_Dams->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     BaseDamsName = getFileorDir(tmp,"Select dams map", filters, 1);
     if (!BaseDamsName.isEmpty())
@@ -184,7 +180,7 @@ void MainWindow::on_toolButton_Dams_clicked()
 
 void MainWindow::on_toolButton_userWatersheds_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_userWatersheds->text();
+    QString tmp = BaseDirName;//+lineEdit_userWatersheds->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     WatershedsName = getFileorDir(tmp,"Select watershed map", filters, 2);
     if (!WatershedsName.isEmpty())
@@ -198,7 +194,7 @@ void MainWindow::on_toolButton_LULCTable_clicked()
 
     QString tmp = lineEdit_LULCTable->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//ProjectDirName;
 
     QStringList filters({"Table (*.tbl *.txt *.csv)","Any files (*)"});
     LULCtableName = getFileorDir(tmp,"Select LULC table", filters, 2);
@@ -216,7 +212,7 @@ void MainWindow::on_toolButton_LULCMap_clicked()
 {
     QString tmp = lineEdit_LULCMap->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//ProjectDirName;
 
     QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
     LULCmapName = getFileorDir(tmp,"Select LULC map", filters, 2);
@@ -230,7 +226,7 @@ void MainWindow::on_toolButton_NDVIMap_clicked()
 {
     QString tmp = lineEdit_NDVIMap->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//ProjectDirName;
 
     QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
     NDVImapName = getFileorDir(tmp,"Select NDVI map", filters, 2);
@@ -243,7 +239,7 @@ void MainWindow::on_toolButton_buildingsSHP_clicked()
 {
     QString tmp = lineEdit_buildingsSHP->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//  ProjectDirName;
 
     QStringList filters({"ESRI Shape file (*.shp)","Any files (*)"});
     buildingsSHPName = getFileorDir(tmp,"Select Buildings Shape file", filters, 1);
@@ -256,7 +252,7 @@ void MainWindow::on_toolButton_drumMap_clicked()
 {
     QString tmp = lineEdit_drumMap->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//ProjectDirName;
 
     QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
     drummapName = getFileorDir(tmp,"Select raindrum map", filters, 1);
@@ -269,7 +265,7 @@ void MainWindow::on_toolButton_roadsSHP_clicked()
 {
     QString tmp = lineEdit_roadsSHP->text();
     if (!QFileInfo(tmp).exists())
-        tmp = ProjectDirName;
+        tmp = BaseDirName;//ProjectDirName;
 
     QStringList filters({"ESRI Shape file (*.shp)","Any files (*)"});
     roadsSHPName = getFileorDir(tmp,"Select Road system Shape file", filters, 1);
@@ -282,7 +278,7 @@ void MainWindow::on_toolButton_roadsSHP_clicked()
 
 void MainWindow::on_toolButton_GPMGauge_clicked()
 {
-    QString tmp = BaseDirName+lineEdit_RainGaugeFilenameGPM->text();
+    QString tmp = ProjectDirName;//+lineEdit_RainGaugeFilenameGPM->text();
     QStringList filters({"PCRaster maps (*.map)","Any files (*)"});
     RainGaugeFilename = getFileorDir(tmp,"Select map with Gauge location (1 point)", filters, 1);
     if (!RainGaugeFilename.isEmpty())

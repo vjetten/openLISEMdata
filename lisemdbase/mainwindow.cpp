@@ -5,10 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
- //  resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
+    //  resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
 
-  //  setMinimumSize(1280, 800);
-  //  setWindowState(Qt::WindowMaximized);
+    //  setMinimumSize(1280, 800);
+    //  setWindowState(Qt::WindowMaximized);
     CondaInstall = GetCondaEnvs();
 
     QStringList sss;
@@ -38,20 +38,41 @@ MainWindow::MainWindow(QWidget *parent)
 
     QString s = combo_iniName->currentText();
     if (QFileInfo(s).exists()) {
-        getIni(s);
 
-        if (comboBox_rainString->count() == 0) {
-            comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
-            comboBox_rainString->addItem("YW_2017.002_");
+        getIni(s);
+        comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+        comboBox_rainString->addItem("YW_2017.002_");
+        QSet<QString> uniqueItems;
+
+        // Iterate through the items in the QComboBox
+        for (int i = 0; i < comboBox_rainString->count(); ++i) {
+            QString itemText = comboBox_rainString->itemText(i);
+            uniqueItems.insert(itemText);
         }
+
+        // Clear the QComboBox
+        comboBox_rainString->clear();
+
+        // Add unique items back to the QComboBox
+        for (const QString &uniqueItem : uniqueItems) {
+            comboBox_rainString->addItem(uniqueItem);
+        }
+
+
+      //  if (comboBox_rainString->count() == 0) {
+//            comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+//            comboBox_rainString->addItem("YW_2017.002_");
+//        }
+
         comboBox_rainString->setCurrentIndex(0);//Text(RainString);
         writeValuestoUI();
         readValuesfromUI();
     }
 
-    s = qApp->applicationDirPath()+"/scripts/lisemDBASEgenerator.py";
-    if (QFileInfo(s).exists()) {
-        lineEdit_Script->setText(s);
+    ScriptDirName = qApp->applicationDirPath()+"/scripts/";
+    ScriptFileName = "lisemDBASEgenerator.py";
+    if (QFileInfo(ScriptDirName+ScriptFileName).exists()) {
+        lineEdit_Script->setText(ScriptDirName+ScriptFileName);
     }
 
 
@@ -61,7 +82,9 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     if (QFileInfo(BaseDirName).exists())
-       ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
+        ProjectDirName = QDir(QDir(BaseDirName).absolutePath()+"/..").absolutePath()+"/";
+
+
 
     tabWidgetOptions->setCurrentIndex(0);
     tabWidgetOptions->removeTab(7);
@@ -209,9 +232,9 @@ bool MainWindow::GetCondaAllEnvs(int cda)
                 QString error;
                 if (!pythonfound) error = QString("Python not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
                 else
-                if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
-                else
-                if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                    if (!pcrasterfound) error = QString("PCRaster not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
+                    else
+                        if (!gdalfound) error = QString("GDAL not found in Anaconda environment "+folders.at(i)+"\nThis environment is ignored.");
 
                 QMessageBox msgBox;
                 msgBox.setText(error);
@@ -227,23 +250,25 @@ bool MainWindow::GetCondaAllEnvs(int cda)
 // select a file or directory
 // doFile = 0: select a directory;
 // dofile = 1 select a file and return file name only;
-// dofile = 2 return filename wioth full path
+// dofile = 2 return filename with full path
 QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList filters, int doFile)
 {
     QFileDialog dialog;
     QString dirout = inputdir;
-    QString startdir = QFileInfo(inputdir).absoluteDir().absolutePath();
-  //  qDebug() <<"dir" << inputdir<< startdir ;
+    // QString startdir = QFileInfo(inputdir).absoluteDir().absolutePath();
+    //  qDebug() <<"dir" << inputdir<< startdir ;
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         dialog.setFileMode(QFileDialog::ExistingFile);
     } else {
-        // get a file
-        filters.clear();
+        //  filters.clear();
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
-        dialog.setFileMode(QFileDialog::DirectoryOnly);
+        if (doFile == 0)
+            dialog.setFileMode(QFileDialog::DirectoryOnly);
+        if (doFile == -1)
+            dialog.setFileMode(QFileDialog::ExistingFile);
     }
 
     dialog.setLabelText(QFileDialog::LookIn,title);
@@ -261,10 +286,17 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
     } else {
         QString S = dialog.selectedUrls().at(0).path();
         S.remove(0,1);
-        if (!S.isEmpty())
-            dirout = S;
-        if (!dirout.endsWith('/') && !dirout.endsWith('\\'))
-            dirout = dirout + "/";
+        qDebug() << QFileInfo(S).dir();
+        if (!S.isEmpty()) {
+            if (!QFileInfo(S).exists()) S = S + "/";
+            dirout = QFileInfo(S).dir().absolutePath();
+            if (dirout.contains("\\") && !dirout.endsWith("\\"))
+                dirout=dirout+"\\";
+            if (dirout.contains("/") && !dirout.endsWith("/"))
+                dirout=dirout+"/";
+
+        }
+
     }
 
     return dirout;
@@ -323,6 +355,25 @@ void MainWindow::on_toolButton_stop_clicked()
 void MainWindow::on_combo_iniName_currentIndexChanged(int index)
 {
     getIni(combo_iniName->currentText());
+
+    comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
+    comboBox_rainString->addItem("YW_2017.002_");
+    QSet<QString> uniqueItems;
+
+    // Iterate through the items in the QComboBox
+    for (int i = 0; i < comboBox_rainString->count(); ++i) {
+        QString itemText = comboBox_rainString->itemText(i);
+        uniqueItems.insert(itemText);
+    }
+
+    // Clear the QComboBox
+    comboBox_rainString->clear();
+
+    // Add unique items back to the QComboBox
+    for (const QString &uniqueItem : uniqueItems) {
+        comboBox_rainString->addItem(uniqueItem);
+    }
+
     writeValuestoUI();
     readValuesfromUI();
 
@@ -331,16 +382,16 @@ void MainWindow::on_combo_iniName_currentIndexChanged(int index)
 
     text_out->clear();
 
-//    if (LULCNames.isEmpty()) {
-//        LULCNames = QString(qApp->applicationDirPath()+"/lulcnames.ini");
-//        lineEdit_LULCNames->setText(LULCNames);
-//    }
+    //    if (LULCNames.isEmpty()) {
+    //        LULCNames = QString(qApp->applicationDirPath()+"/lulcnames.ini");
+    //        lineEdit_LULCNames->setText(LULCNames);
+    //    }
 
     int ncol = 6;
     int nrow = 0;
     int i = 0;
     model = new QStandardItemModel( nrow, ncol, this );
-   // model->setHorizontalHeaderItem( i++, new QStandardItem("LULC type"));
+    // model->setHorizontalHeaderItem( i++, new QStandardItem("LULC type"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("#"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Random\nRoughness (cm)"));
     model->setHorizontalHeaderItem( i++, new QStandardItem("Manning's n\n (-)"));
@@ -442,13 +493,13 @@ void MainWindow::on_toolButton_CheckAll_clicked()
     //checkBox_LULC->setChecked(checked);
     //checkBox_Infil->setChecked(checked);
     //checkBox_erosion->setChecked(checked);
-//    checkBox_D50->setChecked(checked);
-//    checkBox_ChannelsNoErosion->setChecked(checked);
+    //    checkBox_D50->setChecked(checked);
+    //    checkBox_ChannelsNoErosion->setChecked(checked);
 }
 
 void MainWindow::on_radioButton_OutletSIngle_toggled(bool checked)
 {
-   widgetSingleWS->setEnabled(checked);
+    widgetSingleWS->setEnabled(checked);
 }
 
 void MainWindow::on_radioButton_OutletMultiple_toggled(bool checked)
@@ -520,40 +571,40 @@ bool MainWindow::convertDailyPrecipitation()
         double P = line.at(1).toDouble();
         if (P >0) {
 
-//        double I1 = dailyA*qPow(P,dailyB);
-//        double I2 = I1/2;
-//        double I3 = I2/2;
-//        double I4 = I3/2;
-//        double I5 = I4/2;
-//        double I6 = I5/2;
-//        double I6 = I5/2;
-        double I[11];
-        double sum = 0;
+            //        double I1 = dailyA*qPow(P,dailyB);
+            //        double I2 = I1/2;
+            //        double I3 = I2/2;
+            //        double I4 = I3/2;
+            //        double I5 = I4/2;
+            //        double I6 = I5/2;
+            //        double I6 = I5/2;
+            double I[11];
+            double sum = 0;
 
-        for (int i = 0; i < 11; i++) {
-            I[i] = P/12.0*dailyA*qPow(i+0.5,dailyB);
-            sum += I[i];
-                   // qDebug()  <<i << I[i] << sum << P;
-        }
-        double dt = sum > 0 ? 60*P/sum : 60;
+            for (int i = 0; i < 11; i++) {
+                I[i] = P/12.0*dailyA*qPow(i+0.5,dailyB);
+                sum += I[i];
+                    // qDebug()  <<i << I[i] << sum << P;
+            }
+            double dt = sum > 0 ? 60*P/sum : 60;
 
-       // int hour = 11;//qrand() % ((15 + 1) - 3) + 3;
-        int hour = QRandomGenerator::global()->bounded(9)+1;
-        double start = hour*60;
+            // int hour = 11;//qrand() % ((15 + 1) - 3) + 3;
+            int hour = QRandomGenerator::global()->bounded(9)+1;
+            double start = hour*60;
 
-        text_out->appendPlainText(QString("%1:%2").arg(day).arg(start,4,'f',0,'0'));
-        for (int i = 0; i < 11; i++) {
-            eout << QString("%1:%2 ").arg(day).arg(start+(i+1)*dt,4,'f',0,'0') << I[i] << "\n";
+            text_out->appendPlainText(QString("%1:%2").arg(day).arg(start,4,'f',0,'0'));
+            for (int i = 0; i < 11; i++) {
+                eout << QString("%1:%2 ").arg(day).arg(start+(i+1)*dt,4,'f',0,'0') << I[i] << "\n";
 
-        }
-        eout << QString("%1:%2 ").arg(day).arg(start+12*dt,4,'f',0,'0') << "0.00\n";
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I3 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I1 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I2 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I4 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I5 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I6 << "\n";j++;
-//        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
+            }
+            eout << QString("%1:%2 ").arg(day).arg(start+12*dt,4,'f',0,'0') << "0.00\n";
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I3 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I1 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I2 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I4 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I5 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << I6 << "\n";j++;
+            //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
 
         } else {
             eout << QString("%1:%2 ").arg(day).arg(720,4,'f',0,'0') << "0.00\n";
@@ -569,8 +620,8 @@ bool MainWindow::convertDailyPrecipitation()
 void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 {
     //toolButton_clear->setVisible(index < 3);
-//    toolButton_stop->setVisible(index < 3);
-//    pushButton_start->setVisible(index < 3);
+    //    toolButton_stop->setVisible(index < 3);
+    //    pushButton_start->setVisible(index < 3);
 }
 
 
@@ -591,10 +642,10 @@ void MainWindow::on_tabWidgetOptions_currentChanged(int index)
 
 void MainWindow::on_pushButton_start_clicked()
 {
-  //  runGPMscript =false;
-  //  runIDMscript = false;
- //   runOptionsscript = true;
- //   runERAscript = false;
+    //  runGPMscript =false;
+    //  runIDMscript = false;
+    //   runOptionsscript = true;
+    //   runERAscript = false;
 
     runModel();
 }
@@ -642,5 +693,11 @@ void MainWindow::on_pushButton_start_clicked()
 void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {
     gaugeFrame->setEnabled(checked);
+}
+
+
+void MainWindow::on_checkBox_useStormDrain_toggled(bool checked)
+{
+    widget_drain->setEnabled(checked);
 }
 

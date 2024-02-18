@@ -163,21 +163,21 @@ void MainWindow::runModel()
     if (!checkAllNames())
         return;
 
-    setIni(QDir::tempPath()+"/lisemdbaseoptions.cfg");
+    QString Ss = qApp->applicationDirPath(); //QDir::tempPath()
+    if (QFileInfo(Ss+"/lisemdbaseoptions.cfg").exists()) {
+        QFile file (Ss+"/lisemdbaseoptions.cfg");
+        file.remove();
+    }
+
+    setIni(Ss+"/lisemdbaseoptions.cfg");
 
 
     QStringList pythonCommandArguments;
 
-    if (runOptionsscript) pythonCommandArguments << ScriptFileName;
-//    else
-//        if (runGPMscript) pythonCommandArguments << RainScriptFileName;
-//        else
-//            if (runIDMscript) pythonCommandArguments << IDMScriptFileName;
-//            else
-//                if (runERAscript) pythonCommandArguments << ERAScriptFileName;
+    //if (runOptionsscript)
+    pythonCommandArguments << ScriptFileName;
 
-
-    pythonCommandArguments << QDir::tempPath() + "/lisemdbaseoptions.cfg";
+    pythonCommandArguments << Ss+ "/lisemdbaseoptions.cfg";
 
     //qDebug() << pythonCommandArguments;
 

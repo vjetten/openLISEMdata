@@ -117,7 +117,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.7 - 231216)</string>
+       <string>openLISEM database generator (version 4.72 - 240218)</string>
       </property>
      </widget>
     </item>
@@ -546,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>6</number>
+          <number>5</number>
          </property>
          <property name="iconSize">
           <size>
@@ -916,8 +916,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1197</width>
-                <height>701</height>
+                <width>1175</width>
+                <height>736</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_13">
@@ -2300,8 +2300,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1197</width>
-                <height>429</height>
+                <width>1192</width>
+                <height>478</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_12">
@@ -3373,48 +3373,23 @@
            <item row="2" column="1">
             <widget class="QFrame" name="optionsIS">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="frameShape">
               <enum>QFrame::Box</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_23">
-              <property name="leftMargin">
-               <number>8</number>
-              </property>
-              <property name="topMargin">
-               <number>2</number>
-              </property>
-              <property name="rightMargin">
-               <number>8</number>
-              </property>
-              <property name="bottomMargin">
-               <number>2</number>
-              </property>
-              <property name="horizontalSpacing">
-               <number>8</number>
-              </property>
-              <property name="verticalSpacing">
-               <number>4</number>
-              </property>
-              <item row="5" column="1">
-               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="lineEdit_drumMap">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QCheckBox" name="checkBox_useDrums">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_54">
                 <property name="text">
-                 <string>rainwater drums </string>
+                 <string>Building shape file</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
+              <item row="0" column="1" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
+              </item>
+              <item row="0" column="3" rowspan="2">
                <widget class="QToolButton" name="toolButton_buildingsSHP">
                 <property name="text">
                  <string>...</string>
@@ -3425,176 +3400,32 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_70">
-                <property name="text">
-                 <string>Roof interception storage (mm)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QCheckBox" name="checkBox_useStormDrain">
-                <property name="text">
-                 <string>Roads have storm drain (sewage) system</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="8">
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="2" column="3">
+              <item row="0" column="4">
                <widget class="QLabel" name="label_78">
                 <property name="text">
                  <string>(polygons)</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="1" colspan="2">
-               <widget class="QWidget" name="widget_2" native="true">
-                <layout class="QGridLayout" name="gridLayout_25">
-                 <property name="leftMargin">
-                  <number>8</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>4</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>8</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>4</number>
-                 </property>
-                 <property name="horizontalSpacing">
-                  <number>8</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>4</number>
-                 </property>
-                 <item row="1" column="4">
-                  <widget class="QDoubleSpinBox" name="spinDrainHeight">
-                   <property name="minimum">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QRadioButton" name="radioStormdrainRect">
-                   <property name="text">
-                    <string>Rectangular:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="label_101">
-                   <property name="text">
-                    <string>Width</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QRadioButton" name="radioStormdrainCirc">
-                   <property name="text">
-                    <string>Circular:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QDoubleSpinBox" name="spinDrainDiameter">
-                   <property name="minimum">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.650000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="label_81">
-                   <property name="text">
-                    <string>Diameter</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QDoubleSpinBox" name="spinDrainWidth">
-                   <property name="minimum">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="3">
-                  <widget class="QLabel" name="label_102">
-                   <property name="text">
-                    <string>Height</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="7" column="3">
-               <widget class="QLabel" name="label_103">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
+              <item row="1" column="0" rowspan="2">
+               <widget class="QCheckBox" name="checkBox_useDrums">
                 <property name="text">
-                 <string>Inlets: distance</string>
+                 <string>rainwater drums </string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_69">
-                <property name="text">
-                 <string>Road shape file</string>
+              <item row="1" column="1" rowspan="2" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_drumMap">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_54">
-                <property name="text">
-                 <string>Building shape file</string>
+              <item row="2" column="3" rowspan="2">
+               <widget class="QToolButton" name="toolButton_drumMap">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="QToolButton" name="toolButton_roadsSHP">
                 <property name="text">
                  <string>...</string>
                 </property>
@@ -3604,10 +3435,24 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_buildingsSHP"/>
+              <item row="2" column="4">
+               <widget class="QLabel" name="label_80">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>(pixels that have rain water drums in m3)</string>
+                </property>
+               </widget>
               </item>
-              <item row="4" column="1">
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_70">
+                <property name="text">
+                 <string>Roof interception storage (mm)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
                <widget class="QDoubleSpinBox" name="spin_roofStore">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -3632,11 +3477,18 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="2">
-               <widget class="QToolButton" name="toolButton_drumMap">
-                <property name="enabled">
-                 <bool>false</bool>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>Road shape file</string>
                 </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_roadsSHP"/>
+              </item>
+              <item row="4" column="3">
+               <widget class="QToolButton" name="toolButton_roadsSHP">
                 <property name="text">
                  <string>...</string>
                 </property>
@@ -3646,54 +3498,208 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="4">
-               <widget class="QSpinBox" name="spinDrainInletDistance">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <number>30</number>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="6">
-               <widget class="QLabel" name="label_104">
-                <property name="text">
-                 <string>size (m2)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="7">
-               <widget class="QDoubleSpinBox" name="spinDrainInletSize">
-                <property name="minimum">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>10.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="value">
-                 <double>0.500000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="3" colspan="5">
+              <item row="4" column="4">
                <widget class="QLabel" name="label_79">
                 <property name="text">
                  <string>(polygons, tarred roads)</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="3" colspan="5">
-               <widget class="QLabel" name="label_80">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
+              <item row="5" column="0" colspan="2">
+               <widget class="QCheckBox" name="checkBox_useStormDrain">
                 <property name="text">
-                 <string>(pixels that have rain water drums in m3)</string>
+                 <string>Roads have storm drain (sewage) system</string>
                 </property>
+               </widget>
+              </item>
+              <item row="5" column="5">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>172</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="5" column="2" colspan="3">
+               <widget class="QWidget" name="widget_drain" native="true">
+                <layout class="QGridLayout" name="gridLayout_drain">
+                 <property name="leftMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>4</number>
+                 </property>
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QWidget" name="widget_2" native="true">
+                   <layout class="QGridLayout" name="gridLayout_25">
+                    <property name="leftMargin">
+                     <number>8</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>4</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>8</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>4</number>
+                    </property>
+                    <property name="horizontalSpacing">
+                     <number>8</number>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>4</number>
+                    </property>
+                    <item row="1" column="4">
+                     <widget class="QDoubleSpinBox" name="spinDrainHeight">
+                      <property name="minimum">
+                       <double>0.100000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>10.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>0.500000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QRadioButton" name="radioStormdrainRect">
+                      <property name="text">
+                       <string>Rectangular:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="label_101">
+                      <property name="text">
+                       <string>Width</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QRadioButton" name="radioStormdrainCirc">
+                      <property name="text">
+                       <string>Circular:</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QDoubleSpinBox" name="spinDrainDiameter">
+                      <property name="minimum">
+                       <double>0.100000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>10.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>0.650000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="label_81">
+                      <property name="text">
+                       <string>Diameter</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QDoubleSpinBox" name="spinDrainWidth">
+                      <property name="minimum">
+                       <double>0.100000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>10.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>0.500000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="3">
+                     <widget class="QLabel" name="label_102">
+                      <property name="text">
+                       <string>Height</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QLabel" name="label_104">
+                   <property name="text">
+                    <string>size (m2)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QSpinBox" name="spinDrainInletDistance">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <number>30</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QDoubleSpinBox" name="spinDrainInletSize">
+                   <property name="minimum">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.500000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="label_103">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Inlets: distance</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -3758,8 +3764,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1211</width>
-                <height>382</height>
+                <width>1192</width>
+                <height>478</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_20">
@@ -5698,12 +5704,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>287</x>
-     <y>544</y>
+     <x>303</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
-     <x>468</x>
-     <y>545</y>
+     <x>460</x>
+     <y>541</y>
     </hint>
    </hints>
   </connection>
@@ -5714,12 +5720,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>306</x>
-     <y>572</y>
+     <x>303</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
-     <x>468</x>
-     <y>573</y>
+     <x>460</x>
+     <y>569</y>
     </hint>
    </hints>
   </connection>
@@ -5730,12 +5736,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>244</x>
-     <y>544</y>
+     <x>303</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
-     <y>545</y>
+     <x>495</x>
+     <y>542</y>
     </hint>
    </hints>
   </connection>
@@ -5746,12 +5752,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>572</y>
+     <x>303</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
-     <y>573</y>
+     <x>495</x>
+     <y>570</y>
     </hint>
    </hints>
   </connection>
@@ -5782,8 +5788,8 @@
      <y>369</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1138</x>
-     <y>357</y>
+     <x>1223</x>
+     <y>372</y>
     </hint>
    </hints>
   </connection>
@@ -5794,8 +5800,8 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>296</y>
+     <x>311</x>
+     <y>473</y>
     </hint>
     <hint type="destinationlabel">
      <x>248</x>

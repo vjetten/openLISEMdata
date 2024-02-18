@@ -21,9 +21,8 @@ public:
     QString CondaBaseDirName;
     QString iniName;
     QString ScriptFileName;
-   // QString LULCDirName;
-    QString BaseDirName;
     QString ScriptDirName;
+    QString BaseDirName;
     QString BaseDEMName;
     QString BaseChannelName;
     QString BaseOutletsName;
@@ -318,6 +317,8 @@ private slots:
     void on_comboBox_Resample_currentIndexChanged(int index);
 
     void on_toolButton_RainFilename_clicked();
+
+    void on_checkBox_useStormDrain_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

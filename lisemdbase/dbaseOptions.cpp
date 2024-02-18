@@ -123,9 +123,9 @@ void MainWindow::setIni(QString sss)
     settings.setValue("RAINFALL/RainFilename", RainFilename);
     settings.setValue("RAINFALL/RainEPSG", RainEPSG);
     for (int i=0; i < comboBox_rainString->count(); i++) {
-        settings.setValue(QString("RAINFALL/RainString_%1").arg(i), comboBox_rainString->itemText(i));
+        settings.setValue(QString("RAINFALL/RainString_%1").arg(i),"&"+comboBox_rainString->itemText(i));
     }
-    settings.setValue("RAINFALL/RainString", RainString);
+    settings.setValue("RAINFALL/RainString", "&"+RainString);
     settings.setValue("RAINFALL/SelectPointfromGPM", QString::number(optionGaugeGPM));
     settings.setValue("RAINFALL/RainGaugeFilename", RainGaugeFilename);
     settings.setValue("RAINFALL/RainGaugeFilenameIn", RainGaugeFilenameIn);
@@ -258,13 +258,16 @@ void MainWindow::getIni(QString name)
     RainDirName = checkName(0,settings.value("RAINFALL/RainDirectory").toString());
     RainFilename =  settings.value("RAINFALL/RainFilename").toString();
     RainEPSG = settings.value("RAINFALL/RainEPSG").toString();
-    //RainString = settings.value("RAINFALL/RainString").toString();
     comboBox_rainString->clear();
     for (int i=0; i < 10; i++) {
         QString s = settings.value(QString("RAINFALL/RainString_%1").arg(i)).toString();
-        if (!s.isEmpty())
-            comboBox_rainString->addItem(s);
+        if (!s.isEmpty()) {
+            if (s[0] == '&') s.remove(0,1);
+                comboBox_rainString->addItem(s);
+        }
     }
+    RainString = settings.value("RAINFALL/RainString").toString();
+    if (RainString[0] == '&') RainString.remove(0,1);
 
     optionGaugeGPM = settings.value("RAINFALL/SelectPointfromGPM").toInt();
     RainGaugeFilename = checkName(0,settings.value("RAINFALL/RainGaugeFilename").toString());
