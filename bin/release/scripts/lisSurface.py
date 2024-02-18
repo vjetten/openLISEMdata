@@ -37,14 +37,14 @@ class SurfaceMaps(StaticModel):
 
         if lg.doProcessesNDVI == 1:               
             NDVI = readmap(lg.NDVIName)
-            NDVI += 0.2
+            #NDVI += 0.2
             a_ = 4.257
             b_ = 100.719
             c_ = -5.439
             Cover = min(0.99,max(0.0,a_*NDVI*NDVI + b_*NDVI + c_)/100.0)
             #Using NDVI for the assessment of canopy cover in agricultural crops within modelling research
             # Tenreiro et al 2021
-            mann = 0.01*rr + 0.1*Cover                        
+            mann = 0.005 + 0.01*rr + 0.1*Cover                        
 
         # cover = 1-exp(-0.4*LAI)
         LAI = mask*(ln(1-min(0.95,Cover))/-0.4)   

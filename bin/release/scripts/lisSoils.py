@@ -1,11 +1,11 @@
 # lisemDBASEgenerator
 # global vraiables and initialisation
 #
-# author: V.G.Jetten @ 2022, 2023
+# author: V.G.Jetten @ 2022, 2023, 2024
 # University of Twente, Faculty ITC
 # this software has copyright model: GPLV3
 # this software has a disclaimer
-# last edit: 28 mar 2023
+# last edit: 17 Jan 2024
 
 from owslib.wcs import WebCoverageService
 from pcraster import *
@@ -13,9 +13,31 @@ from pcraster.framework import *
 from osgeo import gdal, gdalconst, osr, ogr
 import numpy as np
 import lisGlobals as lg
+from os.path import exists
 
+def fill_nodata(input_raster, output_raster):
+    # Open the input raster dataset
+    in_ds = gdal.Open(input_raster, gdal.GA_ReadOnly)
+    if in_ds is None:
+        print(f"Error: Could not open input raster '{input_raster}'")
+        return
 
+    # Create an output raster dataset
+    driver = gdal.GetDriverByName("GTiff")
+    out_ds = driver.CreateCopy(output_raster, in_ds)
+    if out_ds is None:
+        print(f"Error: Could not create output raster '{output_raster}'")
+        return
+    
+    # Use gdal.FillNodata to fill nodata values
+    #gdal.FillNodata(in_ds.GetRasterBand(1), None, out_ds.GetRasterBand(1), lg.nrCols, 0)
+    gdal.FillNodata(out_ds.GetRasterBand(1), None, lg.nrCols, 0)
 
+    # Close datasets
+    in_ds = None
+    out_ds = None
+
+# okay but does not work with very large datasets
 def inverse_distance_weighting(points, values, target_points, power=2, smoothing=0):
     distances = np.linalg.norm(points - target_points[:, np.newaxis], axis=2)
     weights = 1.0 / (distances ** power + smoothing)
@@ -28,7 +50,8 @@ def interpolate_tiff(input_tiff, output_tiff, power=2, smoothing=0):
 
     src_ds = gdal.Open(input_tiff)
     band = src_ds.GetRasterBand(1)  # Assuming a single band for simplicity
-    nodata_value = 0 #band.GetNoDataValue()
+    nodata_value = band.GetNoDataValue()
+    print(nodata_value,flush = True)
     geotransform = src_ds.GetGeoTransform()
     width = src_ds.RasterXSize
     height = src_ds.RasterYSize
@@ -58,6 +81,7 @@ def interpolate_tiff(input_tiff, output_tiff, power=2, smoothing=0):
 
     src_ds = None
     dst_ds = None
+
 
 
 class GetSoilGridsLayer:
@@ -96,25 +120,26 @@ class GetSoilGridsLayer:
         variable = varname+ID
         varout = varname+str(lg.SG_horizon_)
         outputnametif = "{0}.tif".format(varout)
+        temptif = '_temp.tif'
 
         dx1 = 250
         dy1 = 250
 
         # make a tif but the nrrows and nrcols are related to 250m now
         # force maskbox but this is not exact, add one dx1,dy1 because sometimes the box is smaller than the DEM because of rounding off
-        Maskbox = [lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
+        Maskbox = lg.maskbox #[lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
         # get data as temp geotif and save to disk
         response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
-        with open('__temp.tif', 'wb') as file:
+        with open(temptif, 'wb') as file:
              file.write(response.read())
 
-        src = gdal.Warp(outputnametif, '__temp.tif', srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
-        src = None
+        src = gdal.Warp(outputnametif, temptif, srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
         
-        #os.remove('__temp.tif')
+        os.remove(temptif)
+        src = None
+        response = None
+        
 
-
-             
 
 ### ---------- class SoilGridsTransform() ---------- ###
 
@@ -139,8 +164,11 @@ class SoilGridsTransform(StaticModel):
 
         nametif = name+".tif"
         namemap = name+".map"
+        temptif = "temp.tif"
+        tempwarptif = "temp1.tif"
 
-        interpolate_tiff(nametif,'temp.tif', power=2, smoothing=0)
+        #interpolate_tiff(nametif,temptif, power=2, smoothing=0)
+        fill_nodata(nametif, temptif)
 
 
         # create a high res resampled version of the downloaded tif, using maskbox, forcing float64
@@ -148,16 +176,19 @@ class SoilGridsTransform(StaticModel):
         if lg.optionResample == 1 :
             resa = 'bilinear'
         if lg.optionResample == 2 :
-            resa = 'cubic'        
-        src = gdal.Warp('temp1.tif','temp.tif', srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa, outputType = gdal.GDT_Float64 )
+            resa = 'cubic'       
+            
+        src = gdal.Warp(tempwarptif,temptif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa, outputType = gdal.GDT_Float64 )
         src = None
+        
         #open the tif and create PCRaster copy
         map_ = scalar(readmap('temp1.tif'))
         map_ *= factor
         report(map_,namemap)
         os.remove('temp.tif')
         os.remove('temp1.tif')
-
+        ET = None
+        
 
 ### ---------- class PedoTranfer() ---------- ###
 
@@ -314,52 +345,59 @@ class PedoTransfer(StaticModel):
         #bB = (ln(1500)-ln(33))/(ln(FC)-ln(WP))
         #aA = exp(ln(33)+bB*ln(FC))
         #Psi1= aA * initmoist**-bB *100/9.8
-        SS = S**2
-        CC = C**2
-        PP = POROSITY**2
+        #SS = S**2
+        #CC = C**2
+        #PP = POROSITY**2
         # 10.2 is from kPa to cm!
         # I cannot find where this comes from!!!
         #Psi1 =10.2*exp(6.53-7.326*POROSITY+15.8*CC+3.809*PP+3.44*S*C-4.989*S*POROSITY+16*SS*PP+16*CC*PP-13.6*SS*C-34.8*CC*POROSITY-7.99*SS*POROSITY)
         #Psi1 = Psi1 * max(0.1,1-fractionmoisture)
         # correct psi slightly for initmoisture, where psi1 is assumed to corrspond to FC
-        bB = (ln(1500)-ln(33))/(ln(FC)-ln(WP))
-        aA = exp(ln(33)+bB*ln(FC))
-        Psi1= aA * initmoist**-bB * 10.2
+        #bB = (ln(1500)-ln(33))/(ln(FC)-ln(WP))
+        #aA = exp(ln(33)+bB*ln(FC))
+        #Psi1= aA * initmoist**-bB * 10.2
         # 10.2 is from kPa to cm
         
+        # Rawls in https://www.gsshawiki.com/Infiltration:Parameter_Estimates		
+        ks = max(0.5,min(ln(Ksat),1000))
+        lamb = min(max(0.1,0.0849*ks+0.159),0.7)
+        psi1ae = exp( -0.3012*ks + 3.5164)   #in cm 			
+        #Psi1 = exp(-0.3382*ks + 3.3425) #wetting front
+        Psi1 = psi1ae*pow(initmoist/POROSITY,-1/lamb) #based on theta in cm
+        #Psi1 = max(Psi1,psi1ae)
+        report(psi1ae,"psiae.map")
+       
         report(Psi1,psi1)
         report(initmoist/POROSITY,"se1.map")
         
         
         #SOILDEPTH
-       # distsea = spread(nominal(1-cover(mask,0)),0,1)*mask
-       # +0.5*(distsea/mapmaximum(distsea))**0.1
         rivfact = mask*0
-        chanm = mask*0;
-        if  lg.doProcessesChannels == 1:
-            chanm = cover(lg.rivers_, 0)*mask       
-        else:
-            chanm = readmap(lg.chanmaskName) 
+        chanm = mask*0
+        if lg.riverExists:
+            chanm = readmap(lg.BaseDir+lg.riversbaseName) 
+            if mapmaximum(chanm) > 0 :
+                distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+                rivfact = -0.5*distriv/mapmaximum(distriv)
+                # perpendicular distance to river, closer gives deeper soils
         
-            
-        distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
-        rivfact = -0.5*distriv/mapmaximum(distriv)
-            # perpendicular distance to river, closer gives deeper soils          
-       
         if lg.SG_horizon_ == 1 :
             soildepth1 = lg.soildepth1depth*mask
             report(soildepth1,lg.soildep1Name)
         if lg.SG_horizon_ == 2 :
             # steeper slopes giver undeep soils
-            soild = mask*cover((1-min(1,slope(DEM)))+rivfact,0)
-            #soild = mask*cover((1-min(1,slope(DEM)))+rivfact+100*profcurv(DEM),0) #
-            soildb = min(lg.soildepth2depth,lg.soildepth2depth*(soild)**1.5)
-            # m to mm for lisem, higher power emphasizes depth
-            soildb = windowaverage(soildb,3*celllength())
+            soild = cover((1-min(1,slope(DEM)))+rivfact+5*profcurv(DEM),0)*mask #
+            #a bit after Kuriakose et al
+            soild = windowaverage(soild,3*celllength())
             # smooth because soil depth does not follow dem exactly        
+            smin = mapminimum(soild)
+            smax = mapmaximum(soild)
+            soild = (soild-smin)/(smax-smin)
+            report(soild,"sd.map")
+            soildb = soild*(lg.soildepth2depth-lg.soildepth1depth) 
+            #min(lg.soildepth2depth,lg.soildepth2depth*(soild)**1.5) # CHARIM, somehow used 1.5...?
             soildepth1 = lg.soildepth1depth*mask
-            mapavg = areaaverage(soildb,nominal(mask))
-            soildepth2 = mask*cover(soildepth1+soildb,mapavg)     
+            soildepth2 = soildepth1+soildb # add 100 mm to avoid soildepth2 of 0 in lisem
             report(soildepth2,lg.soildep2Name)
         
 ### ---------- class CorrectTextures() ---------- ###
@@ -371,9 +409,9 @@ class CorrectTextures(StaticModel):
     def initial(self):
         mask = lg.mask_
  
-        S = readmap("sand.map") 
-        Si = readmap("silt.map")
-        C = readmap("clay.map") 
+        S = readmap("sand1.map") 
+        Si = readmap("silt1.map")
+        C = readmap("clay1.map") 
         
         
        #Si = (mapmaximum(Si) - Si)/(mapmaximum(Si)-mapminimum(Si))

@@ -61,6 +61,7 @@ class ChannelMaps(StaticModel):
         culverts = mask*0
         if lg.doUseCulverts :
             culverts = readmap(lg.BaseDir+lg.culvertsbaseName)
+            
         report(culverts, lg.chanmaxqName)
 
         # report(chWidthmap,"chw.map")

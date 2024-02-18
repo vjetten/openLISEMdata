@@ -245,6 +245,7 @@ def initialize():
     global rainPointnameIn 
     global rainEPSG
     global rainString
+    global riverExists
     
    
     #default values for interface options
@@ -324,6 +325,7 @@ def initialize():
     rainPointnameIn = ""
     rainEPSG = ""
     rainString = ""
+    riverExists = False
 
     lulcTIF = "lulc.tif"
     NDVIinName = "ndvi.tif"
@@ -346,13 +348,27 @@ def initialize():
 
     # read init file in test array myvars
     myvars = {}
+  #  with open(sys.argv[1], 'r') as myfile:
+  #      for line in myfile:
+  #          if '=' not in line:
+  #              continue
+  #          S0 = (line.split('='))[0].strip()
+  #          S1 = (line.split('='))[1].strip()
+  #          myvars[S0] = S1
+  #          if S0.comtains("RainString"):
+  #              S1 = "_" + S1
+            
     with open(sys.argv[1], 'r') as myfile:
         for line in myfile:
             if '=' not in line:
                 continue
-            S0 = (line.split('='))[0].strip()
-            S1 = (line.split('='))[1].strip()
-            myvars[S0] = S1
+            parts = line.split('=')
+            S0 = parts[0].strip()
+            S2 = '='.join(parts[1:]).strip()  # Rejoin the parts in case '=' appears multiple times
+            S1 = S2
+            if S2.startswith('$'):
+                S1 = S2[1:]
+            myvars[S0] = S1            
             
     condaDir =myvars["CondaDirectory"]
     BaseDir = myvars["BaseDirectory"]
@@ -433,8 +449,7 @@ def initialize():
     tileWidth= float(myvars["DrainWidth"])
     drainInletDistance= float(myvars["DrainInletDistance"])
     drainInletSize= float(myvars["DrainInletSize"])
-    
-        
+            
     doProcessesRain = int(myvars["optionRain"])
     rainInputdir = myvars["RainBaseDirectory"]
     rainOutputdir = myvars["RainDirectory"]
@@ -587,7 +602,13 @@ def initialize():
     # read base maps and create mask
     DEM_ = readmap(BaseDir+DEMbaseName)
     mask_ = (DEM_*0) + scalar(1)
-    rivers_ = readmap(BaseDir+riversbaseName)
+    riverExists = os.path.isfile(BaseDir+riversbaseName)
+    #isDirectory = os.path.dir(BaseDir+riversbaseName)
+    if riverExists :
+        rivers_ = readmap(BaseDir+riversbaseName)   
+    else:
+        rivers_ = 0*mask_
+        
     mainout_ = scalar(readmap(BaseDir+outletsbaseName))
     mainoutpoint_ = scalar(readmap(BaseDir+outpointsbaseName))
     DAMS_= DEM_*0
