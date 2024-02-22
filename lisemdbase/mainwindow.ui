@@ -117,7 +117,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.72 - 240218)</string>
+       <string>openLISEM database generator (version 4.73 - 240222)</string>
       </property>
      </widget>
     </item>

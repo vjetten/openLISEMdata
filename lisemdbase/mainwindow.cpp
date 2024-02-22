@@ -286,9 +286,11 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
     } else {
         QString S = dialog.selectedUrls().at(0).path();
         S.remove(0,1);
-        qDebug() << QFileInfo(S).dir();
+        if (doFile == 0)
+            S = S + "/";
+        //qDebug() << S << QFileInfo(S).dir();
         if (!S.isEmpty()) {
-            if (!QFileInfo(S).exists()) S = S + "/";
+            //if (!QFileInfo(S).exists()) S = S + "/";
             dirout = QFileInfo(S).dir().absolutePath();
             if (dirout.contains("\\") && !dirout.endsWith("\\"))
                 dirout=dirout+"\\";
@@ -298,7 +300,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
         }
 
     }
-
+    qDebug() << "dirout" << dirout;
     return dirout;
 }
 

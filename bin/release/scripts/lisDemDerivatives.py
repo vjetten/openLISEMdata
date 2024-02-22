@@ -47,19 +47,24 @@ class DEMderivatives(StaticModel):
        
         chanm = cover(lg.rivers_, 0)*mask
         mainout = ifthenelse(lg.mainout_ > 0, scalar(1), 0)  
-        #wsarea = areaarea(nominal(watersheds_))          
-        #watersheds_ is mask if not multiple watersheds
-        #mainout_ can be sero, then endpoint must be used
-
+        
         thr = 100
-        #Ldd = lddcreate (DEMc-chanm*thr-mainout*thr, thr, size, size, size)
         Ldd = lddcreate (DEMc-chanm*thr-mainout*thr, size, size, size, size)
         report(Ldd, lg.LddName)
         Ldd_ = Ldd
+        
+        # if no channel and no outlet specified, default to ldd outlet
+        if maptotal(lg.mainout_) == 0 :
+            outlet = scalar(pit(Ldd_))
+        else :
+            outlet = lg.mainout_
+            
+        if maptotal(lg.mainoutpoint_) == 0 :
+            outpoint = scalar(pit(Ldd_))
+        else :                
+            outpoint = lg.mainoutpoint_
 
-        outlet = lg.mainout_
         report(outlet,lg.outletName)
-        outpoint = lg.mainoutpoint_
         report(outpoint,lg.outpointName)
 
         # runoff flow network based on dem, main outlet, channels and barriers

@@ -63,7 +63,6 @@ void MainWindow::on_toolButton_script_clicked()
         lineEdit_Script->setText(s+ScriptFileName);
 }
 
-//==============================================================================
 void MainWindow::on_toolButton_base_clicked()
 {
     QStringList filters;

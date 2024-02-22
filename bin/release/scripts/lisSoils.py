@@ -280,7 +280,6 @@ class PedoTransfer(StaticModel):
         Dens_om = (1-SadjSat)*2.65  #AF18) =(1-AE18)*2.65
         poredf1 = (1-Dens_om/2.65)  # pore with dens factor 1.0        
         bddf = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
-               
 
         bdodscaled = bdod/areaaverage(bdod,boolean(bdod))-1.0  #scale around 0
         Densityfactor = standardBD/1350+0.5*bdodscaled 
@@ -318,11 +317,11 @@ class PedoTransfer(StaticModel):
         WP = M1500adj*mask
         FC = M33adj* mask
         PAW = (M33adj - M1500adj)*(1-Gravel)* mask
-
-        # POROSITY = ifthenelse(unitmap == unitBuild_, Poreurban_, POROSITY)
-        # Ksat = ifthenelse(unitmap == unitBuild_, Ksaturban_, Ksat)
-        # POROSITY = ifthenelse(unitmap == unitWater_, 0, POROSITY)
-        # Ksat = ifthenelse(unitmap == unitWater_, 0, Ksat)
+        
+        Ksat = ifthenelse(DensityfactorLU == 0,0,Ksat)
+        POROSITY = ifthenelse(DensityfactorLU == 0,0,POROSITY)
+        FC = ifthenelse(DensityfactorLU == 0,0,FC)
+        WP = ifthenelse(DensityfactorLU == 0,0,WP)
 
         if (fractionmoisture >= 0) :
             initmoist = fractionmoisture*POROSITY+ (1-fractionmoisture)*FC
