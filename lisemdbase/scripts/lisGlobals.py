@@ -348,13 +348,27 @@ def initialize():
 
     # read init file in test array myvars
     myvars = {}
+  #  with open(sys.argv[1], 'r') as myfile:
+  #      for line in myfile:
+  #          if '=' not in line:
+  #              continue
+  #          S0 = (line.split('='))[0].strip()
+  #          S1 = (line.split('='))[1].strip()
+  #          myvars[S0] = S1
+  #          if S0.comtains("RainString"):
+  #              S1 = "_" + S1
+            
     with open(sys.argv[1], 'r') as myfile:
         for line in myfile:
             if '=' not in line:
                 continue
-            S0 = (line.split('='))[0].strip()
-            S1 = (line.split('='))[1].strip()
-            myvars[S0] = S1
+            parts = line.split('=')
+            S0 = parts[0].strip()
+            S2 = '='.join(parts[1:]).strip()  # Rejoin the parts in case '=' appears multiple times
+            S1 = S2
+            if S2.startswith('$'):
+                S1 = S2[1:]
+            myvars[S0] = S1            
             
     condaDir =myvars["CondaDirectory"]
     BaseDir = myvars["BaseDirectory"]

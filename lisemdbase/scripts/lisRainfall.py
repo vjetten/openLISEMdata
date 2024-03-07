@@ -82,7 +82,7 @@ class GPMRainfall(StaticModel):
             totallinks = os.listdir(os.getcwd())
             hdflinks = []
             for link in totallinks:
-                if link[-3:] == 'asc':
+                if link[-3:] == 'asc':    #????????????????????????
                     hdflinks.append(link)
             totalcount = len(hdflinks)
             print(">>> nr ASC files to be processed: {0}".format(totalcount),flush = True)

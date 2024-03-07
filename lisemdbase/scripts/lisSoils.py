@@ -120,17 +120,17 @@ class GetSoilGridsLayer:
         variable = varname+ID
         varout = varname+str(lg.SG_horizon_)
         outputnametif = "{0}.tif".format(varout)
-        temptif = 'temp.tif'
+        temptif = '_temp.tif'
 
         dx1 = 250
         dy1 = 250
 
         # make a tif but the nrrows and nrcols are related to 250m now
         # force maskbox but this is not exact, add one dx1,dy1 because sometimes the box is smaller than the DEM because of rounding off
-        Maskbox = [lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
+        Maskbox = lg.maskbox #[lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
         # get data as temp geotif and save to disk
         response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
-        with open('temp.tif', 'wb') as file:
+        with open(temptif, 'wb') as file:
              file.write(response.read())
 
         src = gdal.Warp(outputnametif, temptif, srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
@@ -280,7 +280,6 @@ class PedoTransfer(StaticModel):
         Dens_om = (1-SadjSat)*2.65  #AF18) =(1-AE18)*2.65
         poredf1 = (1-Dens_om/2.65)  # pore with dens factor 1.0        
         bddf = 1000*(1-poredf1)*2.65  # bulk derived from pore with df 1 so standard
-               
 
         bdodscaled = bdod/areaaverage(bdod,boolean(bdod))-1.0  #scale around 0
         Densityfactor = standardBD/1350+0.5*bdodscaled 
@@ -318,11 +317,11 @@ class PedoTransfer(StaticModel):
         WP = M1500adj*mask
         FC = M33adj* mask
         PAW = (M33adj - M1500adj)*(1-Gravel)* mask
-
-        # POROSITY = ifthenelse(unitmap == unitBuild_, Poreurban_, POROSITY)
-        # Ksat = ifthenelse(unitmap == unitBuild_, Ksaturban_, Ksat)
-        # POROSITY = ifthenelse(unitmap == unitWater_, 0, POROSITY)
-        # Ksat = ifthenelse(unitmap == unitWater_, 0, Ksat)
+        
+        Ksat = ifthenelse(DensityfactorLU == 0,0,Ksat)
+        POROSITY = ifthenelse(DensityfactorLU == 0,0,POROSITY)
+        FC = ifthenelse(DensityfactorLU == 0,0,FC)
+        WP = ifthenelse(DensityfactorLU == 0,0,WP)
 
         if (fractionmoisture >= 0) :
             initmoist = fractionmoisture*POROSITY+ (1-fractionmoisture)*FC
@@ -376,11 +375,10 @@ class PedoTransfer(StaticModel):
         chanm = mask*0
         if lg.riverExists:
             chanm = readmap(lg.BaseDir+lg.riversbaseName) 
-            distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
-            rivfact = -0.5*distriv/mapmaximum(distriv)
-            # perpendicular distance to river, closer gives deeper soils
-
-        report(rivfact,"rf.map")
+            if mapmaximum(chanm) > 0 :
+                distriv = spread(cover(nominal(chanm > 0),0),0,1)*mask
+                rivfact = -0.5*distriv/mapmaximum(distriv)
+                # perpendicular distance to river, closer gives deeper soils
         
         if lg.SG_horizon_ == 1 :
             soildepth1 = lg.soildepth1depth*mask
