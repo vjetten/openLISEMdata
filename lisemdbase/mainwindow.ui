@@ -117,7 +117,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.73 - 240222)</string>
+       <string>openLISEM database generator (version 4.74 - 240310)</string>
       </property>
      </widget>
     </item>
@@ -546,7 +546,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>7</number>
          </property>
          <property name="iconSize">
           <size>
@@ -916,8 +916,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1175</width>
-                <height>736</height>
+                <width>1171</width>
+                <height>741</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_13">
@@ -2522,7 +2522,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Inverse distance interpolation of missing values </string>
+                  <string>fill in missing values (urban, open water) with GDAL nofill function</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>

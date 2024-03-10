@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ScriptDirName = qApp->applicationDirPath()+"/scripts/";
     ScriptFileName = "lisemDBASEgenerator.py";
-    if (QFileInfo(ScriptDirName+ScriptFileName).exists()) {
+    if (QFileInfo(QString(ScriptDirName+ScriptFileName)).exists()) {
         lineEdit_Script->setText(ScriptDirName+ScriptFileName);
     }
 
