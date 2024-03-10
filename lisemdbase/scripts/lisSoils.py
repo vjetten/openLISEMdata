@@ -5,7 +5,7 @@
 # University of Twente, Faculty ITC
 # this software has copyright model: GPLV3
 # this software has a disclaimer
-# last edit: 17 Jan 2024
+# last edit: 22 feb 2024
 
 from owslib.wcs import WebCoverageService
 from pcraster import *
@@ -14,6 +14,7 @@ from osgeo import gdal, gdalconst, osr, ogr
 import numpy as np
 import lisGlobals as lg
 from os.path import exists
+from soilgrids import SoilGrids
 
 def fill_nodata(input_raster, output_raster):
     # Open the input raster dataset
@@ -83,6 +84,53 @@ def interpolate_tiff(input_tiff, output_tiff, power=2, smoothing=0):
     dst_ds = None
 
 
+class GetSoilGridsLayerConda:
+    "downbloading a SOILGRIDS layer from conda service"
+    def __init__(self, x = 0):
+          
+        varname = lg.SG_names_[x]
+        # depth string
+        if lg.SG_horizon_ == 1 :
+            ID = lg.SG_layers_[lg.optionSG1-1] 
+        if lg.SG_horizon_ == 2 :
+            ID = lg.SG_layers_[lg.optionSG2-1]             
+            
+        vname = varname  # filename for display
+               
+        # make a readable name for output to screen       
+        if x == 3: vname='Soil Org Carbon' 
+        if x == 4: vname='Gravel' 
+        if x == 5: vname='Bulk Density' 
+
+        print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
+
+        ESPGs = 'urn:ogc:def:crs:EPSG::152160'
+        
+        mean_covs = varname+ID
+        varout = varname+str(lg.SG_horizon_)
+        
+        outputnametif = "{0}.tif".format(varout)
+        temptif = '_temp.tif'
+        
+        #maskbox = [llx,lly,urx,ury]
+        x_min = lg.llx
+        y_max = lg.ury
+        x_max = lg.urx
+        y_min = lg.lly
+        #print(x_min,y_min,x_max,y_max,flush=True)
+        
+        soil_grids = SoilGrids()
+        data = soil_grids.get_coverage_data(service_id=varname,coverage_id=mean_covs,west =x_min,south=y_min,east =x_max,north=y_max,crs=ESPGs,output=temptif)
+         
+        input_dataset = gdal.Open(temptif)
+
+        # Resample the raster to have a uniform pixel size of 250 meters
+        gdal.Warp(outputnametif, input_dataset, format='GTiff', xRes=250, yRes=250)
+
+        # Close the datasets
+        input_dataset = None
+        os.remove(temptif)
+
 
 class GetSoilGridsLayer:
     "downbloading a SOILGRIDS layer from WCS service"
@@ -110,8 +158,9 @@ class GetSoilGridsLayer:
         if self.debug == 1:
             print("Open SOILGRIDS WCS: "+varname+ID, flush=True)
 
-        url = "http://maps.isric.org/mapserv?map=/map/{}.map".format(varname)
+        url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
         wcs = WebCoverageService(url, version='1.0.0')
+        
         if self.debug == 1:
             cov_list = list(wcs.contents)
             mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
@@ -138,8 +187,7 @@ class GetSoilGridsLayer:
         os.remove(temptif)
         src = None
         response = None
-        
-
+       
 
 ### ---------- class SoilGridsTransform() ---------- ###
 
