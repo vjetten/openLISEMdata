@@ -90,7 +90,8 @@ if __name__ == "__main__":
         obj = lisSurface.SurfaceMaps()
         staticModelSURF = StaticFramework(obj)
         staticModelSURF.run()
-    print(SGconda,flush=True)
+    #print(SGconda,flush=True)
+    SGconda = 0
     if SGconda == 1:
         # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
         if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    

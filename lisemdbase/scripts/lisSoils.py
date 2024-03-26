@@ -14,7 +14,17 @@ from osgeo import gdal, gdalconst, osr, ogr
 import numpy as np
 import lisGlobals as lg
 from os.path import exists
-from soilgrids import SoilGrids
+#from soilgrids import SoilGrids
+import threading
+
+
+def call_getCoverage(ID, EPSGs, Maskbox, dx1, dy1):
+    global response
+    try:
+        response = wcs.getCoverage(identifier=ID, crs=EPSGs, bbox=Maskbox, resx=dx1, resy=dy1, format='GEOTIFF_INT16')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        response = None
 
 def fill_nodata(input_raster, output_raster):
     # Open the input raster dataset
@@ -104,32 +114,91 @@ class GetSoilGridsLayerConda:
 
         print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
 
-        ESPGs = 'urn:ogc:def:crs:EPSG::152160'
+        EPSGs = 'urn:ogc:def:crs:EPSG::152160'
         
         mean_covs = varname+ID
         varout = varname+str(lg.SG_horizon_)
         
         outputnametif = "{0}.tif".format(varout)
         temptif = '_temp.tif'
+        if exists(temptif) :
+            os.remove(temptif)
+            
+        
+        
+        bbox = lg.maskbox
+        ring = ogr.Geometry(ogr.wkbLinearRing)
+        ring.AddPoint_2D(bbox[0], bbox[1])  # lower left
+        ring.AddPoint_2D(bbox[2], bbox[1])  # lower right
+        ring.AddPoint_2D(bbox[2], bbox[3])  # upper right
+        ring.AddPoint_2D(bbox[0], bbox[3])  # upper left
+        ring.AddPoint_2D(bbox[0], bbox[1])  # close the ring
+        bbox_geom = ogr.Geometry(ogr.wkbPolygon)
+        bbox_geom.AddGeometry(ring)
+            # Define the source and target spatial reference systems
+        src_sr = osr.SpatialReference()
+        src_sr.ImportFromEPSG(lg.EPSG)
+        target_sr = osr.SpatialReference()
+        target_sr.ImportFromProj4('+proj=igh +datum=WGS84 +no_defs +towgs84=0,0,0')
+        
+        transform = osr.CoordinateTransformation(src_sr, target_sr)
+        bbox_geom.Transform(transform)
+        transformed_bbox = bbox_geom.GetEnvelope()
+        #print("Min X:", transformed_bbox[0])
+        #print("Min Y:", transformed_bbox[2])
+        #print("Max X:", transformed_bbox[1])
+        #print("Max Y:", transformed_bbox[3])
         
         #maskbox = [llx,lly,urx,ury]
-        x_min = lg.llx
-        y_max = lg.ury
-        x_max = lg.urx
-        y_min = lg.lly
+        x_min = transformed_bbox[0]-250    #lg.llx-250
+        x_max = transformed_bbox[1]+250#lg.urx+250 # x_min+250 #
+        y_min = transformed_bbox[2]-250    #lg.lly-250
+        y_max = transformed_bbox[3]+250#lg.ury+250 #y_min+250 #
         #print(x_min,y_min,x_max,y_max,flush=True)
         
+        original_proj = pyproj.Proj("EPSG:" + lg.EPSG)
+        target_proj = pyproj.Proj('+proj=igh +datum=WGS84 +no_defs +towgs84=0,0,0')
+        x_min, y_min = pyproj.transform(original_proj, target_proj, bbox[0], bbox[1])
+        x_max, y_max = pyproj.transform(original_proj, target_proj, bbox[2], bbox[3])
+        
+      #  url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
+      #  wcs = WebCoverageService(url, version='2.0.0')
+      #  subs = [('X',x_min,x_max),('Y',y_min,y_max)]
+      #  response = wcs.getCoverage(
+      #      identifier=mean_covs, 
+      #      crs=ESPGs,
+      #      #subsets=subs, 
+      #      outputBounds=[x_min,y_min,x_max,y_max],
+      #      resx=250, resy=250, 
+      #      format='GEOTIFF_INT16') #vart.supportedFormats[0])  
+      #  with open(temptif, 'wb') as file:
+      #       file.write(response.read())
+        
         soil_grids = SoilGrids()
-        data = soil_grids.get_coverage_data(service_id=varname,coverage_id=mean_covs,west =x_min,south=y_min,east =x_max,north=y_max,crs=ESPGs,output=temptif)
+        data = soil_grids.get_coverage_data(service_id=varname,
+            coverage_id=mean_covs,
+            west =x_min,south=y_min,east =x_max,north=y_max,
+            crs=ESPGs,
+            output=temptif)
          
         input_dataset = gdal.Open(temptif)
-
+        
         # Resample the raster to have a uniform pixel size of 250 meters
-        gdal.Warp(outputnametif, input_dataset, format='GTiff', xRes=250, yRes=250)
-
+        #gdal.Warp(outputnametif, input_dataset, 
+        #    format='GTiff', 
+        #    srcNodata = -32768,
+        #    xRes=250, yRes=250, 
+        #    outputBounds=lg.maskbox, 
+        #    resampleAlg = 'near', 
+        #    outputType = gdal.GDT_Float32)
+        gdal.Warp(outputnametif, input_dataset, 
+            format='GTiff', 
+            srcNodata = -32768,
+            xRes=250, yRes=250, 
+            outputType = gdal.GDT_Float32)        
         # Close the datasets
         input_dataset = None
-        os.remove(temptif)
+        #os.remove(temptif)
 
 
 class GetSoilGridsLayer:
@@ -145,7 +214,7 @@ class GetSoilGridsLayer:
             
         self.debug = 0 #Debug_
         vname = varname  # filename for display
-               
+        
         # make a readable name for output to screen       
         if x == 3: vname='Soil Org Carbon' 
         if x == 4: vname='Gravel' 
@@ -153,36 +222,91 @@ class GetSoilGridsLayer:
 
         print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
 
-        ESPGs = 'urn:ogc:def:crs:EPSG::{0}'.format(lg.ESPG)
+        #EPSGs = 'http://www.opengis.net/def/crs/EPSG/0/152160' 
+        #EPSGs = 'urn:ogc:def:crs:EPSG::152160'
+        #EPSGhomol = '+proj=igh +lat_0=0 +lon_0=0 +datum=WGS84 +units=m +no_defs'
+
+        EPSGs = 'EPSG:3857'
 
         if self.debug == 1:
             print("Open SOILGRIDS WCS: "+varname+ID, flush=True)
 
         url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
-        wcs = WebCoverageService(url, version='1.0.0')
+        wcs = WebCoverageService(url, version='1.0.0',timeout=60)
         
         if self.debug == 1:
             cov_list = list(wcs.contents)
             mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
             print(mean_covs, flush = True)
 
-        variable = varname+ID
+        variable = varname+ID   # give e.g. sand
         varout = varname+str(lg.SG_horizon_)
         outputnametif = "{0}.tif".format(varout)
         temptif = '_temp.tif'
-
+        if exists(temptif) :
+            os.remove(temptif)
+        if exists(outputnametif) :
+            os.remove(outputnametif)
+        
         dx1 = 250
-        dy1 = 250
+        dy1 = 250                
+        bbox = lg.maskbox      
+        ww = 512
+        hh = 512
+        
+        blokx = trunc(lg.nrCols/512)+1
+        bloky = trunc(lg.nrRows/512)+1
+               
+        # transform the coiordinates of the bounding box to 3957 projection for donwload
+        base_ref = osr.SpatialReference()
+        base_ref.ImportFromEPSG(lg.EPSG)
+        new_ref = osr.SpatialReference()
+        new_ref.ImportFromEPSG(3857) #ImportFromProj4
+        transform = osr.CoordinateTransformation(base_ref, new_ref)        
+        point = ogr.Geometry(ogr.wkbPoint)
+        point.AddPoint(bbox[0], bbox[1])
+        point.Transform(transform)
+        x_min = point.GetX()-dx1*2
+        y_min = point.GetY()-dy1*2
+        point.AddPoint(bbox[2], bbox[3])
+        point.Transform(transform)
+        x_max = point.GetX()+dx1*(blokx*512-2)
+        y_max = point.GetY()+dy1*(bloky*512-2)
+        Maskbox = [x_min,y_min,x_max,y_max]
 
-        # make a tif but the nrrows and nrcols are related to 250m now
-        # force maskbox but this is not exact, add one dx1,dy1 because sometimes the box is smaller than the DEM because of rounding off
-        Maskbox = lg.maskbox #[lg.maskbox[0]-dx1,lg.maskbox[1]-dy1,lg.maskbox[2]+2*dx1,lg.maskbox[3]+2*dy1]
-        # get data as temp geotif and save to disk
-        response = wcs.getCoverage(identifier=variable,crs=ESPGs,bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')
+        #print('maskbox: ',lg.maskbox,flush=True)
+        #print('3857 projection mb :',Maskbox,flush=True)
+        
+        
+       #coverage_thread = threading.Thread(target=call_getCoverage, args=(variable, EPSGs, Maskbox, dx1, dy1))        
+       #coverage_thread.start()
+       #timeout_seconds = 60  # Adjust as needed
+       #coverage_thread.join(timeout_seconds)
+       #if coverage_thread.is_alive():
+       #    # If the thread is still alive after the timeout, it likely timed out
+       #    print("getCoverage call timed out")
+       #else:
+       #    # If the thread has finished, you can continue with the response
+       #    print("getCoverage call completed successfully")
+        
+        # make a tif 
+        # get data as temp geotif and save to disk ,
+        response = wcs.getCoverage(identifier=variable,crs=EPSGs, bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')               
         with open(temptif, 'wb') as file:
              file.write(response.read())
-
-        src = gdal.Warp(outputnametif, temptif, srcNodata = 0, xRes=dx1, yRes=dy1, outputBounds=Maskbox, resampleAlg = 'near', outputType = gdal.GDT_Float64 )     
+            
+        #reproject
+        warp_options = {
+            "xRes": dx1,
+            "yRes": dy1,
+            "outputBounds": Maskbox,
+            "resampleAlg": "near",
+            "outputType": gdal.GDT_Int16, 
+            #"outputType": gdal.GDT_Float32
+            #"dstSRS": EPSGs
+        }
+  
+        src = gdal.Warp(outputnametif, temptif, **warp_options)
         
         os.remove(temptif)
         src = None
@@ -226,7 +350,18 @@ class SoilGridsTransform(StaticModel):
         if lg.optionResample == 2 :
             resa = 'cubic'       
             
-        src = gdal.Warp(tempwarptif,temptif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa, outputType = gdal.GDT_Float64 )
+        warp_options = {
+            "xRes": lg.dx,
+            "yRes": lg.dy,
+            "outputBounds": lg.maskbox,
+            "resampleAlg": resa,
+            "outputType": gdal.GDT_Float32,
+            "dstSRS": 'EPSG:{0}'.format(lg.EPSG)
+        }
+  
+        src = gdal.Warp(tempwarptif, temptif, **warp_options)    
+            
+        #src = gdal.Warp(tempwarptif,temptif, srcNodata = 0, xRes=lg.dx, yRes=lg.dy, outputBounds=lg.maskbox, resampleAlg = resa, outputType = gdal.GDT_Float64 )
         src = None
         
         #open the tif and create PCRaster copy
