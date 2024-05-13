@@ -24,8 +24,7 @@ from pcraster.framework import *
 # operation system
 import subprocess  # call exe from wihin script
 import os          # operating system, change dir
-import time,sys         # read commandline arguments
-import subprocess
+import time,sys    # read commandline arguments
 
 # lisem DBASE generator classes 
 import lisGlobals as lg
@@ -37,6 +36,13 @@ import lisErosion
 import lisDams
 import lisInfrastructure
 import lisRainfall
+
+SGconda = 1
+try:
+    import soilgrids
+except ImportError:    
+    SGconda = 0
+
 
 # PCRaster global options
 setglobaloption("lddin")
@@ -84,19 +90,40 @@ if __name__ == "__main__":
         obj = lisSurface.SurfaceMaps()
         staticModelSURF = StaticFramework(obj)
         staticModelSURF.run()
-
+        
     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
-        print(">>> Downloading SOILGRIDS layers from web server https://maps.isric.org", flush=True)        
+        print(">>> Downloading SOILGRIDS layers from ISRIC webserver", flush=True)        
         for x in range(6):
             lg.SG_horizon_ = 1
-            lisSoils.GetSoilGridsLayer(x)
+            lisSoils.GetSoilGridsLayerConda(x)
         for x in range(6):
             lg.SG_horizon_ = 2
-            lisSoils.GetSoilGridsLayer(x)
-        #for x in range(6):
-            #lg.SG_horizon_ = 3
-            #lisSoils.GetSoilGridsLayer(x)
+            lisSoils.GetSoilGridsLayerConda(x)        
+        
+   ## #print(SGconda,flush=True)
+   ## SGconda = 1
+   ## if SGconda == 1:
+   ##     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
+   ##     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
+   ##         print(">>> Downloading SOILGRIDS layers from conda package", flush=True)        
+   ##         for x in range(6):
+   ##             lg.SG_horizon_ = 1
+   ##             lisSoils.GetSoilGridsLayerConda(x)
+   ##         for x in range(6):
+   ##             lg.SG_horizon_ = 2
+   ##             lisSoils.GetSoilGridsLayerConda(x)
+   ## else : 
+   ##     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
+   ##     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
+   ##         print(">>> Downloading SOILGRIDS layers from web server https://maps.isric.org", flush=True)        
+   ##         for x in range(6):
+   ##             lg.SG_horizon_ = 1
+   ##             lisSoils.GetSoilGridsLayer(x)
+   ##         for x in range(6):
+   ##             lg.SG_horizon_ = 2
+   ##             lisSoils.GetSoilGridsLayer(x)
+
 
     if lg.doProcessesInfil == 1 and lg.doProcessesSGInterpolation == 1:
         print(">>> Inverse distance interpolation SOILGRIDS layers for missing values ", flush=True)

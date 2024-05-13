@@ -5,6 +5,7 @@
 # University of Twente, Faculty ITC
 # this software has copyright model: GPLV3
 # this software has a disclaimer
+# last edit: 22 feb 2024
 
 from pcraster import *
 from pcraster.framework import *
@@ -16,10 +17,7 @@ class DEMderivatives(StaticModel):
     def initial(self):
         DEM = lg.DEM_
         mask = lg.mask_
-        #if lg.doCatchment == 0 :      # always 0, obsolete
-           # lg.catchmentsize_ = 1e20  # always
-
-        size = 1e20 #lg.catchmentsize_   #????
+        size = 1e20 
         
         ID = mask
         report(ID,lg.IDName)
