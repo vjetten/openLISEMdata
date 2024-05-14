@@ -39,6 +39,7 @@ public:
     QString roadsSHPName;
     QString buildingsSHPName;
     QString drummapName;
+    QString BuiltUpAreaName;
 
     QString optionList;
 
@@ -319,6 +320,8 @@ private slots:
     void on_toolButton_RainFilename_clicked();
 
     void on_checkBox_useStormDrain_toggled(bool checked);
+
+    void on_toolButton_BuiltUp_clicked();
 
 private:
     Ui::MainWindow *ui;

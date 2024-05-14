@@ -467,7 +467,7 @@ void MainWindow::on_toolButton_resetInfra_clicked()
     spinDrainHeight->setValue(0.5);
     spinDrainWidth->setValue(0.5);
     spinDrainInletDistance->setValue(30);
-    spinDrainInletSize->setValue(0.5);
+    spinDrainInletSize->setValue(0.005);
 
 
 }
@@ -702,4 +702,5 @@ void MainWindow::on_checkBox_useStormDrain_toggled(bool checked)
 {
     widget_drain->setEnabled(checked);
 }
+
 

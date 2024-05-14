@@ -107,13 +107,14 @@ void MainWindow::setIni(QString sss)
     settings.setValue("INFRA/optionUseDrums", QString::number(optionUseDrums));
     settings.setValue("INFRA/drumMap", drummapName);
     settings.setValue("INFRA/roadsSHPName", roadsSHPName);
+    settings.setValue("INFRA/BuiltUpAreaName", BuiltUpAreaName);
     settings.setValue("INFRA/optionUseStormDrain", QString::number(optionUseStormDrain));
     settings.setValue("INFRA/optionDrainShape", QString::number(optionDrainShape));
     settings.setValue("INFRA/DrainWidth", QString::number(drainWidth, 'f', 1));
     settings.setValue("INFRA/DrainHeight", QString::number(drainHeight, 'f', 1));
     settings.setValue("INFRA/DrainDiameter", QString::number(drainDiameter, 'f', 1));
     settings.setValue("INFRA/DrainInletDistance", QString::number(drainInletDistance, 'f', 1));
-    settings.setValue("INFRA/DrainInletSize", QString::number(drainInletSize, 'f', 1));
+    settings.setValue("INFRA/DrainInletSize", QString::number(drainInletSize, 'f', 3));
 
     settings.setValue("RAINFALL/optionRain", QString::number(optionRain));
   //  settings.setValue("RAINFALL/RainScript", RainScriptFileName);
@@ -241,6 +242,7 @@ void MainWindow::getIni(QString name)
     buildingsSHPName = checkName(1,settings.value("INFRA/buildingsSHPName").toString());
     roofStore = settings.value("INFRA/roofStore").toDouble();
     optionUseDrums = settings.value("INFRA/optionUseDrums").toInt();
+    BuiltUpAreaName = settings.value("INFRA/BuiltUpAreaName").toString();
     drummapName = settings.value("INFRA/drumMap").toString();
     roadsSHPName = checkName(1,settings.value("INFRA/roadsSHPName").toString());
     optionUseStormDrain= settings.value("INFRA/optionUseStormDrain").toInt();
@@ -364,6 +366,7 @@ void MainWindow::readValuesfromUI()
     drummapName = lineEdit_drumMap->text();
     roofStore = spin_roofStore->value();
     roadsSHPName = lineEdit_roadsSHP->text();
+    BuiltUpAreaName = lineEdit_BuiltUpArea->text();
     optionUseStormDrain = checkBox_useStormDrain->isChecked() ? 1 : 0;
     radioStormdrainCirc->setChecked(optionDrainShape == 0);
     radioStormdrainRect->setChecked(optionDrainShape == 1);
@@ -485,6 +488,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_drumMap->setText(drummapName);
     spin_roofStore->setValue(roofStore);
     lineEdit_roadsSHP->setText(roadsSHPName);
+    lineEdit_BuiltUpArea->setText(BuiltUpAreaName);
     checkBox_useStormDrain->setChecked(optionUseStormDrain > 0);
 
     optionDrainShape = radioStormdrainCirc->isChecked() ? 1 : 0;
@@ -493,7 +497,6 @@ void MainWindow::writeValuestoUI()
     spinDrainDiameter->setValue(drainDiameter);
     spinDrainInletDistance->setValue(drainInletDistance);
     spinDrainInletSize->setValue(drainInletSize);
-
 
     checkBox_Rain->setChecked(optionRain > 0);
     scrollArea_Rain->setEnabled(optionRain > 0);

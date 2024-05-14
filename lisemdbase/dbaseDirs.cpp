@@ -273,6 +273,18 @@ void MainWindow::on_toolButton_roadsSHP_clicked()
 }
 
 
+
+void MainWindow::on_toolButton_BuiltUp_clicked()
+{
+    QString tmp = lineEdit_BuiltUpArea->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = BaseDirName;//ProjectDirName;
+
+    QStringList filters({"PCRaster map (*.map)","Any files (*)"});
+    BuiltUpAreaName = getFileorDir(tmp,"Select Built Up Area map", filters, 1);
+    if (!BuiltUpAreaName.isEmpty())
+        lineEdit_BuiltUpArea->setText(BuiltUpAreaName);
+}
 //==============================================================================
 
 void MainWindow::on_toolButton_GPMGauge_clicked()
