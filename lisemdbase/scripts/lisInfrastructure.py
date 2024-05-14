@@ -87,7 +87,9 @@ class InfrastructureMaps(StaticModel):
             report(map_,lg.roadwidthName)
             if lg.doProcessesStormdrain == 1:
                 print("Creating storm drain maps.", flush=True);
-                tilemask = ifthen(map_ > 1, scalar(1))
+                
+                bua = readmap(lg.BaseDir+lg.builtUpAreaName)
+                tilemask = ifthen(map_*bua > 1, scalar(1))
                 lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
                 tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
                 lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
@@ -97,7 +99,7 @@ class InfrastructureMaps(StaticModel):
                 lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
                 #tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
                 #lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
-                
+                print(lg.drainInletDistance, lg.drainInletSize)
                 tilesink = scalar(accuflux(lddtile, celllength()) % lg.drainInletDistance < celllength()) * lg.drainInletSize
                 tilesink = ifthenelse(accuflux(lddtile, 1) == 1,lg.drainInletSize,tilesink)  
                 tilediameter = tilemask*lg.tileDiameter

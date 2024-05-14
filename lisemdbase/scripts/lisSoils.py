@@ -4,8 +4,9 @@
 # author: V.G.Jetten @ 2022, 2023, 2024
 # University of Twente, Faculty ITC
 # this software has copyright model: GPLV3
+# Soilgrids layers have copyright model: https://creativecommons.org/licenses/by/4.0/
 # this software has a disclaimer
-# last edit: 22 feb 2024
+# last edit: 11 May feb 2024
 
 from owslib.wcs import WebCoverageService
 from pcraster import *
@@ -14,17 +15,15 @@ from osgeo import gdal, gdalconst, osr, ogr
 import numpy as np
 import lisGlobals as lg
 from os.path import exists
-#from soilgrids import SoilGrids
-import threading
+#import threading
+import math 
 
+SGconda = 1
+try:
+    from soilgrids import SoilGrids   
+except ImportError:    
+    SGconda = 0
 
-def call_getCoverage(ID, EPSGs, Maskbox, dx1, dy1):
-    global response
-    try:
-        response = wcs.getCoverage(identifier=ID, crs=EPSGs, bbox=Maskbox, resx=dx1, resy=dy1, format='GEOTIFF_INT16')
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        response = None
 
 def fill_nodata(input_raster, output_raster):
     # Open the input raster dataset
@@ -41,61 +40,15 @@ def fill_nodata(input_raster, output_raster):
         return
     
     # Use gdal.FillNodata to fill nodata values
-    #gdal.FillNodata(in_ds.GetRasterBand(1), None, out_ds.GetRasterBand(1), lg.nrCols, 0)
     gdal.FillNodata(out_ds.GetRasterBand(1), None, lg.nrCols, 0)
 
     # Close datasets
     in_ds = None
     out_ds = None
-
-# okay but does not work with very large datasets
-def inverse_distance_weighting(points, values, target_points, power=2, smoothing=0):
-    distances = np.linalg.norm(points - target_points[:, np.newaxis], axis=2)
-    weights = 1.0 / (distances ** power + smoothing)
-    weights /= np.sum(weights, axis=1)[:, np.newaxis]
-    interpolated_values = np.sum(weights * values, axis=1)
-    return interpolated_values
-
-def interpolate_tiff(input_tiff, output_tiff, power=2, smoothing=0):
-    gdal.UseExceptions()
-
-    src_ds = gdal.Open(input_tiff)
-    band = src_ds.GetRasterBand(1)  # Assuming a single band for simplicity
-    nodata_value = band.GetNoDataValue()
-    print(nodata_value,flush = True)
-    geotransform = src_ds.GetGeoTransform()
-    width = src_ds.RasterXSize
-    height = src_ds.RasterYSize
-
-    points = np.array([(i % width, i // width) for i in range(width * height) if band.ReadAsArray(i % width, i // width, 1, 1)[0] != nodata_value])
-    values = band.ReadAsArray()[points[:, 1], points[:, 0]]
-
-    all_points = np.array([(i % width, i // width) for i in range(width * height)])
-    all_indices = np.arange(all_points.shape[0])
-
-    missing_points = np.array([(i % width, i // width) for i in range(width * height) if band.ReadAsArray(i % width, i // width, 1, 1)[0] < 1e-5]) #== nodata_value])
-    missing_indices = np.arange(missing_points.shape[0])
-        
-    interpolated_values = inverse_distance_weighting(
-        points, values, missing_points, power=power, smoothing=smoothing
-    )
-
-    output_array = band.ReadAsArray()
-    output_array[missing_points[:, 1], missing_points[:, 0]] = interpolated_values
-
-    driver = gdal.GetDriverByName("GTiff")
-    dst_ds = driver.Create(output_tiff, width, height, 1, gdal.GDT_Float32)
-    dst_ds.SetGeoTransform(geotransform)
-    dst_ds.SetProjection(src_ds.GetProjection())
-    dst_ds.GetRasterBand(1).WriteArray(output_array)
-    dst_ds.GetRasterBand(1).SetNoDataValue(nodata_value)
-
-    src_ds = None
-    dst_ds = None
-
+    
 
 class GetSoilGridsLayerConda:
-    "downbloading a SOILGRIDS layer from conda service"
+    "downbloading a SOILGRIDS layer"
     def __init__(self, x = 0):
           
         varname = lg.SG_names_[x]
@@ -112,10 +65,8 @@ class GetSoilGridsLayerConda:
         if x == 4: vname='Gravel' 
         if x == 5: vname='Bulk Density' 
 
-        print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
+        print("   => Downloading "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
 
-        EPSGs = 'urn:ogc:def:crs:EPSG::152160'
-        
         mean_covs = varname+ID
         varout = varname+str(lg.SG_horizon_)
         
@@ -123,9 +74,10 @@ class GetSoilGridsLayerConda:
         temptif = '_temp.tif'
         if exists(temptif) :
             os.remove(temptif)
-            
         
+        # convert the mask box from the project EPSG to EPSG::152160
         
+        # make a polygon of the maskbox coordinates
         bbox = lg.maskbox
         ring = ogr.Geometry(ogr.wkbLinearRing)
         ring.AddPoint_2D(bbox[0], bbox[1])  # lower left
@@ -135,183 +87,49 @@ class GetSoilGridsLayerConda:
         ring.AddPoint_2D(bbox[0], bbox[1])  # close the ring
         bbox_geom = ogr.Geometry(ogr.wkbPolygon)
         bbox_geom.AddGeometry(ring)
-            # Define the source and target spatial reference systems
+        
+        # Define the source and target spatial reference systems
         src_sr = osr.SpatialReference()
         src_sr.ImportFromEPSG(lg.EPSG)
         target_sr = osr.SpatialReference()
         target_sr.ImportFromProj4('+proj=igh +datum=WGS84 +no_defs +towgs84=0,0,0')
-        
+        # transform the box
         transform = osr.CoordinateTransformation(src_sr, target_sr)
         bbox_geom.Transform(transform)
         transformed_bbox = bbox_geom.GetEnvelope()
-        #print("Min X:", transformed_bbox[0])
-        #print("Min Y:", transformed_bbox[2])
-        #print("Max X:", transformed_bbox[1])
-        #print("Max Y:", transformed_bbox[3])
-        
-        #maskbox = [llx,lly,urx,ury]
-        x_min = transformed_bbox[0]-250    #lg.llx-250
-        x_max = transformed_bbox[1]+250#lg.urx+250 # x_min+250 #
-        y_min = transformed_bbox[2]-250    #lg.lly-250
-        y_max = transformed_bbox[3]+250#lg.ury+250 #y_min+250 #
-        #print(x_min,y_min,x_max,y_max,flush=True)
-        
-        original_proj = pyproj.Proj("EPSG:" + lg.EPSG)
-        target_proj = pyproj.Proj('+proj=igh +datum=WGS84 +no_defs +towgs84=0,0,0')
-        x_min, y_min = pyproj.transform(original_proj, target_proj, bbox[0], bbox[1])
-        x_max, y_max = pyproj.transform(original_proj, target_proj, bbox[2], bbox[3])
-        
-      #  url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
-      #  wcs = WebCoverageService(url, version='2.0.0')
-      #  subs = [('X',x_min,x_max),('Y',y_min,y_max)]
-      #  response = wcs.getCoverage(
-      #      identifier=mean_covs, 
-      #      crs=ESPGs,
-      #      #subsets=subs, 
-      #      outputBounds=[x_min,y_min,x_max,y_max],
-      #      resx=250, resy=250, 
-      #      format='GEOTIFF_INT16') #vart.supportedFormats[0])  
-      #  with open(temptif, 'wb') as file:
-      #       file.write(response.read())
-        
-        soil_grids = SoilGrids()
-        data = soil_grids.get_coverage_data(service_id=varname,
-            coverage_id=mean_covs,
-            west =x_min,south=y_min,east =x_max,north=y_max,
-            crs=ESPGs,
-            output=temptif)
+        # expand by one cell
+        x_min = transformed_bbox[0]-250
+        x_max = transformed_bbox[1]+250
+        y_min = transformed_bbox[2]-250
+        y_max = transformed_bbox[3]+250
+        Maskbox = [x_min,y_min,x_max,y_max]
+
+        EPSGs = 'urn:ogc:def:crs:EPSG::152160'
+       
+        if SGconda == 1:
+            #print("conda",flush = True)
+            soil_grids = SoilGrids()
+            data = soil_grids.get_coverage_data(service_id=varname, coverage_id=mean_covs, west = x_min,south=y_min,east =x_max,north=y_max, crs=EPSGs, output=temptif)
+        else :            
+            url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
+            wcs = WebCoverageService(url, version='1.0.0') 
+            response = wcs.getCoverage(identifier=mean_covs,crs=EPSGs, bbox=Maskbox,resx=250,resy=250,format='GEOTIFF_INT16')               
+            with open(temptif, 'wb') as file:
+                file.write(response.read())
          
-        input_dataset = gdal.Open(temptif)
-        
-        # Resample the raster to have a uniform pixel size of 250 meters
-        #gdal.Warp(outputnametif, input_dataset, 
-        #    format='GTiff', 
-        #    srcNodata = -32768,
-        #    xRes=250, yRes=250, 
-        #    outputBounds=lg.maskbox, 
-        #    resampleAlg = 'near', 
-        #    outputType = gdal.GDT_Float32)
+        input_dataset = gdal.Open(temptif)        
         gdal.Warp(outputnametif, input_dataset, 
             format='GTiff', 
             srcNodata = -32768,
             xRes=250, yRes=250, 
             outputType = gdal.GDT_Float32)        
+        
         # Close the datasets
         input_dataset = None
-        #os.remove(temptif)
-
-
-class GetSoilGridsLayer:
-    "downbloading a SOILGRIDS layer from WCS service"
-    def __init__(self, x = 0):
-          
-        varname = lg.SG_names_[x]
-        # depth string
-        if lg.SG_horizon_ == 1 :
-            ID = lg.SG_layers_[lg.optionSG1-1] 
-        if lg.SG_horizon_ == 2 :
-            ID = lg.SG_layers_[lg.optionSG2-1]             
-            
-        self.debug = 0 #Debug_
-        vname = varname  # filename for display
-        
-        # make a readable name for output to screen       
-        if x == 3: vname='Soil Org Carbon' 
-        if x == 4: vname='Gravel' 
-        if x == 5: vname='Bulk Density' 
-
-        print("   => Downloading SOILGRIDS layer "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
-
-        #EPSGs = 'http://www.opengis.net/def/crs/EPSG/0/152160' 
-        #EPSGs = 'urn:ogc:def:crs:EPSG::152160'
-        #EPSGhomol = '+proj=igh +lat_0=0 +lon_0=0 +datum=WGS84 +units=m +no_defs'
-
-        EPSGs = 'EPSG:3857'
-
-        if self.debug == 1:
-            print("Open SOILGRIDS WCS: "+varname+ID, flush=True)
-
-        url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
-        wcs = WebCoverageService(url, version='1.0.0',timeout=60)
-        
-        if self.debug == 1:
-            cov_list = list(wcs.contents)
-            mean_covs = [k for k in wcs.contents.keys() if k.find("mean") != -1]
-            print(mean_covs, flush = True)
-
-        variable = varname+ID   # give e.g. sand
-        varout = varname+str(lg.SG_horizon_)
-        outputnametif = "{0}.tif".format(varout)
-        temptif = '_temp.tif'
+        response = None
         if exists(temptif) :
             os.remove(temptif)
-        if exists(outputnametif) :
-            os.remove(outputnametif)
-        
-        dx1 = 250
-        dy1 = 250                
-        bbox = lg.maskbox      
-        ww = 512
-        hh = 512
-        
-        blokx = trunc(lg.nrCols/512)+1
-        bloky = trunc(lg.nrRows/512)+1
-               
-        # transform the coiordinates of the bounding box to 3957 projection for donwload
-        base_ref = osr.SpatialReference()
-        base_ref.ImportFromEPSG(lg.EPSG)
-        new_ref = osr.SpatialReference()
-        new_ref.ImportFromEPSG(3857) #ImportFromProj4
-        transform = osr.CoordinateTransformation(base_ref, new_ref)        
-        point = ogr.Geometry(ogr.wkbPoint)
-        point.AddPoint(bbox[0], bbox[1])
-        point.Transform(transform)
-        x_min = point.GetX()-dx1*2
-        y_min = point.GetY()-dy1*2
-        point.AddPoint(bbox[2], bbox[3])
-        point.Transform(transform)
-        x_max = point.GetX()+dx1*(blokx*512-2)
-        y_max = point.GetY()+dy1*(bloky*512-2)
-        Maskbox = [x_min,y_min,x_max,y_max]
 
-        #print('maskbox: ',lg.maskbox,flush=True)
-        #print('3857 projection mb :',Maskbox,flush=True)
-        
-        
-       #coverage_thread = threading.Thread(target=call_getCoverage, args=(variable, EPSGs, Maskbox, dx1, dy1))        
-       #coverage_thread.start()
-       #timeout_seconds = 60  # Adjust as needed
-       #coverage_thread.join(timeout_seconds)
-       #if coverage_thread.is_alive():
-       #    # If the thread is still alive after the timeout, it likely timed out
-       #    print("getCoverage call timed out")
-       #else:
-       #    # If the thread has finished, you can continue with the response
-       #    print("getCoverage call completed successfully")
-        
-        # make a tif 
-        # get data as temp geotif and save to disk ,
-        response = wcs.getCoverage(identifier=variable,crs=EPSGs, bbox=Maskbox,resx=dx1,resy=dy1,format='GEOTIFF_INT16')               
-        with open(temptif, 'wb') as file:
-             file.write(response.read())
-            
-        #reproject
-        warp_options = {
-            "xRes": dx1,
-            "yRes": dy1,
-            "outputBounds": Maskbox,
-            "resampleAlg": "near",
-            "outputType": gdal.GDT_Int16, 
-            #"outputType": gdal.GDT_Float32
-            #"dstSRS": EPSGs
-        }
-  
-        src = gdal.Warp(outputnametif, temptif, **warp_options)
-        
-        os.remove(temptif)
-        src = None
-        response = None
-       
 
 ### ---------- class SoilGridsTransform() ---------- ###
 
@@ -581,7 +399,13 @@ class PedoTransfer(StaticModel):
             soildepth1 = lg.soildepth1depth*mask
             soildepth2 = soildepth1+soildb # add 100 mm to avoid soildepth2 of 0 in lisem
             report(soildepth2,lg.soildep2Name)
-        
+#pcrcalc sd2.map=dem.map-mapminimum(dem.map)
+#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))
+#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))+1
+#pcrcalc sd2.map=1000*(sqrt(dem.map-mapminimum(dem.map))+1)
+#pcrcalc sd2.map=windowaverage(sd2.map,50)
+
+       
 ### ---------- class CorrectTextures() ---------- ###
 
 class CorrectTextures(StaticModel):

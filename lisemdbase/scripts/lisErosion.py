@@ -63,7 +63,7 @@ class ErosionMaps(StaticModel):
         aggrstab = ((S+0.15*C)/1.3) * mask #from table A9.1 page 27 eurosem manual 2nd column erod (= kfactor multiply directly with splash energy)
         if lg.optionSplash == 1 :
             # LISEM aggr stab
-            aggrstab*=10
+            aggrstab/=10
             report(aggrstab,lg.asName)
         else :
             #EUROSEM aggr stab
