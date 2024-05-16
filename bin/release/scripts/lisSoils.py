@@ -399,7 +399,13 @@ class PedoTransfer(StaticModel):
             soildepth1 = lg.soildepth1depth*mask
             soildepth2 = soildepth1+soildb # add 100 mm to avoid soildepth2 of 0 in lisem
             report(soildepth2,lg.soildep2Name)
-        
+#pcrcalc sd2.map=dem.map-mapminimum(dem.map)
+#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))
+#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))+1
+#pcrcalc sd2.map=1000*(sqrt(dem.map-mapminimum(dem.map))+1)
+#pcrcalc sd2.map=windowaverage(sd2.map,50)
+
+       
 ### ---------- class CorrectTextures() ---------- ###
 
 class CorrectTextures(StaticModel):

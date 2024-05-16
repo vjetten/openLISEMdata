@@ -200,6 +200,7 @@ def initialize():
     global tileinletName
     global tileheightName
     global tilewidthName
+    global builtUpAreaName
 
     
     global DEM_
@@ -301,7 +302,7 @@ def initialize():
     tileHeight = 0.5
     tileWidth = 0.5
     drainInletDistance = 30
-    drainInletSize = 0.5
+    drainInletSize = 0.005
     
     
     optionSplash = 1
@@ -443,13 +444,14 @@ def initialize():
     buildingsSHPName = myvars["buildingsSHPName"]
     roofStore = float(myvars["roofStore"])
     roadsSHPName = myvars["roadsSHPName"]
+    builtUpAreaName = myvars["BuiltUpAreaName"]
     doProcessesStormdrain = int(myvars["optionUseStormDrain"])    
     tileDiameter= float(myvars["DrainDiameter"])
     tileHeight= float(myvars["DrainHeight"])
     tileWidth= float(myvars["DrainWidth"])
     drainInletDistance= float(myvars["DrainInletDistance"])
     drainInletSize= float(myvars["DrainInletSize"])
-            
+    print(drainInletSize)       
     doProcessesRain = int(myvars["optionRain"])
     rainInputdir = myvars["RainBaseDirectory"]
     rainOutputdir = myvars["RainDirectory"]

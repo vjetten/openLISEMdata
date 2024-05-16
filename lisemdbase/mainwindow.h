@@ -272,7 +272,7 @@ private slots:
 
  //  void on_pushButton_gennerateSyntheticRain_clicked();
 
-    void on_tabWidgetOptions_currentChanged(int index);
+ //   void on_tabWidgetOptions_currentChanged(int index);
 
  //   void on_toolButton_stopGPM_clicked();
 

@@ -619,12 +619,12 @@ bool MainWindow::convertDailyPrecipitation()
 }
 
 
-void MainWindow::on_tabWidgetOptions_currentChanged(int index)
-{
-    //toolButton_clear->setVisible(index < 3);
-    //    toolButton_stop->setVisible(index < 3);
-    //    pushButton_start->setVisible(index < 3);
-}
+//void MainWindow::on_tabWidgetOptions_currentChanged(int index)
+//{
+//    //toolButton_clear->setVisible(index < 3);
+//    //    toolButton_stop->setVisible(index < 3);
+//    //    pushButton_start->setVisible(index < 3);
+//}
 
 
 //void MainWindow::on_toolButton_stopGPM_clicked()
