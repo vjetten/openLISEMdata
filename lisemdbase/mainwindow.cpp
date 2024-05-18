@@ -5,10 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     setupUi(this);
-    //  resize(QDesktopWidget().availableGeometry(this).size() * 0.9);
 
-    //  setMinimumSize(1280, 800);
-    //  setWindowState(Qt::WindowMaximized);
+    label_16->setStyleSheet("background-image : url(:/Screenshot.png);"); // title background!
+
     CondaInstall = GetCondaEnvs();
 
     QStringList sss;
@@ -20,19 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     sss << "Nearest Neighbourhood" << "Bilinear" << "Cubic";
     comboBox_Resample->addItems(sss);
 
-    dailyA = 0.14;
-    dailyB = -0.374;
-    day0 = 1;
-    dayn = 365;
-    dt30min = 30;
-    bufstart = false;
-
-    label_16->setStyleSheet("background-image : url(:/Screenshot.png);");
-
-    setupModel(); // read standard output etc
+    setupModel(); // read standard python output etc
 
     combo_iniName->clear();
     combo_iniName->setDuplicatesEnabled(false);
+
+    ScriptFileName = "lisemDBASEgenerator.py";
 
     getIniStart();
 
@@ -40,6 +32,15 @@ MainWindow::MainWindow(QWidget *parent)
     if (QFileInfo(s).exists()) {
 
         getIni(s);
+
+        if (ScriptDirName.contains(ScriptFileName))
+            ScriptDirName = QDir(QDir(ScriptDirName).absolutePath()+"/..").absolutePath()+"/";
+        if (!QFileInfo(ScriptDirName+ScriptFileName).exists())
+            ScriptDirName = ScriptDirName = qApp->applicationDirPath()+"/scripts/";
+        if (!QFileInfo(ScriptDirName+ScriptFileName).exists())
+            ScriptDirName = "";
+        lineEdit_Script->setText(ScriptDirName);
+
         comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
         comboBox_rainString->addItem("YW_2017.002_");
         QSet<QString> uniqueItems;
@@ -69,12 +70,10 @@ MainWindow::MainWindow(QWidget *parent)
         readValuesfromUI();
     }
 
-    ScriptDirName = qApp->applicationDirPath()+"/scripts/";
+    if (ScriptDirName.isEmpty()) ScriptDirName = qApp->applicationDirPath()+"/scripts/";
     ScriptFileName = "lisemDBASEgenerator.py";
-    if (QFileInfo(QString(ScriptDirName+ScriptFileName)).exists()) {
-        lineEdit_Script->setText(ScriptDirName+ScriptFileName);
-    }
-
+    if (QFileInfo(QString(ScriptDirName+ScriptFileName)).exists())
+        lineEdit_Script->setText(ScriptDirName);
 
     for (int i = 0; i < combo_envs->count(); i++){
         if (combo_envs->itemText(i) == CondaBaseDirName)
@@ -255,8 +254,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
 {
     QFileDialog dialog;
     QString dirout = inputdir;
-    // QString startdir = QFileInfo(inputdir).absoluteDir().absolutePath();
-    //  qDebug() <<"dir" << inputdir<< startdir ;
+
     if (doFile > 0) {
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
@@ -357,6 +355,14 @@ void MainWindow::on_toolButton_stop_clicked()
 void MainWindow::on_combo_iniName_currentIndexChanged(int index)
 {
     getIni(combo_iniName->currentText());
+
+    if (ScriptDirName.contains(ScriptFileName))
+        ScriptDirName = QDir(QDir(ScriptDirName).absolutePath()+"/..").absolutePath()+"/";
+    if (!QFileInfo(ScriptDirName+ScriptFileName).exists())
+        ScriptDirName = ScriptDirName = qApp->applicationDirPath()+"/scripts/";
+    if (!QFileInfo(ScriptDirName+ScriptFileName).exists())
+        ScriptDirName = "";
+    lineEdit_Script->setText(ScriptDirName);
 
     comboBox_rainString->addItem("3B-HHR-L.MS.MRG.3IMERG");
     comboBox_rainString->addItem("YW_2017.002_");
@@ -618,30 +624,6 @@ bool MainWindow::convertDailyPrecipitation()
     return true;
 }
 
-
-//void MainWindow::on_tabWidgetOptions_currentChanged(int index)
-//{
-//    //toolButton_clear->setVisible(index < 3);
-//    //    toolButton_stop->setVisible(index < 3);
-//    //    pushButton_start->setVisible(index < 3);
-//}
-
-
-//void MainWindow::on_toolButton_stopGPM_clicked()
-//{
-//    Process->kill();
-//    text_out->appendPlainText("User interrupt");
-//}
-
-
-
-//void MainWindow::on_toolButton_stopIDM_clicked()
-//{
-//    Process->kill();
-//    text_out->appendPlainText("User interrupt");
-//}
-
-
 void MainWindow::on_pushButton_start_clicked()
 {
     //  runGPMscript =false;
@@ -651,46 +633,6 @@ void MainWindow::on_pushButton_start_clicked()
 
     runModel();
 }
-
-
-//void MainWindow::on_pushButton_generateGPMRain_clicked()
-//{
-//    runGPMscript = true;
-//    runERAscript = false;
-//    runIDMscript = false;
-//    runOptionsscript = false;
-//    runModel();
-//}
-
-
-//void MainWindow::on_pushButton_gennerateSyntheticRain_clicked()
-//{
-//    runERAscript = false;
-//    runGPMscript =false;
-//    runIDMscript = true;
-//    runOptionsscript = false;
-
-//    runModel();
-//}
-
-
-
-//void MainWindow::on_pushButton_generateERARain_clicked()
-//{
-//    runERAscript = true;
-//    runGPMscript =false;
-//    runIDMscript = false;
-//    runOptionsscript = false;
-
-//    runModel();
-//}
-
-
-//void MainWindow::on_toolButton_stopERA_clicked()
-//{
-//    Process->kill();
-//    text_out->appendPlainText("User interrupt");
-//}
 
 void MainWindow::on_checkBox_writeGaugeData_toggled(bool checked)
 {

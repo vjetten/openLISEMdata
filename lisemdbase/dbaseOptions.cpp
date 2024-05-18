@@ -31,7 +31,7 @@ void MainWindow::setIni(QString sss)
     settings.sync();
 
     settings.setValue("CondaDirectory", CondaBaseDirName);
-    settings.setValue("Script", ScriptFileName);
+    settings.setValue("Script", ScriptDirName );
     settings.setValue("BaseDirectory", BaseDirName);
     settings.setValue("MapsDirectory", MapsDirName);
     settings.setValue("ESPGnumber", ESPGnumber);
@@ -94,6 +94,7 @@ void MainWindow::setIni(QString sss)
     //settings.setValue("SOIL/refBulkDens2", QString::number(refBulkDens2, 'f', 0));
     settings.setValue("SOIL/refRootzone", QString::number(refRootzone, 'f', 2));
     settings.setValue("SOIL/refMaxSoildepth", QString::number(refMaxSoildepth, 'f', 2));
+    settings.setValue("SOIL/SoildepthMethod", QString::number(optionSoildepthMethod));
     settings.setValue("SOIL/initmoist", QString::number(initmoist, 'f', 2));
 
     settings.setValue("EROSION/optionErosion", QString::number(optionErosion));
@@ -169,7 +170,7 @@ void MainWindow::getIni(QString name)
 
     CondaBaseDirName = checkName(0,settings.value("CondaDirectory").toString());
 
-    ScriptFileName = checkName(0,settings.value("Script").toString());
+    ScriptDirName = checkName(0,settings.value("Script").toString());
 
     BaseDirName = checkName(0,settings.value("BaseDirectory").toString());
     MapsDirName = checkName(0,settings.value("MapsDirectory").toString());
@@ -231,6 +232,7 @@ void MainWindow::getIni(QString name)
     //refBulkDens2 = settings.value("SOIL/refBulkDens2").toDouble();
     refRootzone = settings.value("SOIL/refRootzone").toDouble();
     refMaxSoildepth = settings.value("SOIL/refMaxSoildepth").toDouble();
+    optionSoildepthMethod = settings.value("SOIL/SoildepthMethod").toInt();
     initmoist = settings.value("SOIL/initmoist").toDouble();
 
     optionErosion = settings.value("EROSION/optionErosion").toInt();
@@ -288,13 +290,12 @@ void MainWindow::getIni(QString name)
     conversionmm = settings.value("RAINFALL/conversionmm").toDouble();
     timeintervalGPM = settings.value("RAINFALL/timeinterval").toDouble();
     interpolationGPM = settings.value("RAINFALL/interpolation").toDouble();
-
 }
 
 void MainWindow::readValuesfromUI()
 {
     CondaBaseDirName = combo_envs->currentText();
-    ScriptFileName= lineEdit_Script->text();
+    ScriptDirName= lineEdit_Script->text();
     BaseDirName = lineEdit_Base->text();
     MapsDirName = lineEdit_Maps->text();
     ESPGnumber = E_ESPGnumber->text();
@@ -353,6 +354,7 @@ void MainWindow::readValuesfromUI()
   //  refBulkDens2 = spin_refBD2->value();
     refRootzone = spin_Rootzone->value();
     refMaxSoildepth = spin_MaxSoildepth->value();
+    optionSoildepthMethod = checkBox_SoildepthMethod->isChecked() ? 1 : 0;
     initmoist = spin_initmoist->value();
 
     optionErosion = checkBox_erosion->isChecked() ? 1 : 0;
@@ -406,7 +408,7 @@ void MainWindow::readValuesfromUI()
 void MainWindow::writeValuestoUI()
 {
     combo_envs->setCurrentText(CondaBaseDirName);
-    lineEdit_Script->setText(ScriptFileName);
+    lineEdit_Script->setText(ScriptDirName);
     lineEdit_Base->setText(BaseDirName );
     lineEdit_Maps->setText(MapsDirName);
     E_ESPGnumber->setText(ESPGnumber);
@@ -466,6 +468,7 @@ void MainWindow::writeValuestoUI()
     //spin_refBD2->setValue(refBulkDens2);
     spin_Rootzone->setValue(refRootzone);
     spin_MaxSoildepth->setValue(refMaxSoildepth);
+    checkBox_SoildepthMethod->setChecked(optionSoildepthMethod > 0);
     spin_initmoist->setValue(initmoist);
 
     checkBox_erosion->setChecked(optionErosion > 0);

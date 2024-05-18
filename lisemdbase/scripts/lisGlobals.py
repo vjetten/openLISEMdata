@@ -55,6 +55,7 @@ def initialize():
     global initmoisture_
     global rootzone
     global maxSoildepth
+    global soildepthMethod
     global useCorrOM
     global CorrOM
     global roofStore
@@ -290,6 +291,7 @@ def initialize():
     initmoisture_ = 0.0
     rootzone = 0.6
     maxSoildepth = 5.0
+    soildepthMethod = 1
     useCorrOM = 0
     CorrOM = 0.0
     useCorrText = 0
@@ -427,6 +429,7 @@ def initialize():
     #standardbulkdensity2_ = float(myvars["refBulkDens2"])
     rootzone = float(myvars["refRootzone"]) 
     maxSoildepth = float(myvars["refMaxSoildepth"]) 
+    soildepthMethod = int(myvars["SoildepthMethod"])
     initmoisture_ = float(myvars["initmoist"])  
     useCorrOM = int(myvars["optionUseCorrOM"])
     CorrOM = float(myvars["corrOM"])  

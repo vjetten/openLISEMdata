@@ -385,26 +385,22 @@ class PedoTransfer(StaticModel):
             soildepth1 = lg.soildepth1depth*mask
             report(soildepth1,lg.soildep1Name)
         if lg.SG_horizon_ == 2 :
-            # steeper slopes giver undeep soils
-            soild = cover((1-min(1,slope(DEM)))+rivfact+5*profcurv(DEM),0)*mask #
-            #a bit after Kuriakose et al
-            soild = windowaverage(soild,3*celllength())
-            # smooth because soil depth does not follow dem exactly        
-            smin = mapminimum(soild)
-            smax = mapmaximum(soild)
-            soild = (soild-smin)/(smax-smin)
-            report(soild,"sd.map")
-            soildb = soild*(lg.soildepth2depth-lg.soildepth1depth) 
-            #min(lg.soildepth2depth,lg.soildepth2depth*(soild)**1.5) # CHARIM, somehow used 1.5...?
-            soildepth1 = lg.soildepth1depth*mask
-            soildepth2 = soildepth1+soildb # add 100 mm to avoid soildepth2 of 0 in lisem
+            if lg.soildepthMethod == 1 :
+                # steeper slopes giver undeep soils
+                soild = cover((1-min(1,slope(DEM)))+rivfact+profcurv(DEM),0)*mask #
+                #a bit after Kuriakose et al
+                # scale between 0 and 1 and smooth
+                soild = windowaverage(soild,lg.dx*5)
+                minm = mapminimum(soild)
+                maxm = mapmaximum(soild)
+                sd = (lg.soildepth2depth-lg.soildepth1depth-100)*(soild-minm)/(maxm-minm)
+            else :
+                # scale DEM between 0 and 1
+                demr = windowaverage(DEM**0.5, lg.dx*5)
+                demr = (demr - mapminimum(demr))/(mapmaximum(demr) - mapminimum(demr))
+                sd = (lg.soildepth2depth-lg.soildepth1depth-100) * demr
+            soildepth2 = (lg.soildepth1depth+100+sd)*mask
             report(soildepth2,lg.soildep2Name)
-#pcrcalc sd2.map=dem.map-mapminimum(dem.map)
-#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))
-#pcrcalc sd2.map=sqrt(dem.map-mapminimum(dem.map))+1
-#pcrcalc sd2.map=1000*(sqrt(dem.map-mapminimum(dem.map))+1)
-#pcrcalc sd2.map=windowaverage(sd2.map,50)
-
        
 ### ---------- class CorrectTextures() ---------- ###
 

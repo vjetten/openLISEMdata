@@ -7,7 +7,8 @@ void MainWindow::setupModel()
 
     connect(Process, SIGNAL(readyReadStandardError()),this, SLOT(readFromStderr()) );
     connect(Process, SIGNAL(readyReadStandardOutput()),this, SLOT(readFromOutput()) );
-    //connect(pushButton_start, SIGNAL(clicked()), this, SLOT(runModel()));
+
+    bufstart = false;
 }
 
 
@@ -27,7 +28,7 @@ bool MainWindow::checkAllNames()
     int quit = 0;
     //if (ESPGnumber.isEmpty())
 
-    quit += checkNameandOption(ScriptFileName, true, "Python Scripts not found.");
+    quit += checkNameandOption(ScriptDirName + ScriptFileName, true, "Python Scripts not found."); // should not happen at this point
     quit += checkNameandOption(BaseDirName, true, "Base folder not found.");
     quit += checkNameandOption(MapsDirName, true, "Maps folder not found.");
 
@@ -175,7 +176,7 @@ void MainWindow::runModel()
     QStringList pythonCommandArguments;
 
     //if (runOptionsscript)
-    pythonCommandArguments << ScriptFileName;
+    pythonCommandArguments << ScriptDirName + ScriptFileName;
 
     pythonCommandArguments << Ss+ "/lisemdbaseoptions.cfg";
 

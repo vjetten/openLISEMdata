@@ -93,6 +93,7 @@ public:
     int optionUseBD2;
     int optionUseCorrOM;
     int optionUseCorrTexture;
+    int optionSoildepthMethod;
     int optionUseDensity;
     int optionFillDEM;
     int optionCatchments;
@@ -322,6 +323,8 @@ private slots:
     void on_checkBox_useStormDrain_toggled(bool checked);
 
     void on_toolButton_BuiltUp_clicked();
+
+    void on_lineEdit_Maps_returnPressed();
 
 private:
     Ui::MainWindow *ui;

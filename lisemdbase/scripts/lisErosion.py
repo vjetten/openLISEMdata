@@ -44,7 +44,9 @@ class ErosionMaps(StaticModel):
         Cover = readmap(lg.coverName)
 
         #Coh = ifthenelse(C < 1e-5, -1,max(1.0, 4.316*ln(C+1.0) - 6.955))
-        Coh = ifthenelse(C < 1e-5, -1,max(1.0, 7.018*ln(C) + 13.312))
+        #Coh = ifthenelse(C < 1e-5, -1,max(1.0, 7.018*ln(C) + 13.312))
+        #Coh = 1.2048*exp(1.0085*(C*4.1+Si))   #R2 = 0.9285
+        Coh = 1.7483*exp(0.4881*(8*C+Si))   #R2 = 0.9285
         # log fit using values below
         #Coh = lookupscalar("claycoh.tbl",C)*mask
         # content of claycoh.tbl

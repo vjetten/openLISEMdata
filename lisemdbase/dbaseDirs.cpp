@@ -20,9 +20,10 @@ void MainWindow::on_toolButton_SaveIni_clicked()
     readValuesfromUI();
     if (combo_iniName->currentText().isEmpty())
         on_toolButton_saveas_clicked();
-        //combo_iniName->addItem(qApp->applicationDirPath()+"/lisemdbase.ini");
+
     createNNLULCTable();
     setIni(combo_iniName->currentText());
+        qDebug() << ScriptDirName;
 }
 
 
@@ -58,9 +59,16 @@ void MainWindow::on_toolButton_script_clicked()
 {
     QStringList filters({"Python (*.py)"});
 
-    QString s = getFileorDir(ScriptDirName,"Select python script folder", filters, -1);
-    if (!s.isEmpty())
-        lineEdit_Script->setText(s+ScriptFileName);
+    QString s = getFileorDir(ScriptDirName,"Select python script folder", filters, 2);
+    if (!s.isEmpty()) {
+        ScriptDirName = QDir(QDir(s).absolutePath()+"/..").absolutePath()+"/";
+        if (!QFileInfo(ScriptDirName + ScriptFileName).exists()) {
+            ScriptDirName = ScriptDirName = qApp->applicationDirPath()+"/scripts/";
+            QMessageBox::warning(this,"", "Cannot find lisemDBASEgenerator.py, defaulting to application path.");
+        }
+
+        lineEdit_Script->setText(ScriptDirName);
+    }
 }
 
 void MainWindow::on_toolButton_base_clicked()
@@ -88,6 +96,24 @@ void MainWindow::on_toolButton_maps_clicked()
     MapsDirName = getFileorDir(tmp,"Select Maps folder", filters, 0);
     if (!MapsDirName.isEmpty())
         lineEdit_Maps->setText(MapsDirName);
+}
+
+
+void MainWindow::on_lineEdit_Maps_returnPressed()
+{
+    if (lineEdit_Maps->text().isEmpty())
+        return;
+    QFileInfo fin(lineEdit_Maps->text());
+    if(!fin.exists()) {
+        int ret =
+            QMessageBox::question(this, QString("Lisem DBase Generator"),
+                                  QString("The directory \"%1\"does not exist.\n"
+                                          "Do you want to create it (apply)?")
+                                      .arg(fin.absoluteFilePath()),
+                                  QMessageBox::Apply |QMessageBox::Cancel,QMessageBox::Cancel);
+        if (ret == QMessageBox::Apply)
+            QDir(lineEdit_Maps->text()).mkpath(lineEdit_Maps->text());
+    }
 }
 
 
