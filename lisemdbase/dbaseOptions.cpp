@@ -5,7 +5,7 @@ void MainWindow::setIniStart()
     QSettings settings(qApp->applicationDirPath()+"/lisemdbase.ini",QSettings::IniFormat);
     settings.clear();
     for (int i = 0; i < combo_iniName->count(); i++) {
-        settings.setValue(QString(i),combo_iniName->itemText(i));
+        settings.setValue(QString::number(i),combo_iniName->itemText(i));
     }
 }
 
@@ -16,7 +16,7 @@ void MainWindow::getIniStart()
     QStringList keys = settings.allKeys();
     QStringList skeys;
     for (int i = 0; i < keys.size(); i++) {
-        QString s = settings.value(QString(i)).toString();
+        QString s = settings.value(QString::number(i)).toString();
         if (QFileInfo(s).exists())
             skeys << s;
     }
@@ -475,7 +475,6 @@ void MainWindow::writeValuestoUI()
     checkBox_D50->setChecked(optionD50 > 0);
     spin_Splash->setValue(optionSplash);
     checkBox_ChannelsNoErosion->setChecked(optionChannelsNoEros > 0);
-    spin_Splash->setValue(1);
 
     if (optionUserOutlets == 0) {
         on_radioButton_OutletMultiple_toggled(false);

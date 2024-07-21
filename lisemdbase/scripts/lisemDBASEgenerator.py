@@ -101,32 +101,8 @@ if __name__ == "__main__":
             lg.SG_horizon_ = 2
             lisSoils.GetSoilGridsLayerConda(x)        
         
-   ## #print(SGconda,flush=True)
-   ## SGconda = 1
-   ## if SGconda == 1:
-   ##     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
-   ##     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
-   ##         print(">>> Downloading SOILGRIDS layers from conda package", flush=True)        
-   ##         for x in range(6):
-   ##             lg.SG_horizon_ = 1
-   ##             lisSoils.GetSoilGridsLayerConda(x)
-   ##         for x in range(6):
-   ##             lg.SG_horizon_ = 2
-   ##             lisSoils.GetSoilGridsLayerConda(x)
-   ## else : 
-   ##     # soil processes, SOILGIRDS and pedotransfer functions Saxton and Rawls
-   ##     if lg.doProcessesInfil == 1 and lg.doProcessesSG == 1:    
-   ##         print(">>> Downloading SOILGRIDS layers from web server https://maps.isric.org", flush=True)        
-   ##         for x in range(6):
-   ##             lg.SG_horizon_ = 1
-   ##             lisSoils.GetSoilGridsLayer(x)
-   ##         for x in range(6):
-   ##             lg.SG_horizon_ = 2
-   ##             lisSoils.GetSoilGridsLayer(x)
-
-
     if lg.doProcessesInfil == 1 and lg.doProcessesSGInterpolation == 1:
-        print(">>> Inverse distance interpolation SOILGRIDS layers for missing values ", flush=True)
+        print(">>> Fill missing values in SOILGRIDS layers", flush=True)
         obj = lisSoils.SoilGridsTransform()
         staticModel = StaticFramework(obj)
         #update_progress(0)

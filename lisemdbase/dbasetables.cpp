@@ -6,9 +6,9 @@
 void MainWindow::resetLULCTable()
 {
     for (int r = 1; r < model->rowCount()+1; r++){
-        QStringList names = LULCspare[r].split(QRegExp("="));
+        QStringList names = LULCspare[r].split(QRegularExpression("="));
         QString s = names.at(1).simplified();
-        QStringList fields = s.split(QRegExp("\\s+"));
+        QStringList fields = s.split(QRegularExpression("\\s+"));
         for (int c = 1; c < model->columnCount(); c++){
             model->item(r-1,c)->setText(fields.at(c));
         }
@@ -57,9 +57,9 @@ void MainWindow::fillLULCTable()
             }
 
             if (r > 0) {
-                QStringList names = line.split(QRegExp("="));
+                QStringList names = line.split(QRegularExpression("="));
                 QString s = names.at(1).simplified();
-                QStringList fields = s.split(QRegExp("\\s+"));
+                QStringList fields = s.split(QRegularExpression("\\s+"));
                 fields << "0.0" << "0.0";
 
                 model->setVerticalHeaderItem(r-1,new QStandardItem(names.at(0).simplified()));
@@ -169,7 +169,7 @@ void MainWindow::fillOutletsTable()
         while(!in.atEnd()) {
             QString line = in.readLine();
             if (r > 0) {
-                QStringList fields = line.split(QRegExp("\\s+"));
+                QStringList fields = line.split(QRegularExpression("\\s+"));
 
                 for (int i = 0; i < fields.count(); i++){
                     if (i == 0)
@@ -208,7 +208,7 @@ void MainWindow::resetOutletsTable()
     sl.removeAt(0);
 
     for (int r = 0; r < modelOutlets->rowCount(); r++){
-        QStringList fields = sl[r].split(QRegExp("\\s+"));
+        QStringList fields = sl[r].split(QRegularExpression("\\s+"));
         for (int c = 1; c < modelOutlets->columnCount()-1; c++){
             modelOutlets->item(r,c)->setText(fields.at(c+1));
         }

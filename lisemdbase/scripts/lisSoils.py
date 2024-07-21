@@ -1,30 +1,37 @@
-# lisemDBASEgenerator
-# global vraiables and initialisation
-#
-# author: V.G.Jetten @ 2022, 2023, 2024
-# University of Twente, Faculty ITC
-# this software has copyright model: GPLV3
-# Soilgrids layers have copyright model: https://creativecommons.org/licenses/by/4.0/
-# this software has a disclaimer
-# last edit: 11 May feb 2024
+## lisemDBASEgenerator
+## soil related functions
+##
+## author: V.G.Jetten @ 2022, 2023, 2024
+## University of Twente, Faculty ITC
+## this software has copyright model: GPLV3
+## Soilgrids layers have copyright model: https://creativecommons.org/licenses/by/4.0/
+## this software has a disclaimer
+#################################
 
-from owslib.wcs import WebCoverageService
+### last edit: 23 May 2024 ###
+
+## general libs
 from pcraster import *
 from pcraster.framework import *
 from osgeo import gdal, gdalconst, osr, ogr
 import numpy as np
-import lisGlobals as lg
 from os.path import exists
-#import threading
-import math 
+import math
 
+## web coverage service for SOILGRIDS
+from owslib.wcs import WebCoverageService
+
+## import global variables
+import lisGlobals as lg
+
+# check if conda SOILGRIDS exists
 SGconda = 1
 try:
     from soilgrids import SoilGrids   
 except ImportError:    
     SGconda = 0
 
-
+# fill missing values in soilgrids maps
 def fill_nodata(input_raster, output_raster):
     # Open the input raster dataset
     in_ds = gdal.Open(input_raster, gdal.GA_ReadOnly)
@@ -46,7 +53,7 @@ def fill_nodata(input_raster, output_raster):
     in_ds = None
     out_ds = None
     
-
+# download soilgrids layers
 class GetSoilGridsLayerConda:
     "downbloading a SOILGRIDS layer"
     def __init__(self, x = 0):
@@ -130,11 +137,8 @@ class GetSoilGridsLayerConda:
         if exists(temptif) :
             os.remove(temptif)
 
-
-### ---------- class SoilGridsTransform() ---------- ###
-
+# convert tif to map and fill missing values
 class SoilGridsTransform(StaticModel):
-    # convert tif to map and do inverse distance interpolation to fill missing values
     def __init__(self, mask=0, mapnr=1):
         StaticModel.__init__(self)
     def initial(self):
@@ -191,13 +195,12 @@ class SoilGridsTransform(StaticModel):
         ET = None
         
 
-### ---------- class PedoTranfer() ---------- ###
-
-class PedoTransfer(StaticModel):
+# pedotransfer functions
     # creates infiltration input vars: Ksat 1,2; Thetas1,2; Thetai1,2; Psi1,2
     # from SOILGRID.ORG GTiff maps for texture, org matter, gravel and bulkdensity
     # Using Saxton And Rawls 2006 pedotransferfunctions
     # https://hrsl.ba.ars.usda.gov/SPAW/Index.htm
+class PedoTransfer(StaticModel):
     def __init__(self,mask=0,layer=1,moisture=0):
         StaticModel.__init__(self)
     def initial(self):
@@ -402,10 +405,10 @@ class PedoTransfer(StaticModel):
             soildepth2 = (lg.soildepth1depth+100+sd)*mask
             report(soildepth2,lg.soildep2Name)
        
-### ---------- class CorrectTextures() ---------- ###
 
+
+# correct soilgrids textures to field values and make sure sum = 1
 class CorrectTextures(StaticModel):
-    # correct soilgrids textures to field values and make sure sum = 1
     def __init__(self,mask=0):
         StaticModel.__init__(self)
     def initial(self):

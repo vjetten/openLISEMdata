@@ -31,5 +31,17 @@ RC_FILE = lisemdbase.rc
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
 
+DISTFILES += \
+    scripts/lisChannels.py \
+    scripts/lisDams.py \
+    scripts/lisDemDerivatives.py \
+    scripts/lisErosion.py \
+    scripts/lisGlobals.py \
+    scripts/lisInfrastructure.py \
+    scripts/lisRainfall.py \
+    scripts/lisSoils.py \
+    scripts/lisSurface.py \
+    scripts/lisemDBASEgenerator.py
+
 
 

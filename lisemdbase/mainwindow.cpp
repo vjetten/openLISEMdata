@@ -110,31 +110,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::findDPIscale()
 {
-    //QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
-    int _H = QApplication::desktop()->height();
-    //int _H = rect.height();
-    if (_H > 600) {
-        genfontsize = -1;//12;
-    }
-    if (_H > 800) {
-        genfontsize = 0;//12;
-    }
-    if (_H > 1080) {
-        genfontsize = 1;// 14;
-    }
-    if (_H > 1440) {
-        genfontsize = 2;//12;
-    }
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int _H = screenGeometry.height();// * screen->devicePixelRatio();
 
-    const QWidgetList allWidgets = QApplication::allWidgets();
-    for (QWidget *widget : allWidgets) {
-        QFont font = widget->font();
-        //qDebug() << font;
-        int ps = 8 + genfontsize;
-        font.setPointSize(ps);
-        widget->setFont(font);
-        widget->update();
-    }
+    int disp = 3;
+    // for (int i = 0; i < screens.size(); ++i) {
+    //     QScreen *screen = screens.at(i);
+    //     qreal logicalDpi = screen->logicalDotsPerInch();
+    //     qreal physicalDpi = screen->physicalDotsPerInch();
+    //     qreal devicePixelRatio = screen->devicePixelRatio();
+    //     qDebug() << "Screen" << i << ":";
+    //     qDebug() << "  Logical DPI:" << logicalDpi;
+    //     qDebug() << "  Physical DPI:" << physicalDpi;
+    //     qDebug() << "  Device Pixel Ratio:" << devicePixelRatio;
+    // }
+
+
+    if(_H < 1400) disp = 2;
+    if(_H < 1200) disp = 1;
+    if(_H < 1080) disp = 0;
+    if(_H < 800) disp = -1;
+
+    genfontsize = screen->devicePixelRatio()*(disp+10);
+    qDebug() << genfontsize << screen->devicePixelRatio();
+    qApp->setStyleSheet(QString("* { font-size: %1px; }").arg(genfontsize));
 }
 
 
@@ -264,7 +264,7 @@ QString MainWindow::getFileorDir(QString inputdir,QString title, QStringList fil
         dialog.setNameFilters(filters);
         dialog.setDirectory(QFileInfo(inputdir).absoluteDir());
         if (doFile == 0)
-            dialog.setFileMode(QFileDialog::DirectoryOnly);
+            dialog.setFileMode(QFileDialog::Directory);
         if (doFile == -1)
             dialog.setFileMode(QFileDialog::ExistingFile);
     }
@@ -574,7 +574,7 @@ bool MainWindow::convertDailyPrecipitation()
     eout << "P (mm/h)\n";
     //parsing
     for (int i = 4; i < sl.count(); i++) {
-        QStringList line = sl.at(i).split(QRegExp("\\s+"));
+        QStringList line = sl.at(i).split(QRegularExpression("\\s+"));
         int day = line.at(0).toInt();
         double P = line.at(1).toDouble();
         if (P >0) {
