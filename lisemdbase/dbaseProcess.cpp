@@ -51,6 +51,7 @@ bool MainWindow::checkAllNames()
     quit += checkNameandOption(NDVImapName  ,optionUseNDVI == 1 && optionLULC == 1,"3. Land use: NDVI map not found.");
     quit += checkNameandOption(BaseDirName+buildingsSHPName,optionUseInfrastructure == 1,"7. Buildings: buildings shapefile not found.");
     quit += checkNameandOption(BaseDirName+roadsSHPName,optionUseInfrastructure == 1,"7. Buildings: roads shapefile not found.");
+    quit += checkNameandOption(BaseDirName+hardSHPName,optionUseInfrastructure == 1,"7. Buildings: hard surfaces shapefile not found.");
 
   //  quit += checkNameandOption(RainRefNameDEM     ,optionUseInfrastructure,"8. Rainfall: reference DEM for rainfall not found.");
     quit += checkNameandOption(RainBaseDirName    ,optionRain == 1,"8. Rainfall: Folder with GPM data (tif files) not found.");

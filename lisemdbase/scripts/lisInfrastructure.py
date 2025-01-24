@@ -22,6 +22,8 @@ class InfrastructureMaps(StaticModel):
             return;
         if sf == 2 and lg.roadsSHPName == "" :
             return;
+        if sf == 3 and lg.hardSHPName == "" :
+            return;
 
         ShapeName = ""
         if sf == 1 :
@@ -31,7 +33,11 @@ class InfrastructureMaps(StaticModel):
         if sf == 2 :            
             ShapeName = lg.BaseDir+lg.roadsSHPName
             print("Creating roads map.", flush=True);
-            
+
+        if sf == 3 :
+                ShapeName = lg.BaseDir+lg.hardSHPName
+                print("Creating hard surfaces map.", flush=True);
+
         tifname = lg.BaseDir+"tempbuild.tif"
         outnametif = lg.BaseDir+"rescale.tif"
 
@@ -77,7 +83,9 @@ class InfrastructureMaps(StaticModel):
                 print("WARNING: resulting building map is empty!, check you shape file");
             if sf == 2 :
                 print("WARNING: resulting road map is empty!, check you shape file");
-                
+            if sf == 2 :
+                print("WARNING: resulting hard surfaces map is empty!, check you shape file");
+
         if sf == 1 :
             report(map_,lg.housecovName)
             roofstore = ifthenelse(map_ > 0, scalar(1), 0)*lg.mask_*lg.roofStore
@@ -116,6 +124,9 @@ class InfrastructureMaps(StaticModel):
                 report(tileheight ,lg.tileheightName)  
                 report(tilewidth ,lg.tilewidthName)  
                 report(tilesink,lg.tileinletName)
+        if sf == 3 :
+            map_ = map_ * lg.dx
+            report(map_,lg.hardsurfName)
 
         os.remove(tifname)
         os.remove(outnametif)

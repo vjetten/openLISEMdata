@@ -63,6 +63,10 @@ def initialize():
     global CorrClay
     global CorrSilt
     global CorrSand
+    global useBuiltUpText
+    global BuiltUpClay
+    global BuiltUpSilt
+    global BuiltUpSand
     global tileDiameter
     global tileHeight
     global tileWidth
@@ -90,7 +94,9 @@ def initialize():
     global hardsurfinName 
     global roadinName
     global roadsSHPName
+    global hardSHPName
     global buildingsSHPName
+    global builtUpMaskName
     
     global fillDEM
     global catchmentsize
@@ -295,9 +301,14 @@ def initialize():
     useCorrOM = 0
     CorrOM = 0.0
     useCorrText = 0
-    CorrClay = 0.0
-    CorrSilt = 0.0
-    CorrSand = 0.0
+    CorrClay = 0.33
+    CorrSilt = 0.33
+    CorrSand = 0.33
+    useBuiltUpText = 0
+    BuiltUpClay = 0.05
+    BuiltUpSilt = 0.05
+    BuiltUpSand = 0.9
+    builtUpMaskName = ""
     shapeNr = 1
     roofStore = 1.0
     tileDiameter = 0.65
@@ -437,7 +448,12 @@ def initialize():
     CorrClay = float(myvars["corrClay"])  
     CorrSilt = float(myvars["corrSilt"])  
     CorrSand = float(myvars["corrSand"])  
-    
+    useBuiltUpText = int(myvars["optionUseBuiltUpTexture"])
+    BuiltUpClay = float(myvars["builtUpClay"])
+    BuiltUpSilt = float(myvars["builtUpSilt"])
+    BuiltUpSand = float(myvars["builtUpSand"])
+    builtUpMaskName = myvars["BuiltUpMaskName"]
+
     doProcessesErosion = int(myvars["optionErosion"])
     doChannelsNoEros = int(myvars["optionChannelsNoEros"])
     optionD50 = int(myvars["optionD50"])
@@ -447,14 +463,14 @@ def initialize():
     buildingsSHPName = myvars["buildingsSHPName"]
     roofStore = float(myvars["roofStore"])
     roadsSHPName = myvars["roadsSHPName"]
+    hardSHPName = myvars["hardSHPName"]
     builtUpAreaName = myvars["BuiltUpAreaName"]
     doProcessesStormdrain = int(myvars["optionUseStormDrain"])    
     tileDiameter= float(myvars["DrainDiameter"])
     tileHeight= float(myvars["DrainHeight"])
     tileWidth= float(myvars["DrainWidth"])
     drainInletDistance= float(myvars["DrainInletDistance"])
-    drainInletSize= float(myvars["DrainInletSize"])
-    print(drainInletSize)       
+    drainInletSize= float(myvars["DrainInletSize"])  
     doProcessesRain = int(myvars["optionRain"])
     rainInputdir = myvars["RainBaseDirectory"]
     rainOutputdir = myvars["RainDirectory"]

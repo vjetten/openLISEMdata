@@ -84,14 +84,15 @@ class SurfaceMaps(StaticModel):
 
         roadwidth = readmap(lg.roadinName)*mask
         report(roadwidth,lg.roadwidthName)
+        #defaults to zero
 
         building = readmap(lg.housecoverinName)*mask
-        
-        #hardsurf=cover(max(0,1-Cover-building-roadwidth),0)    
-        #hardsurf=ifthenelse(Cover > 0.2,0,hardsurf)
+        #defaults to zero
+
         hardsurf = readmap(lg.hardsurfinName)*mask
         report(hardsurf ,lg.hardsurfName)
          #hard surface, here airports and large impenetrable areas
+         # defaults to zero
         
         report(building,lg.housecovName)
         roofstore = 1 * mask

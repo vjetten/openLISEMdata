@@ -2,7 +2,7 @@
 
 void MainWindow::setIniStart()
 {
-    QSettings settings(qApp->applicationDirPath()+"/lisemdbase.ini",QSettings::IniFormat);
+    QSettings settings(localPath+"/lisemdbase.ini",QSettings::IniFormat);
     settings.clear();
     for (int i = 0; i < combo_iniName->count(); i++) {
         settings.setValue(QString::number(i),combo_iniName->itemText(i));
@@ -11,7 +11,7 @@ void MainWindow::setIniStart()
 
 void MainWindow::getIniStart()
 {
-    QSettings settings(qApp->applicationDirPath()+"/lisemdbase.ini",QSettings::IniFormat);
+    QSettings settings(localPath+"/lisemdbase.ini",QSettings::IniFormat);
     settings.sync();
     QStringList keys = settings.allKeys();
     QStringList skeys;
@@ -88,6 +88,12 @@ void MainWindow::setIni(QString sss)
     settings.setValue("SOIL/corrClay", QString::number(corrClay, 'f', 2));
     settings.setValue("SOIL/corrSilt", QString::number(corrSilt, 'f', 2));
     settings.setValue("SOIL/corrSand", QString::number(corrSand, 'f', 2));
+    settings.setValue("SOIL/optionUseBuiltUpTexture", QString::number(optionUseBuiltUpTexture));
+    settings.setValue("SOIL/builtUpClay", QString::number(builtUpClay, 'f', 2));
+    settings.setValue("SOIL/builtUpSilt", QString::number(builtUpSilt, 'f', 2));
+    settings.setValue("SOIL/builtUpSand", QString::number(builtUpSand, 'f', 2));
+    settings.setValue("SOIL/BuiltUpMaskName", builtUpMaskName);
+
     settings.setValue("SOIL/optionUseDensity", QString::number(optionUseDensity));
     settings.setValue("SOIL/refBulkDens", QString::number(refBulkDens, 'f', 0));
     //settings.setValue("SOIL/optionUseBD2", QString::number(optionUseBD2));
@@ -108,6 +114,7 @@ void MainWindow::setIni(QString sss)
     settings.setValue("INFRA/optionUseDrums", QString::number(optionUseDrums));
     settings.setValue("INFRA/drumMap", drummapName);
     settings.setValue("INFRA/roadsSHPName", roadsSHPName);
+    settings.setValue("INFRA/hardSHPName", hardSHPName);
     settings.setValue("INFRA/BuiltUpAreaName", BuiltUpAreaName);
     settings.setValue("INFRA/optionUseStormDrain", QString::number(optionUseStormDrain));
     settings.setValue("INFRA/optionDrainShape", QString::number(optionDrainShape));
@@ -226,6 +233,12 @@ void MainWindow::getIni(QString name)
     corrClay = settings.value("SOIL/corrClay").toDouble();
     corrSilt = settings.value("SOIL/corrSilt").toDouble();
     corrSand = settings.value("SOIL/corrSand").toDouble();
+    optionUseBuiltUpTexture = settings.value("SOIL/optionUseCBuiltUpTexture").toInt();
+    builtUpClay = settings.value("SOIL/builtUpClay").toDouble();
+    builtUpSilt = settings.value("SOIL/builtUpSilt").toDouble();
+    builtUpSand = settings.value("SOIL/builtUpSand").toDouble();
+    builtUpMaskName = settings.value("SOIL/BuiltUpMaskName").toString();
+
     optionUseDensity = settings.value("SOIL/optionUseDensity").toInt();
     refBulkDens = settings.value("SOIL/refBulkDens").toDouble();
     //optionUseBD2 = settings.value("SOIL/optionUseBD2").toInt();
@@ -247,6 +260,7 @@ void MainWindow::getIni(QString name)
     BuiltUpAreaName = settings.value("INFRA/BuiltUpAreaName").toString();
     drummapName = settings.value("INFRA/drumMap").toString();
     roadsSHPName = checkName(1,settings.value("INFRA/roadsSHPName").toString());
+    hardSHPName = checkName(1,settings.value("INFRA/hardSHPName").toString());
     optionUseStormDrain= settings.value("INFRA/optionUseStormDrain").toInt();
     optionDrainShape= settings.value("INFRA/optionDrainShape").toInt();
     drainWidth = settings.value("INFRA/DrainWidth").toDouble();
@@ -348,6 +362,11 @@ void MainWindow::readValuesfromUI()
     corrClay = spin_corrClay->value();
     corrSilt = spin_corrSilt->value();
     corrSand = spin_corrSand->value();
+    optionUseBuiltUpTexture  = checkBox_useBuiltUpTexture->isChecked() ? 1 : 0;
+    builtUpClay = spin_builtUpClay->value();
+    builtUpSilt = spin_builtUpSilt->value();
+    builtUpSand = spin_builtUpSand->value();
+    builtUpMaskName = lineEdit_BuiltUpMask->text();
     optionUseDensity = checkBox_useLUdensity->isChecked() ? 1 : 0;
     refBulkDens = spin_refBD->value();
     // optionUseBD2 = checkBox_userefBD2->isChecked() ? 1 : 0;
@@ -368,6 +387,7 @@ void MainWindow::readValuesfromUI()
     drummapName = lineEdit_drumMap->text();
     roofStore = spin_roofStore->value();
     roadsSHPName = lineEdit_roadsSHP->text();
+    hardSHPName = lineEdit_hardSHP->text();
     BuiltUpAreaName = lineEdit_BuiltUpArea->text();
     optionUseStormDrain = checkBox_useStormDrain->isChecked() ? 1 : 0;
     radioStormdrainCirc->setChecked(optionDrainShape == 0);
@@ -463,6 +483,12 @@ void MainWindow::writeValuestoUI()
     spin_corrClay->setValue(corrClay);
     spin_corrSilt->setValue(corrSilt);
     spin_corrSand->setValue(corrSand);
+    checkBox_useBuiltUpTexture->setChecked(optionUseBuiltUpTexture > 0);
+    spin_builtUpClay->setValue(builtUpClay);
+    spin_builtUpSilt->setValue(builtUpSilt);
+    spin_builtUpSand->setValue(builtUpSand);
+    lineEdit_BuiltUpMask->setText(builtUpMaskName);
+
     checkBox_useLUdensity->setChecked(optionUseDensity > 0);
     spin_refBD->setValue(refBulkDens);
     //spin_refBD2->setValue(refBulkDens2);
@@ -490,6 +516,7 @@ void MainWindow::writeValuestoUI()
     lineEdit_drumMap->setText(drummapName);
     spin_roofStore->setValue(roofStore);
     lineEdit_roadsSHP->setText(roadsSHPName);
+    lineEdit_hardSHP->setText(hardSHPName);
     lineEdit_BuiltUpArea->setText(BuiltUpAreaName);
     checkBox_useStormDrain->setChecked(optionUseStormDrain > 0);
 

@@ -127,6 +127,12 @@ if __name__ == "__main__":
         staticModel = StaticFramework(obj)
         staticModel.run()
 
+    if lg.doProcessesInfil == 1 and lg.useBuiltUpText == 1:
+        print(">>> Correcting texture of Built Up Areas", flush=True)
+        obj = lisSoils.BuiltUpTextures()
+        staticModel = StaticFramework(obj)
+        staticModel.run()
+
     if lg.doProcessesInfil == 1:
         print(">>> Creating soil physical maps for infiltration", flush=True)
         obj = lisSoils.PedoTransfer()
@@ -151,7 +157,9 @@ if __name__ == "__main__":
         staticModelBuild.run()
         lg.shapeNr = 2
         staticModelBuild.run()
-               
+        lg.shapeNr = 3
+        staticModelBuild.run()
+
     # adjust rivers for large dams
     if lg.doProcessesDams == 1:
         print('>>> Adjust maps for Dams', flush=True)

@@ -446,3 +446,25 @@ class CorrectTextures(StaticModel):
         report(S, "sand2.map");
         report(C, "clay2.map");
         report(Si,"silt2.map");
+
+
+# correct soilgrids textures to field values and make sure sum = 1
+class BuiltUpTextures(StaticModel):
+    def __init__(self,mask=0):
+        StaticModel.__init__(self)
+    def initial(self):
+        mask = lg.mask_
+
+        S = readmap("sand1.map")
+        Si = readmap("silt1.map")
+        C = readmap("clay1.map")
+
+        BUMask = readmap(lg.builtUpMaskName)
+
+        S = ifthenelse(BUMask == 1, lg.BuiltUpSand, S)
+        C = ifthenelse(BUMask == 1, lg.BuiltUpClay, C)
+
+        Si = 1 - S - C
+        report(S, "sand1.map");
+        report(C, "clay1.map");
+        report(Si,"silt1.map");

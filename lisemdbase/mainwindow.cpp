@@ -26,6 +26,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     ScriptFileName = "lisemDBASEgenerator.py";
 
+    QString appDataLocalPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    QFileInfo appDataLocalFileInfo(appDataLocalPath);
+    localPath = appDataLocalFileInfo.absolutePath()+"/lisem";
+    QDir dir;
+    if (!dir.exists(localPath)) {
+        if (dir.mkpath(localPath)) {
+            qDebug() << "Directory created successfully: " << localPath;
+        } else {
+            qDebug() << "Failed to create directory: " << localPath;
+        }
+    } else {
+        qDebug() << "Directory already exists: " << localPath;
+    }
+
     getIniStart();
 
     QString s = combo_iniName->currentText();

@@ -37,10 +37,13 @@ public:
     QString LULCNNtableName;
     QString NDVImapName;
     QString roadsSHPName;
+    QString hardSHPName;
     QString buildingsSHPName;
     QString drummapName;
     QString BuiltUpAreaName;
+    QString builtUpMaskName;
 
+    QString localPath;
     QString optionList;
 
    // QString RainScriptFileName;
@@ -93,6 +96,7 @@ public:
     int optionUseBD2;
     int optionUseCorrOM;
     int optionUseCorrTexture;
+    int optionUseBuiltUpTexture;
     int optionSoildepthMethod;
     int optionUseDensity;
     int optionFillDEM;
@@ -125,6 +129,9 @@ public:
     double corrClay;
     double corrSilt;
     double corrSand;
+    double builtUpClay;
+    double builtUpSilt;
+    double builtUpSand;
     double roofStore;
     double drainWidth;
     double drainHeight;
@@ -313,7 +320,6 @@ private slots:
 
     void on_toolButton_resetEros_clicked();
 
-
     void on_checkBox_Rain_clicked(bool checked);
 
     void on_comboBox_Resample_currentIndexChanged(int index);
@@ -325,6 +331,10 @@ private slots:
     void on_toolButton_BuiltUp_clicked();
 
     void on_lineEdit_Maps_returnPressed();
+
+    void on_toolButton_hardSHP_clicked();
+
+    void on_toolButton_BuiltupMaskMap_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -311,6 +311,20 @@ void MainWindow::on_toolButton_BuiltUp_clicked()
     if (!BuiltUpAreaName.isEmpty())
         lineEdit_BuiltUpArea->setText(BuiltUpAreaName);
 }
+
+
+
+void MainWindow::on_toolButton_hardSHP_clicked()
+{
+    QString tmp = lineEdit_hardSHP->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = BaseDirName;//ProjectDirName;
+
+    QStringList filters({"ESRI Shape file (*.shp)","Any files (*)"});
+    hardSHPName = getFileorDir(tmp,"Select hard surfaces Shape file", filters, 1);
+    if (!hardSHPName.isEmpty())
+        lineEdit_hardSHP->setText(hardSHPName);
+}
 //==============================================================================
 
 void MainWindow::on_toolButton_GPMGauge_clicked()
@@ -361,4 +375,17 @@ void MainWindow::on_toolButton_RainFilename_clicked()
     RainFilename = getFileorDir(tmp,"Select input ranfall file for openLisem", filters, 1);
     if (!RainFilename.isEmpty())
         lineEdit_RainFilename->setText(RainFilename);
+}
+
+
+void MainWindow::on_toolButton_BuiltupMaskMap_clicked()
+{
+    QString tmp = lineEdit_BuiltUpMask->text();
+    if (!QFileInfo(tmp).exists())
+        tmp = BaseDirName;//ProjectDirName;
+
+    QStringList filters({"GeoTiff or PCRaster (*.tif *.map)","Any files (*)"});
+    builtUpMaskName = getFileorDir(tmp,"Select Built Up mask map", filters, 1);
+    if (!builtUpMaskName.isEmpty())
+        lineEdit_BuiltUpMask->setText(builtUpMaskName);
 }
