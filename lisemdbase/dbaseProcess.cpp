@@ -165,13 +165,26 @@ void MainWindow::runModel()
     if (!checkAllNames())
         return;
 
+
+    QString tempDirPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+
+    // Define file path within the temp directory
+    QString filePath = tempDirPath + QDir::separator() + "lisemdbaseoptions.cfg";
+    if (QFileInfo(filePath).exists()) {
+        QFile file (filePath);
+        file.remove();
+    }
+
+    /*
     QString Ss = qApp->applicationDirPath(); //QDir::tempPath()
+    qDebug() << Ss+"/lisemdbaseoptions.cfg";
     if (QFileInfo(Ss+"/lisemdbaseoptions.cfg").exists()) {
         QFile file (Ss+"/lisemdbaseoptions.cfg");
         file.remove();
     }
+    */
 
-    setIni(Ss+"/lisemdbaseoptions.cfg");
+    setIni(filePath);// Ss+"/lisemdbaseoptions.cfg");
 
 
     QStringList pythonCommandArguments;
@@ -179,7 +192,7 @@ void MainWindow::runModel()
     //if (runOptionsscript)
     pythonCommandArguments << ScriptDirName + ScriptFileName;
 
-    pythonCommandArguments << Ss+ "/lisemdbaseoptions.cfg";
+    pythonCommandArguments << filePath;//Ss+ "/lisemdbaseoptions.cfg";
 
     //qDebug() << pythonCommandArguments;
 

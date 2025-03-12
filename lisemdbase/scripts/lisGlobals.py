@@ -632,6 +632,8 @@ def initialize():
         
     mainout_ = scalar(readmap(BaseDir+outletsbaseName))
     mainoutpoint_ = scalar(readmap(BaseDir+outpointsbaseName))
+    mainout_ = cover(mainout_,0)
+    mainoutpoint_ = cover(mainoutpoint_,0)
     DAMS_= DEM_*0
        
     report(mask_, BaseDir+masknamemap_)

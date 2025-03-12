@@ -1,7 +1,5 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+QT += core gui
+QT += widgets
 CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
