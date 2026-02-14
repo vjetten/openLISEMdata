@@ -83,30 +83,7 @@ bool MainWindow::checkAllNames()
     //if (!QFileInfo(RainFilenameHourERA).exists() && optionRain == 1)
 }
 
-/*
- *
-CONDA_DEFAULT_ENV=lisem
-CONDA_EXE=C:\Users\vjett\miniconda3\Scripts\conda.exe
-CONDA_PREFIX=C:\Users\vjett\miniconda3\envs\lisem
-CONDA_PREFIX_1=C:\Users\vjett\miniconda3
-CONDA_PYTHON_EXE=C:\Users\vjett\miniconda3\python.exe
-CONDA_SHLVL=2
-GDAL_DATA=C:\Users\vjett\miniconda3\envs\lisem\Library\share\gdal
-GDAL_DRIVER_PATH=C:\Users\vjett\miniconda3\envs\lisem\Library\lib\gdalplugins
-GEOTIFF_CSV=C:\Users\vjett\miniconda3\envs\lisem\Library\share\epsg_csv
 
-path +
-C:\Users\vjett\miniconda3\envs\lisem;
-C:\Users\vjett\miniconda3\envs\lisem\Library\mingw-w64\bin;
-C:\Users\vjett\miniconda3\envs\lisem\Library\usr\bin;
-C:\Users\vjett\miniconda3\envs\lisem\Library\bin;
-C:\Users\vjett\miniconda3\envs\lisem\Scripts;
-C:\Users\vjett\miniconda3\envs\lisem\bin;
-C:\Users\vjett\miniconda3\condabin;
-
-PROJ_DATA=C:\Users\vjett\miniconda3\envs\lisem\Library\share\proj
-PROJ_NETWORK=ON
- */
 void MainWindow::runModel()
 {
     text_out->clear();
@@ -129,42 +106,34 @@ void MainWindow::runModel()
 
     Process->setProcessEnvironment(env);
 
-    QStringList pythonCommandArguments;
-
-    //if (runOptionsscript)
-    pythonCommandArguments << ScriptDirName + ScriptFileName;
-
-    QString tempDirPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-
-    // Define file path within the temp directory
-    QString filePath = tempDirPath + QDir::separator() + "lisemdbaseoptions.cfg";
-    // if (QFileInfo(filePath).exists()) {
-    //     QFile file (filePath);
-    //     file.remove();
-    // }
-
-    pythonCommandArguments << filePath;//Ss+ "/lisemdbaseoptions.cfg";
-
-    setIni(filePath);// Ss+"/lisemdbaseoptions.cfg");
-
-    qDebug() << pythonCommandArguments;
-
-    //Process->start (condaenv+"/python", pythonCommandArguments);
-    Process->start(envRoot + "/python.exe", pythonCommandArguments);
-    Process->setReadChannel(QProcess::StandardOutput);
-
     //  if (runOptionsscript)
     createNNLULCTable();
 
     readValuesfromUI();
 
-    if (QFileInfo(filePath).exists()) {
-        QFile file (filePath);
+    if (!checkAllNames())
+        return;
+
+    QString Ss = qApp->applicationDirPath(); //QDir::tempPath()
+    if (QFileInfo(Ss+"/lisemdbaseoptions.cfg").exists()) {
+        QFile file (Ss+"/lisemdbaseoptions.cfg");
         file.remove();
     }
 
-    if (!checkAllNames())
-        return;
+
+    setIni(Ss+"/lisemdbaseoptions.cfg");
+
+    QStringList pythonCommandArguments;
+
+    //if (runOptionsscript)
+    pythonCommandArguments << ScriptDirName + ScriptFileName;
+
+    pythonCommandArguments << Ss+ "/lisemdbaseoptions.cfg";
+
+    qDebug() << pythonCommandArguments;
+
+    Process->start(envRoot + "/python.exe", pythonCommandArguments);
+    Process->setReadChannel(QProcess::StandardOutput);
 
 }
 
