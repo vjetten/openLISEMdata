@@ -117,7 +117,7 @@
        </font>
       </property>
       <property name="text">
-       <string>openLISEM database generator (version 4.79 - 250212)</string>
+       <string>openLISEM database generator (version 4.80 - 260214)</string>
       </property>
      </widget>
     </item>
@@ -923,7 +923,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>1168</width>
-                <height>776</height>
+                <height>774</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_13">
@@ -2307,7 +2307,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>1168</width>
-                <height>549</height>
+                <height>545</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_12">

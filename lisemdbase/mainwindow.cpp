@@ -629,7 +629,7 @@ bool MainWindow::convertDailyPrecipitation()
             //        eout << QString("%1:%2 ").arg(day).arg(start+j*dt,4,'f',0,'0') << "0.00\n";
 
         } else {
-            eout << QString("%1:%2 ").arg(day).arg(720,4,'f',0,'0') << "0.00\n";
+            eout << QString("%1:%2 ").arg(day).arg(720.0,4,'f',0,'0') << "0.00\n";
         }
 
 

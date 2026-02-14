@@ -112,92 +112,59 @@ void MainWindow::runModel()
     text_out->clear();
     text_out->insertPlainText(">>> Preparing python libraries\n");
 
+    QString envRoot = combo_envs->currentText();  // full path to env
 
-    // add the env path names, copied from Spyder. Maybe overkill but it works
-    QString condaenv = combo_envs->currentText();
-    QStringList Sn = condaenv.split('/');
-    QString envname = Sn.at(Sn.count()-2);
+    QStringList newPath;
+    newPath << envRoot
+            << envRoot + "/Library/bin"
+            << envRoot + "/DLLs"
+            << envRoot + "/Scripts";
 
-    QString condabase = QDir(condaenv+"/../..").absolutePath();
-    QString condascripts = QDir(condabase+"/Scripts").absolutePath();
+    QString mergedPath = newPath.join(";") + ";" +
+            QProcessEnvironment::systemEnvironment().value("PATH");
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("CONDA_DEAFULT_ENV",envname);
-    env.insert("CONDA_EXE",condascripts+"conda.exe");
-    env.insert("CONDA_PREFIX", condaenv);
-    env.insert("CONDA_PREFIX_1", condabase);
-    env.insert("CONDA_PYTHON_EXE",condabase+"/python.exe");
-    env.insert("CONDA_SHLVL","2"); // 1 ?
+    env.insert("PATH", mergedPath);
+    env.insert("GDAL_DATA", envRoot + "/Library/share/gdal");
 
-    env.insert("USE_PATH_FOR_GDAL_PYTHON","YES");
-    env.insert("CONDA_ACTIVATE_SCRIPT",condascripts+"/activate");
-    env.insert("CONDA_ENV_PATH",condaenv);
-    env.insert("CONDA_ENV_PYTHON",condaenv+"python.exe");
-
-    env.insert("GDAL_DATA",condaenv+"Library/share/gdal");
-    env.insert("GDAL_DRIVER",condaenv+"Library/share/gdal");
-    env.insert("GDAL_DRIVER_PATH",condaenv+ "Library/lib/gdalplugins");
-    env.insert("GEOTIFF_CSV",condaenv+"Library/share/epsg_csv");
-    QString addpath = condaenv+";"
-            +condaenv+"Library/bin/minw-w64/bin;"
-            +condaenv+"Library/usr/bin;"
-            +condaenv+"Library/bin;"
-            +condaenv+"Scripts;"
-            +condaenv+"bin;"
-            +condaenv+"condabin;"
-            +condaenv+"/Scripts;";
-
-    env.insert("PATH", addpath + env.value("Path"));
     Process->setProcessEnvironment(env);
-
-//    qDebug() << condabase ;
-//    qDebug() << condascripts+ "/activate";
-//    qDebug() << condaenv+"python.exe";
-//    qDebug() << condabase+"/python.exe";
-//    qDebug() << condaenv+"Library/share/gdal";
-
-
-  //  if (runOptionsscript)
-    createNNLULCTable();
-
-    readValuesfromUI();
-
-    if (!checkAllNames())
-        return;
-
-
-    QString tempDirPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-
-    // Define file path within the temp directory
-    QString filePath = tempDirPath + QDir::separator() + "lisemdbaseoptions.cfg";
-    if (QFileInfo(filePath).exists()) {
-        QFile file (filePath);
-        file.remove();
-    }
-
-    /*
-    QString Ss = qApp->applicationDirPath(); //QDir::tempPath()
-    qDebug() << Ss+"/lisemdbaseoptions.cfg";
-    if (QFileInfo(Ss+"/lisemdbaseoptions.cfg").exists()) {
-        QFile file (Ss+"/lisemdbaseoptions.cfg");
-        file.remove();
-    }
-    */
-
-    setIni(filePath);// Ss+"/lisemdbaseoptions.cfg");
-
 
     QStringList pythonCommandArguments;
 
     //if (runOptionsscript)
     pythonCommandArguments << ScriptDirName + ScriptFileName;
 
+    QString tempDirPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+
+    // Define file path within the temp directory
+    QString filePath = tempDirPath + QDir::separator() + "lisemdbaseoptions.cfg";
+    // if (QFileInfo(filePath).exists()) {
+    //     QFile file (filePath);
+    //     file.remove();
+    // }
+
     pythonCommandArguments << filePath;//Ss+ "/lisemdbaseoptions.cfg";
 
-    //qDebug() << pythonCommandArguments;
+    setIni(filePath);// Ss+"/lisemdbaseoptions.cfg");
 
-    Process->start (condaenv+"/python", pythonCommandArguments);
+    qDebug() << pythonCommandArguments;
+
+    //Process->start (condaenv+"/python", pythonCommandArguments);
+    Process->start(envRoot + "/python.exe", pythonCommandArguments);
     Process->setReadChannel(QProcess::StandardOutput);
+
+    //  if (runOptionsscript)
+    createNNLULCTable();
+
+    readValuesfromUI();
+
+    if (QFileInfo(filePath).exists()) {
+        QFile file (filePath);
+        file.remove();
+    }
+
+    if (!checkAllNames())
+        return;
 
 }
 

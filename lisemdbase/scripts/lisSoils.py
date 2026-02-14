@@ -19,7 +19,8 @@ from os.path import exists
 import math
 
 ## web coverage service for SOILGRIDS
-from owslib.wcs import WebCoverageService
+## from owslib.wcs import WebCoverageService
+import requests
 
 ## import global variables
 import lisGlobals as lg
@@ -55,87 +56,113 @@ def fill_nodata(input_raster, output_raster):
     
 # download soilgrids layers
 class GetSoilGridsLayerConda:
-    "downbloading a SOILGRIDS layer"
-    def __init__(self, x = 0):
-          
+    "downloading a SOILGRIDS layer (REST API only)"
+
+    def __init__(self, x=0):
+
         varname = lg.SG_names_[x]
+
         # depth string
-        if lg.SG_horizon_ == 1 :
-            ID = lg.SG_layers_[lg.optionSG1-1] 
-        if lg.SG_horizon_ == 2 :
-            ID = lg.SG_layers_[lg.optionSG2-1]             
-            
-        vname = varname  # filename for display
-               
-        # make a readable name for output to screen       
-        if x == 3: vname='Soil Org Carbon' 
-        if x == 4: vname='Gravel' 
-        if x == 5: vname='Bulk Density' 
+        if lg.SG_horizon_ == 1:
+            ID = lg.SG_layers_[lg.optionSG1 - 1]
+        elif lg.SG_horizon_ == 2:
+            ID = lg.SG_layers_[lg.optionSG2 - 1]
 
-        print("   => Downloading "+varname+ID+" as LISEM soil layer "+str(lg.SG_horizon_)+": "+vname+" content", flush=True)
+        vname = varname
 
-        mean_covs = varname+ID
-        varout = varname+str(lg.SG_horizon_)
-        
-        outputnametif = "{0}.tif".format(varout)
-        temptif = '_temp.tif'
-        if exists(temptif) :
+        if x == 3: vname = 'Soil Org Carbon'
+        if x == 4: vname = 'Gravel'
+        if x == 5: vname = 'Bulk Density'
+
+        print(
+            "   => Downloading " + varname + ID +
+            " as LISEM soil layer " + str(lg.SG_horizon_) +
+            ": " + vname + " content",
+            flush=True
+        )
+
+        mean_covs = varname + ID
+        varout = varname + str(lg.SG_horizon_)
+        outputnametif = f"{varout}.tif"
+        temptif = "_temp.tif"
+
+        if exists(temptif):
             os.remove(temptif)
-        
-        # convert the mask box from the project EPSG to EPSG::152160
-        
-        # make a polygon of the maskbox coordinates
+
+        # transform bbox (your existing code remains unchanged)
         bbox = lg.maskbox
         ring = ogr.Geometry(ogr.wkbLinearRing)
-        ring.AddPoint_2D(bbox[0], bbox[1])  # lower left
-        ring.AddPoint_2D(bbox[2], bbox[1])  # lower right
-        ring.AddPoint_2D(bbox[2], bbox[3])  # upper right
-        ring.AddPoint_2D(bbox[0], bbox[3])  # upper left
-        ring.AddPoint_2D(bbox[0], bbox[1])  # close the ring
+        ring.AddPoint_2D(bbox[0], bbox[1])
+        ring.AddPoint_2D(bbox[2], bbox[1])
+        ring.AddPoint_2D(bbox[2], bbox[3])
+        ring.AddPoint_2D(bbox[0], bbox[3])
+        ring.AddPoint_2D(bbox[0], bbox[1])
+
         bbox_geom = ogr.Geometry(ogr.wkbPolygon)
         bbox_geom.AddGeometry(ring)
-        
-        # Define the source and target spatial reference systems
+
         src_sr = osr.SpatialReference()
         src_sr.ImportFromEPSG(lg.EPSG)
+
         target_sr = osr.SpatialReference()
-        target_sr.ImportFromProj4('+proj=igh +datum=WGS84 +no_defs +towgs84=0,0,0')
-        # transform the box
+        target_sr.ImportFromEPSG(4326)  # SoilGrids REST uses WGS84
+
         transform = osr.CoordinateTransformation(src_sr, target_sr)
         bbox_geom.Transform(transform)
         transformed_bbox = bbox_geom.GetEnvelope()
-        # expand by one cell
-        x_min = transformed_bbox[0]-250
-        x_max = transformed_bbox[1]+250
-        y_min = transformed_bbox[2]-250
-        y_max = transformed_bbox[3]+250
-        Maskbox = [x_min,y_min,x_max,y_max]
 
-        EPSGs = 'urn:ogc:def:crs:EPSG::152160'
-       
-        if SGconda == 1:
-            #print("conda",flush = True)
-            soil_grids = SoilGrids()
-            data = soil_grids.get_coverage_data(service_id=varname, coverage_id=mean_covs, west = x_min,south=y_min,east =x_max,north=y_max, crs=EPSGs, output=temptif)
-        else :            
-            url = "https://maps.isric.org/mapserv?map=/map/{0}.map".format(varname)
-            wcs = WebCoverageService(url, version='1.0.0') 
-            response = wcs.getCoverage(identifier=mean_covs,crs=EPSGs, bbox=Maskbox,resx=250,resy=250,format='GEOTIFF_INT16')               
-            with open(temptif, 'wb') as file:
-                file.write(response.read())
-         
-        input_dataset = gdal.Open(temptif)        
-        gdal.Warp(outputnametif, input_dataset, 
-            format='GTiff', 
-            srcNodata = -32768,
-            xRes=250, yRes=250, 
-            outputType = gdal.GDT_Float32)        
-        
-        # Close the datasets
+        x_min = transformed_bbox[0]
+        x_max = transformed_bbox[1]
+        y_min = transformed_bbox[2]
+        y_max = transformed_bbox[3]
+
+        # ---- REST API CALL ----
+
+        url = "https://rest.isric.org/soilgrids/v2.0/coverage"
+
+        params = {
+            "property": varname,
+            "depth": ID.replace("_mean", ""),
+            "west": x_min,
+            "south": y_min,
+            "east": x_max,
+            "north": y_max,
+            "format": "geotiff"
+        }
+
+        print("   -> Requesting SoilGrids REST coverage...")
+
+        response = requests.get(url, params=params, stream=True)
+
+        if response.status_code != 200:
+            raise Exception(
+                f"SoilGrids REST request failed: {response.status_code}"
+            )
+
+        with open(temptif, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+        # ---- GDAL warp (same as before) ----
+
+        input_dataset = gdal.Open(temptif)
+
+        gdal.Warp(
+            outputnametif,
+            input_dataset,
+            format='GTiff',
+            srcNodata=-32768,
+            xRes=250,
+            yRes=250,
+            outputType=gdal.GDT_Float32
+        )
+
         input_dataset = None
-        response = None
-        if exists(temptif) :
-            os.remove(temptif)
+
+        if exists(temptif):
+            os.remove(temptif)    
+    
+
 
 # convert tif to map and fill missing values
 class SoilGridsTransform(StaticModel):

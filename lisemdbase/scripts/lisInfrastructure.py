@@ -91,20 +91,34 @@ class InfrastructureMaps(StaticModel):
             roofstore = ifthenelse(map_ > 0, scalar(1), 0)*lg.mask_*lg.roofStore
             report(roofstore,lg.roofstoreName)            
         if sf == 2 :    
-            map_ = map_ * lg.dx
-            report(map_,lg.roadwidthName)
+            map2 = map_ * lg.dx
+            report(map2,lg.roadwidthName) # write roadwidth map
             if lg.doProcessesStormdrain == 1:
                 print("Creating storm drain maps.", flush=True);
                 
+                #village boundary
                 bua = readmap(lg.BaseDir+lg.builtUpAreaName)
-                tilemask = ifthen(map_*bua > 1, scalar(1))
+                trytile =scalar(map_>0.3)
+                #report(trytile,lg.MapsDir+'trytile.map')
+                tilemask = ifthen(trytile*bua== 1, scalar(1))                
+                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)                                
+                upstile = accuflux(lddtile, 1)
+                downtile = downstream(lddtile, upstile)
+                tilemask =ifthenelse((upstile == 1) & (downtile > 2),0, tilemask)
+                tilemask =ifthen(tilemask > 0,scalar(1))
                 lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
-                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                upstile = accuflux(lddtile, 1)
+                downtile = downstream(lddtile, upstile)
+                tilemask =ifthenelse((upstile == 1) & (downtile > 2),0, tilemask)
+                tilemask =ifthen(tilemask > 0,scalar(1))
+                
+                tilemask=ifthen( areaarea(clump(nominal(tilemask))) > 5*cellarea(), scalar(1)) 
+                
                 lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
-                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
-                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
-                tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
-                lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                #tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                #lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
+                #tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
+                #lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
                 #tilemask =ifthen(accuflux(lddtile, 1) > 1,scalar(1))
                 #lddtile  = lddcreate(tilemask*lg.DEM_,1e20,1e20,1e20,1e20)
                 print(lg.drainInletDistance, lg.drainInletSize)
