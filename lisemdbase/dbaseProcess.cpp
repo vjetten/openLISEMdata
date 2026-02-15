@@ -114,21 +114,27 @@ void MainWindow::runModel()
     if (!checkAllNames())
         return;
 
-    QString Ss = qApp->applicationDirPath(); //QDir::tempPath()
-    if (QFileInfo(Ss+"/lisemdbaseoptions.cfg").exists()) {
-        QFile file (Ss+"/lisemdbaseoptions.cfg");
+    QString appDataLocalPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    QFileInfo appDataLocalFileInfo(appDataLocalPath);
+    QString localPath = appDataLocalFileInfo.absolutePath() + "/lisem";
+    QDir dir;
+    if (!dir.exists(localPath))
+        dir.mkpath(localPath);
+
+    if (QFileInfo(localPath+"/lisemdbaseoptions.cfg").exists()) {
+        QFile file (localPath+"/lisemdbaseoptions.cfg");
         file.remove();
     }
 
 
-    setIni(Ss+"/lisemdbaseoptions.cfg");
+    setIni(localPath+"/lisemdbaseoptions.cfg");
 
     QStringList pythonCommandArguments;
 
     //if (runOptionsscript)
     pythonCommandArguments << ScriptDirName + ScriptFileName;
 
-    pythonCommandArguments << Ss+ "/lisemdbaseoptions.cfg";
+    pythonCommandArguments << localPath+ "/lisemdbaseoptions.cfg";
 
     qDebug() << pythonCommandArguments;
 
